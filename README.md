@@ -4,10 +4,6 @@
 Tabs:
 - Home
 - Resume
-  - Summary
-  - Skills
-  - Experience
-  - Education
 - Portfolio
   - Project
   - Project
