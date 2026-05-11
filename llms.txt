@@ -1,0 +1,17 @@
+# Diana Payton
+
+> Documentation systems consultant and technical writer. I help teams build processes that produce documentation agents can trust — not just access.
+
+## Site sections
+
+- [Portfolio](/docs/intro): Technical writing samples
+- [Blog](/blog): Documentation systems, tooling, and process design
+- [skill.md](/docs/skill.md): Agent capability manifest for this site
+
+## Contact
+
+Email: diana@hackmamba.io
+
+## Topics covered on this site
+
+Documentation pipelines, Vale linting, Doc Detective, agent-readable documentation, skill.md, llms.txt, AFdocs, documentation process design, technical writing career development

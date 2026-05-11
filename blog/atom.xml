@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xsl" href="atom.xsl"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://oddlittlebird.github.io/showcase-site/blog</id>
+    <title>Diana Payton Blog</title>
+    <updated>2026-05-10T00:00:00.000Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://oddlittlebird.github.io/showcase-site/blog"/>
+    <subtitle>Diana Payton Blog</subtitle>
+    <icon>https://oddlittlebird.github.io/showcase-site/img/favicon.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[First Blog Post]]></title>
+        <id>https://oddlittlebird.github.io/showcase-site/blog/first-blog-post</id>
+        <link href="https://oddlittlebird.github.io/showcase-site/blog/first-blog-post"/>
+        <updated>2026-05-10T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Placeholder for your first blog post.]]></summary>
+        <content type="html"><![CDATA[<p>Placeholder for your first blog post.</p>
+]]></content>
+        <author>
+            <name>Diana Payton</name>
+            <uri>https://www.linkedin.com/in/dianapayton/</uri>
+        </author>
+    </entry>
+</feed>

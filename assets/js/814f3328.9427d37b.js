@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([["833"],{5513(e){e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"First Blog Post","permalink":"/showcase-site/blog/first-blog-post","unlisted":false,"date":"2026-05-10T00:00:00.000Z"}]}')}}]);
