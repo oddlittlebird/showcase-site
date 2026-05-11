@@ -1,0 +1,21 @@
+{
+  "id": "sample-pipeline-test",
+  "description": "Verifies that the documentation pipeline overview page loads and contains expected content.",
+  "tests": [
+    {
+      "id": "pipeline-page-loads",
+      "description": "The pipeline overview page exists and renders the expected heading.",
+      "steps": [
+        {
+          "action": "goTo",
+          "url": "http://localhost:3000/showcase-site/docs/intro"
+        },
+        {
+          "action": "find",
+          "selector": "h1",
+          "matchText": "Introduction"
+        }
+      ]
+    }
+  ]
+}

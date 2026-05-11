@@ -1,0 +1,6 @@
+.DS_Store
+node_modules/
+website/build/
+website/.docusaurus/
+.vale/styles/Google/
+.vale/styles/Vale/

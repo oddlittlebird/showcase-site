@@ -1,0 +1,11 @@
+extends: substitution
+message: "Use '%s' instead of '%s'."
+level: error
+ignorecase: true
+swap:
+  AI agent: agent
+  LLM: large language model
+  utilize: use
+  leverage: use
+  spin up: start
+  kick off: start
