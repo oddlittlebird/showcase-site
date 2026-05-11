@@ -1,0 +1,24 @@
+name: Lint
+
+on:
+  pull_request:
+    paths:
+      - 'website/docs/**'
+      - 'website/blog/**'
+      - 'website/static/llms.txt'
+      - 'website/docs/skill.md'
+
+jobs:
+  vale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Vale packages
+        uses: errata-ai/vale-action@reviewdog
+        with:
+          files: '["website/docs", "website/blog"]'
+          vale_flags: '--config=.vale/.vale.ini'
+          fail_on_error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

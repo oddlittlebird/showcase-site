@@ -1,0 +1,5 @@
+{
+  "testDirectory": "doc-detective/tests",
+  "recursive": true,
+  "filePattern": "*.json"
+}

@@ -1,0 +1,11 @@
+extends: existence
+message: "Avoid passive voice: '%s'."
+level: warning
+link: https://developers.google.com/style/voice
+ignorecase: true
+tokens:
+  - was \w+ed
+  - were \w+ed
+  - is \w+ed
+  - are \w+ed
+  - been \w+ed
