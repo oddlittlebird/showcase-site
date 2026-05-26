@@ -1,10 +1,16 @@
 # Lychee link checker configuration
 
+# Base URL for resolving root-relative links in local files
+base = "https://oddlittlebird.github.io/showcase-site/"
+
 # Skip URLs that are known to be unreachable in CI (localhost, examples, etc.)
+# Internal root-relative paths (/blog, /portfolio, etc.) are Docusaurus routes —
+# Lychee cannot validate them, so they are excluded here.
 exclude = [
   "^http://localhost",
   "^https?://.*\\.example\\.com",
   "^mailto:",
+  "^/",
 ]
 
 # Treat these status codes as valid (some sites return 403/429 to bots)
