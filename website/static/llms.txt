@@ -1,17 +1,57 @@
-# Diana Payton
+# Documentation Pipeline Portfolio
 
-> Documentation systems consultant and technical writer. I help teams build processes that produce documentation agents can trust — not just access.
+> A working demonstration of an end-to-end technical documentation quality
+> pipeline. Built by Diana Payton to show what modern, AI-era documentation
+> practice looks like in a portfolio context — with running CI checks, custom
+> Vale rules, docs-as-tests, and agent-facing documentation maintained by the
+> same pipeline it describes.
+
+## What this site is
+
+This is a portfolio demonstration site, not a consulting site. Everything on
+it — the pipeline configuration, the custom Vale rules, the OpenAPI spec, the
+GitHub Actions workflows — was built to show a hiring manager what competent
+documentation engineering looks like in practice.
+
+## The pipeline
+
+Four quality checks run automatically on every content change:
+
+- Style and terminology linting (Vale) — runs on pull request, errors block merge
+- Spell checking (codespell) — runs on pull request, any misspelling blocks merge
+- External link checking (Lychee) — runs on push and every Monday at 8am UTC
+- Docs-as-tests (Doc Detective) — runs on push to main, validates docs against the live site
+
+## Custom Vale rules
+
+Three rules were written from scratch beyond the standard Google style guide:
+
+- Passive.yml: warns on passive voice ("was edited", "were deployed")
+- Terminology.yml: errors on "utilize", "leverage", "AI agent", "spin up", "kick off"
+- StackedHeadings.yml: warns when a heading immediately follows another heading
+  with no prose between them — uses scope: text with a multiline regex
 
 ## Site sections
 
-- [Portfolio](/docs/intro): Technical writing samples
-- [Blog](/blog): Documentation systems, tooling, and process design
-- [skill.md](/docs/skill.md): Agent capability manifest for this site
+- [Introduction](/docs/intro): What the pipeline does and why each piece is there
+- [skill.md](/docs/skill.md): Full technical breakdown of every tool and design decision
+- [Portfolio](/portfolio): Writing samples from Grafana Labs and Macrometa
+- [Garden Companion API](/api): OpenAPI 3.1 spec rendered via Redoc
+- [Blog](/blog): Posts on documentation systems and tooling decisions
 
-## Contact
+## Key files in the repository
 
-Email: diana@hackmamba.io
+- .github/workflows/ — five workflow definitions
+- .vale/styles/Diana/ — three custom rules (Passive.yml, Terminology.yml, StackedHeadings.yml)
+- .lychee.toml — Lychee configuration with exclusion rules
+- website/static/api/garden.yaml — OpenAPI 3.1 spec
+- doc-detective/tests/ — Doc Detective test specifications
 
-## Topics covered on this site
+## About Diana Payton
 
-Documentation pipelines, Vale linting, Doc Detective, agent-readable documentation, skill.md, llms.txt, AFdocs, documentation process design, technical writing career development
+Technical documentation leader with 15+ years of experience building
+documentation functions from the ground up. Former Grafana Labs, Macrometa,
+Thermo Fisher Scientific. Specializes in documentation systems for teams
+navigating the shift to AI-assisted and agent-readable documentation.
+
+[linkedin.com/in/dianapayton](https://www.linkedin.com/in/dianapayton/)
