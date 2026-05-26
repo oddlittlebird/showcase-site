@@ -54,4 +54,4 @@ documentation functions from the ground up. Former Grafana Labs, Macrometa,
 Thermo Fisher Scientific. Specializes in documentation systems for teams
 navigating the shift to AI-assisted and agent-readable documentation.
 
-[linkedin.com/in/dianapayton](https://www.linkedin.com/in/dianapayton/)
+https://www.linkedin.com/in/dianapayton/
