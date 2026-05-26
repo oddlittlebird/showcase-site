@@ -1,0 +1,14 @@
+# Lychee link checker configuration
+
+# Skip URLs that are known to be unreachable in CI (localhost, examples, etc.)
+exclude = [
+  "^http://localhost",
+  "^https?://.*\\.example\\.com",
+  "^mailto:",
+]
+
+# Treat these status codes as valid (some sites return 403/429 to bots)
+accept = [200, 403, 429]
+
+timeout = 20
+max_retries = 3
