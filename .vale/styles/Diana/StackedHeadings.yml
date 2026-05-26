@@ -1,0 +1,6 @@
+extends: existence
+message: "Avoid stacked headings. Add at least one sentence of context between headings."
+level: warning
+scope: text
+raw:
+  - '(?m)^#{1,6} [^\n]+\n\n*(#{1,6} )'
