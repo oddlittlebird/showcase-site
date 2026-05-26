@@ -7,6 +7,9 @@ on:
   schedule:
     - cron: '0 8 * * 1'  # every Monday at 8am UTC
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   lychee:
     runs-on: ubuntu-latest
