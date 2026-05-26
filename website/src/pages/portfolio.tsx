@@ -3,6 +3,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 
+
 interface SampleProps {
   href: string;
   title: string;
@@ -26,7 +27,7 @@ export default function Portfolio(): ReactNode {
       title="Portfolio"
       description="Technical writing samples by Diana Payton.">
       <main className="container margin-vert--lg">
-        <Heading as="h1">Portfolio</Heading>
+        <h1 style={{fontSize: '3rem'}}>Portfolio</h1>
         <p>Selected work samples. Each link opens the original document.</p>
 
         <Heading as="h2">How-to guides</Heading>

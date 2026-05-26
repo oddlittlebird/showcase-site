@@ -1,0 +1,28 @@
+name: Spell check
+
+on:
+  pull_request:
+    paths:
+      - 'website/docs/**'
+      - 'website/blog/**'
+      - 'website/src/pages/**'
+      - 'website/static/llms.txt'
+      - 'README.md'
+
+jobs:
+  codespell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run codespell
+        uses: codespell-project/actions-codespell@v2
+        with:
+          check_filenames: true
+          ignore_words_file: .codespellignore
+          path: >-
+            website/docs
+            website/blog
+            website/src/pages
+            website/static/llms.txt
+            README.md

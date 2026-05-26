@@ -1,6 +1,7 @@
 import type {ReactNode} from 'react';
 import clsx from 'clsx';
 import Link from '@docusaurus/Link';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
@@ -9,9 +10,12 @@ import styles from './index.module.css';
 
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
+  const heroBg = useBaseUrl('/img/hero-bg.jpg');
   return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
-      <div className="container">
+    <header
+      className={clsx('hero hero--primary', styles.heroBanner)}
+      style={{backgroundImage: `url(${heroBg})`}}>
+      <div className="container" style={{position: 'relative', zIndex: 1}}>
         <Heading as="h1" className="hero__title">
           {siteConfig.title}
         </Heading>
@@ -39,7 +43,9 @@ function HomepageContent() {
         </p>
         <ul>
           <li>Vale</li>
+          <li>codespell</li>
           <li>Doc Detective</li>
+          <li>Lychee</li>
           <li>Agent skills</li>
         </ul>
       </div>
