@@ -17,14 +17,6 @@ info:
     https://api.gardencompanion.example.com/v1
     ```
 
-    ## Authentication
-
-    All requests require an API key passed as a header.
-
-    ```
-    X-API-Key: your-api-key
-    ```
-
 servers:
   - url: https://api.gardencompanion.example.com/v1
     description: Production
@@ -40,151 +32,59 @@ paths:
     get:
       operationId: listPlants
       summary: Get all plants
-      description: |
-        Returns a list of all plants in the database that have companion or enemy relationships.
-        Use the optional `search` and `type` parameters to filter results.
+      description: Returns a list of all plants in the database.
       tags:
         - Plants
-      parameters:
-        - name: search
-          in: query
-          required: false
-          description: Filter plants by common name or scientific name.
-          schema:
-            type: string
-            example: tomatoes
-        - name: type
-          in: query
-          required: false
-          description: Filter plants by type.
-          schema:
-            type: string
-            enum: [vegetable, herb, flower, fruit, shrub]
-            example: vegetable
-        - name: limit
-          in: query
-          required: false
-          description: Maximum number of results to return.
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 20
-        - name: offset
-          in: query
-          required: false
-          description: Number of results to skip for pagination.
-          schema:
-            type: integer
-            minimum: 0
-            default: 0
       responses:
         '200':
-          description: A list of plants matching the query.
+          description: A list of plants.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  total:
-                    type: integer
-                    description: Total number of matching plants.
-                    example: 19
-                  limit:
-                    type: integer
-                    example: 20
-                  offset:
-                    type: integer
-                    example: 0
-                  plants:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/PlantSummary'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Plant'
               example:
-                total: 19
-                limit: 20
-                offset: 0
-                plants:
-                  - id: asparagus-001
-                    common_name: Asparagus
-                    scientific_name: Asparagus officinalis
-                    type: vegetable
-                  - id: beans-001
-                    common_name: Beans
-                    scientific_name: Phaseolus vulgaris
-                    type: vegetable
-                  - id: beets-001
-                    common_name: Beets
-                    scientific_name: Beta vulgaris
-                    type: vegetable
-                  - id: cabbage-001
-                    common_name: Cabbage
-                    scientific_name: Brassica oleracea var. capitata
-                    type: vegetable
-                  - id: carrots-001
-                    common_name: Carrots
-                    scientific_name: Daucus carota
-                    type: vegetable
-                  - id: corn-001
-                    common_name: Corn
-                    scientific_name: Zea mays
-                    type: vegetable
-                  - id: cucumbers-001
-                    common_name: Cucumbers
-                    scientific_name: Cucumis sativus
-                    type: vegetable
-                  - id: dill-001
-                    common_name: Dill
-                    scientific_name: Anethum graveolens
-                    type: herb
-                  - id: fennel-001
-                    common_name: Fennel
-                    scientific_name: Foeniculum vulgare
-                    type: herb
-                  - id: garlic-001
-                    common_name: Garlic
-                    scientific_name: Allium sativum
-                    type: vegetable
-                  - id: lettuce-001
-                    common_name: Lettuce
-                    scientific_name: Lactuca sativa
-                    type: vegetable
-                  - id: onions-001
-                    common_name: Onions
-                    scientific_name: Allium cepa
-                    type: vegetable
-                  - id: peas-001
-                    common_name: Peas
-                    scientific_name: Pisum sativum
-                    type: vegetable
-                  - id: peppers-001
-                    common_name: Peppers
-                    scientific_name: Capsicum annuum
-                    type: vegetable
-                  - id: potatoes-001
-                    common_name: Potatoes
-                    scientific_name: Solanum tuberosum
-                    type: vegetable
-                  - id: pumpkins-001
-                    common_name: Pumpkins and winter squash
-                    scientific_name: Cucurbita spp.
-                    type: vegetable
-                  - id: radishes-001
-                    common_name: Radishes
-                    scientific_name: Raphanus sativus
-                    type: vegetable
-                  - id: spinach-001
-                    common_name: Spinach
-                    scientific_name: Spinacia oleracea
-                    type: vegetable
-                  - id: tomatoes-001
-                    common_name: Tomatoes
-                    scientific_name: Solanum lycopersicum
-                    type: vegetable
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                - id: asparagus-001
+                  common_name: Asparagus
+                - id: beans-001
+                  common_name: Beans
+                - id: beets-001
+                  common_name: Beets
+                - id: cabbage-001
+                  common_name: Cabbage
+                - id: carrots-001
+                  common_name: Carrots
+                - id: corn-001
+                  common_name: Corn
+                - id: cucumbers-001
+                  common_name: Cucumbers
+                - id: dill-001
+                  common_name: Dill
+                - id: fennel-001
+                  common_name: Fennel
+                - id: garlic-001
+                  common_name: Garlic
+                - id: lettuce-001
+                  common_name: Lettuce
+                - id: onions-001
+                  common_name: Onions
+                - id: peas-001
+                  common_name: Peas
+                - id: peppers-001
+                  common_name: Peppers
+                - id: potatoes-001
+                  common_name: Potatoes
+                - id: pumpkins-001
+                  common_name: Pumpkins and winter squash
+                - id: radishes-001
+                  common_name: Radishes
+                - id: spinach-001
+                  common_name: Spinach
+                - id: tomatoes-001
+                  common_name: Tomatoes
+        '404':
+          $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
 
@@ -192,7 +92,7 @@ paths:
     get:
       operationId: getPlant
       summary: Get a plant
-      description: Returns detailed information about a single plant.
+      description: Returns information about a single plant.
       tags:
         - Plants
       parameters:
@@ -205,7 +105,7 @@ paths:
             example: tomatoes-001
       responses:
         '200':
-          description: Detailed plant information.
+          description: Plant information.
           content:
             application/json:
               schema:
@@ -213,20 +113,6 @@ paths:
               example:
                 id: tomatoes-001
                 common_name: Tomatoes
-                scientific_name: Solanum lycopersicum
-                type: vegetable
-                description: >-
-                  A warm-season crop grown for its edible fruit. Tomatoes are
-                  one of the most popular vegetables in home gardens and benefit
-                  greatly from companion planting to deter common pests.
-                sunlight: full sun
-                watering: medium
-                days_to_maturity: 70
-                spacing_cm: 60
-                seasons:
-                  - summer
-        '401':
-          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
         '429':
@@ -237,12 +123,11 @@ paths:
       operationId: getCompanions
       summary: Get companion plants
       description: |
-        Returns a list of companion planting recommendations for the specified
-        plant, sorted by relationship strength.
+        Returns companion planting recommendations for the specified plant.
 
         Each result includes a `relationship` field indicating whether the
-        pairing is **beneficial** or **harmful**, and a `reason`
-        explaining the interaction.
+        pairing is **beneficial** or **harmful**, and a `reason` explaining
+        the interaction where available.
       tags:
         - Companions
       parameters:
@@ -253,14 +138,6 @@ paths:
           schema:
             type: string
             example: tomatoes-001
-        - name: relationship
-          in: query
-          required: false
-          description: Filter results by relationship type.
-          schema:
-            type: string
-            enum: [beneficial, harmful]
-            example: beneficial
       responses:
         '200':
           description: A list of companion planting recommendations.
@@ -283,92 +160,64 @@ paths:
                   - plant:
                       id: asparagus-001
                       common_name: Asparagus
-                      scientific_name: Asparagus officinalis
-                      type: vegetable
                     relationship: beneficial
                   - plant:
                       id: basil-001
                       common_name: Basil
-                      scientific_name: Ocimum basilicum
-                      type: herb
                     relationship: beneficial
                     reason: Enhances growth and pest resistance.
                   - plant:
                       id: beans-001
                       common_name: Beans
-                      scientific_name: Phaseolus vulgaris
-                      type: vegetable
                     relationship: beneficial
                   - plant:
                       id: borage-001
                       common_name: Borage
-                      scientific_name: Borago officinalis
-                      type: herb
                     relationship: beneficial
                     reason: Attracts beneficial insects and pollinators.
                   - plant:
                       id: celery-001
                       common_name: Celery
-                      scientific_name: Apium graveolens
-                      type: vegetable
                     relationship: beneficial
                   - plant:
                       id: marigold-001
                       common_name: Marigold
-                      scientific_name: Tagetes spp.
-                      type: flower
                     relationship: beneficial
                     reason: Reduce whitefly populations.
                   - plant:
                       id: parsley-001
                       common_name: Parsley
-                      scientific_name: Petroselinum crispum
-                      type: herb
                     relationship: beneficial
                     reason: Attracts beneficial insects.
                   - plant:
                       id: radishes-001
                       common_name: Radishes
-                      scientific_name: Raphanus sativus
-                      type: vegetable
                     relationship: beneficial
                   - plant:
                       id: rosemary-001
                       common_name: Rosemary
-                      scientific_name: Salvia rosmarinus
-                      type: herb
                     relationship: beneficial
                   - plant:
                       id: thyme-001
                       common_name: Thyme
-                      scientific_name: Thymus vulgaris
-                      type: herb
                     relationship: beneficial
                   - plant:
                       id: broccoli-001
                       common_name: Broccoli
-                      scientific_name: Brassica oleracea var. italica
-                      type: vegetable
+                    relationship: harmful
+                    reason: Can stunt the growth of nightshades.
+                  - plant:
+                      id: cabbage-001
+                      common_name: Cabbage
                     relationship: harmful
                     reason: Can stunt the growth of nightshades.
                   - plant:
                       id: cauliflower-001
                       common_name: Cauliflower
-                      scientific_name: Brassica oleracea var. botrytis
-                      type: vegetable
                     relationship: harmful
-                  - plant:
-                      id: cabbage-001
-                      common_name: Cabbage
-                      scientific_name: Brassica oleracea var. capitata
-                      type: vegetable
-                    relationship: harmful
-                    reason: Can stunt the growth of nightshades.
                   - plant:
                       id: corn-001
                       common_name: Corn
-                      scientific_name: Zea mays
-                      type: vegetable
                     relationship: harmful
                     reason: >-
                       Tomatoes and corn are both heavy feeders and can deplete
@@ -376,73 +225,33 @@ paths:
                   - plant:
                       id: dill-001
                       common_name: Dill
-                      scientific_name: Anethum graveolens
-                      type: herb
                     relationship: harmful
                   - plant:
                       id: eggplant-001
                       common_name: Eggplant
-                      scientific_name: Solanum melongena
-                      type: vegetable
                     relationship: harmful
                   - plant:
                       id: fennel-001
                       common_name: Fennel
-                      scientific_name: Foeniculum vulgare
-                      type: herb
                     relationship: harmful
                   - plant:
                       id: peppers-001
                       common_name: Peppers
-                      scientific_name: Capsicum annuum
-                      type: vegetable
                     relationship: harmful
                   - plant:
                       id: potatoes-001
                       common_name: Potatoes
-                      scientific_name: Solanum tuberosum
-                      type: vegetable
                     relationship: harmful
-        '401':
-          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
 
 components:
-  securitySchemes:
-    ApiKeyAuth:
-      type: apiKey
-      in: header
-      name: X-API-Key
-
   schemas:
-    PlantSummary:
-      type: object
-      description: A brief summary of a plant, returned in list results.
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the plant.
-          example: tomatoes-001
-        common_name:
-          type: string
-          description: The plant's common name.
-          example: Tomatoes
-        scientific_name:
-          type: string
-          description: The plant's scientific (Latin) name.
-          example: Solanum lycopersicum
-        type:
-          type: string
-          enum: [vegetable, herb, flower, fruit, shrub]
-          description: The category of plant.
-          example: vegetable
-
     Plant:
       type: object
-      description: Detailed information about a plant.
+      description: A plant in the database.
       properties:
         id:
           type: string
@@ -452,50 +261,13 @@ components:
           type: string
           description: The plant's common name.
           example: Tomatoes
-        scientific_name:
-          type: string
-          description: The plant's scientific (Latin) name.
-          example: Solanum lycopersicum
-        type:
-          type: string
-          enum: [vegetable, herb, flower, fruit, shrub]
-          description: The category of plant.
-          example: vegetable
-        description:
-          type: string
-          description: A plain-language description of the plant.
-        sunlight:
-          type: string
-          enum: [full sun, partial shade, full shade]
-          description: The plant's sunlight requirements.
-          example: full sun
-        watering:
-          type: string
-          enum: [low, medium, high]
-          description: The plant's watering needs.
-          example: medium
-        days_to_maturity:
-          type: integer
-          description: Approximate days from planting to harvest.
-          example: 70
-        spacing_cm:
-          type: integer
-          description: Recommended spacing between plants, in centimeters.
-          example: 60
-        seasons:
-          type: array
-          description: The seasons in which this plant grows best.
-          items:
-            type: string
-            enum: [spring, summer, fall, winter]
-          example: [summer]
 
     Companion:
       type: object
       description: A companion planting recommendation.
       properties:
         plant:
-          $ref: '#/components/schemas/PlantSummary'
+          $ref: '#/components/schemas/Plant'
         relationship:
           type: string
           enum: [beneficial, harmful]
@@ -508,7 +280,7 @@ components:
         reason:
           type: string
           description: An explanation of why this pairing works or doesn't.
-          example: Basil repels aphids and whiteflies that commonly affect tomatoes.
+          example: Enhances growth and pest resistance.
 
     Error:
       type: object
@@ -524,26 +296,6 @@ components:
           example: Plant not found.
 
   responses:
-    BadRequest:
-      description: One or more parameter values are invalid.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: 400
-            message: Make sure all parameter values are valid.
-
-    Unauthorized:
-      description: The API key is invalid or missing.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: 401
-            message: API key is invalid or missing.
-
     NotFound:
       description: The requested plant does not exist in the database.
       content:
@@ -563,6 +315,3 @@ components:
           example:
             code: 429
             message: Request limit exceeded. Try again in 60 seconds.
-
-security:
-  - ApiKeyAuth: []
