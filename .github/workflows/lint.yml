@@ -5,8 +5,8 @@ on:
     paths:
       - 'website/docs/**'
       - 'website/blog/**'
+      - 'website/src/pages/**/*.mdx'
       - 'website/static/llms.txt'
-      - 'website/docs/skill.md'
 
 jobs:
   vale:
@@ -17,7 +17,7 @@ jobs:
       - name: Download Vale packages
         uses: errata-ai/vale-action@reviewdog
         with:
-          files: '["website/docs", "website/blog"]'
+          files: '["website/docs", "website/blog", "website/src/pages"]'
           vale_flags: '--config=.vale/.vale.ini'
           fail_on_error: true
         env:
