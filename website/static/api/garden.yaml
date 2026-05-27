@@ -1,7 +1,7 @@
 openapi: 3.1.0
 
 info:
-  title: Garden Companion API
+  title: Garden companion API
   version: 1.0.0
   description: |
     The Garden Companion API provides plant information and companion planting
