@@ -23,9 +23,9 @@ servers:
 
 tags:
   - name: Plants
-    description: Search and retrieve plant information.
-  - name: Companions
-    description: Get companion planting recommendations for a specific plant.
+    description: Look up plants and their companion relationships.
+  - name: Pairings
+    description: Browse all beneficial or harmful plant pairings.
 
 paths:
   /plants:
@@ -83,8 +83,6 @@ paths:
                   common_name: Spinach
                 - id: tomatoes-001
                   common_name: Tomatoes
-        '404':
-          $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
 
@@ -92,7 +90,9 @@ paths:
     get:
       operationId: getPlant
       summary: Get a plant
-      description: Returns information about a single plant.
+      description: >-
+        Returns a plant and all of its companion planting relationships,
+        both beneficial and harmful.
       tags:
         - Plants
       parameters:
@@ -105,57 +105,14 @@ paths:
             example: tomatoes-001
       responses:
         '200':
-          description: Plant information.
+          description: The plant and its companion relationships.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Plant'
+                $ref: '#/components/schemas/PlantWithCompanions'
               example:
                 id: tomatoes-001
                 common_name: Tomatoes
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-
-  /plants/{plantId}/companions:
-    get:
-      operationId: getCompanions
-      summary: Get companion plants
-      description: |
-        Returns companion planting recommendations for the specified plant.
-
-        Each result includes a `relationship` field indicating whether the
-        pairing is **beneficial** or **harmful**, and a `reason` explaining
-        the interaction where available.
-      tags:
-        - Companions
-      parameters:
-        - name: plantId
-          in: path
-          required: true
-          description: The unique identifier for the plant to get companions for.
-          schema:
-            type: string
-            example: tomatoes-001
-      responses:
-        '200':
-          description: A list of companion planting recommendations.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  plant_id:
-                    type: string
-                    description: The plant you requested companions for.
-                    example: tomatoes-001
-                  companions:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Companion'
-              example:
-                plant_id: tomatoes-001
                 companions:
                   - plant:
                       id: asparagus-001
@@ -247,6 +204,167 @@ paths:
         '429':
           $ref: '#/components/responses/TooManyRequests'
 
+  /pairings/beneficial:
+    get:
+      operationId: listBeneficialPairings
+      summary: Get all beneficial pairings
+      description: >-
+        Returns all plants that have at least one beneficial companion,
+        along with their beneficial companions and reasons where available.
+      tags:
+        - Pairings
+      responses:
+        '200':
+          description: All beneficial plant pairings.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlantPairing'
+              example:
+                - plant:
+                    id: asparagus-001
+                    common_name: Asparagus
+                  companions:
+                    - plant:
+                        id: basil-001
+                        common_name: Basil
+                    - plant:
+                        id: marigold-001
+                        common_name: Marigold
+                    - plant:
+                        id: nasturtium-001
+                        common_name: Nasturtiums
+                    - plant:
+                        id: parsley-001
+                        common_name: Parsley
+                - plant:
+                    id: beans-001
+                    common_name: Beans
+                  companions:
+                    - plant:
+                        id: corn-001
+                        common_name: Corn
+                      reason: >-
+                        Provides a natural trellis for climbing beans and
+                        improves sunlight access.
+                    - plant:
+                        id: lovage-001
+                        common_name: Lovage
+                      reason: >-
+                        Attracts beneficial insects such as parasitoid wasps
+                        that prey on aphids and beetles.
+                    - plant:
+                        id: rosemary-001
+                        common_name: Rosemary
+                      reason: Repels common garden pests with natural aromatic compounds.
+                    - plant:
+                        id: sunflower-001
+                        common_name: Sunflowers
+                      reason: >-
+                        Provides a natural trellis for climbing beans and
+                        improves sunlight access.
+                - plant:
+                    id: beets-001
+                    common_name: Beets
+                  companions:
+                    - plant:
+                        id: beans-001
+                        common_name: Bush beans
+                      reason: Fixes nitrogen in the soil, improves fertility.
+                    - plant:
+                        id: garlic-001
+                        common_name: Garlic
+                      reason: Improves beet growth and flavor.
+                    - plant:
+                        id: lettuce-001
+                        common_name: Lettuce
+                      reason: Complements root depth and suppresses weeds.
+                    - plant:
+                        id: onions-001
+                        common_name: Onions
+                      reason: Reduces pest pressure and improves yields.
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /pairings/harmful:
+    get:
+      operationId: listHarmfulPairings
+      summary: Get all harmful pairings
+      description: >-
+        Returns all plants that have at least one harmful companion,
+        along with their harmful companions and reasons where available.
+      tags:
+        - Pairings
+      responses:
+        '200':
+          description: All harmful plant pairings.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlantPairing'
+              example:
+                - plant:
+                    id: asparagus-001
+                    common_name: Asparagus
+                  companions:
+                    - plant:
+                        id: fennel-001
+                        common_name: Fennel
+                    - plant:
+                        id: garlic-001
+                        common_name: Garlic
+                      reason: Can inhibit growth of asparagus.
+                    - plant:
+                        id: onions-001
+                        common_name: Onions
+                      reason: Can inhibit growth of asparagus.
+                    - plant:
+                        id: potatoes-001
+                        common_name: Potatoes
+                - plant:
+                    id: beans-001
+                    common_name: Beans
+                  companions:
+                    - plant:
+                        id: broccoli-001
+                        common_name: Broccoli
+                    - plant:
+                        id: cauliflower-001
+                        common_name: Cauliflower
+                    - plant:
+                        id: chives-001
+                        common_name: Chives
+                      reason: Can inhibit growth of beans.
+                    - plant:
+                        id: garlic-001
+                        common_name: Garlic
+                      reason: Can inhibit growth of beans.
+                    - plant:
+                        id: kale-001
+                        common_name: Kale
+                    - plant:
+                        id: leeks-001
+                        common_name: Leeks
+                      reason: Can inhibit growth of beans.
+                    - plant:
+                        id: onions-001
+                        common_name: Onions
+                      reason: Can inhibit growth of beans.
+                - plant:
+                    id: beets-001
+                    common_name: Beets
+                  companions:
+                    - plant:
+                        id: beans-001
+                        common_name: Pole beans
+                      reason: The two plants can stunt each other's growth.
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
 components:
   schemas:
     Plant:
@@ -264,7 +382,7 @@ components:
 
     Companion:
       type: object
-      description: A companion planting recommendation.
+      description: A companion planting relationship.
       properties:
         plant:
           $ref: '#/components/schemas/Plant'
@@ -281,6 +399,47 @@ components:
           type: string
           description: An explanation of why this pairing works or doesn't.
           example: Enhances growth and pest resistance.
+
+    PlantWithCompanions:
+      type: object
+      description: A plant and all of its companion relationships.
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the plant.
+          example: tomatoes-001
+        common_name:
+          type: string
+          description: The plant's common name.
+          example: Tomatoes
+        companions:
+          type: array
+          description: All companion relationships for this plant.
+          items:
+            $ref: '#/components/schemas/Companion'
+
+    PairingCompanion:
+      type: object
+      description: A companion plant in a pairing, with an optional reason.
+      properties:
+        plant:
+          $ref: '#/components/schemas/Plant'
+        reason:
+          type: string
+          description: An explanation of why this pairing works or doesn't.
+          example: Attracts beneficial insects and pollinators.
+
+    PlantPairing:
+      type: object
+      description: A plant and its companions of a single relationship type.
+      properties:
+        plant:
+          $ref: '#/components/schemas/Plant'
+        companions:
+          type: array
+          description: Plants in this pairing relationship.
+          items:
+            $ref: '#/components/schemas/PairingCompanion'
 
     Error:
       type: object
