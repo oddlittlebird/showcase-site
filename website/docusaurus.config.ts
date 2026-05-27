@@ -1,7 +1,7 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
-import type * as Redocusaurus from 'redocusaurus';
+import type {ScalarOptions} from '@scalar/docusaurus';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -32,22 +32,24 @@ const config: Config = {
     locales: ['en'],
   },
 
-  presets: [
+  plugins: [
     [
-      'redocusaurus',
+      '@scalar/docusaurus',
       {
-        specs: [
-          {
-            id: 'garden-api',
-            spec: 'static/api/garden.yaml',
-            route: '/api',
+        label: 'API sample',
+        route: '/api',
+        showNavLink: false,
+        configuration: {
+          spec: {
+            url: '/showcase-site/api/garden.yaml',
           },
-        ],
-        theme: {
-          primaryColor: '#1a5f8a',
+          theme: 'default',
         },
-      } satisfies Redocusaurus.PresetEntry,
+      } satisfies ScalarOptions,
     ],
+  ],
+
+  presets: [
     [
       'classic',
       {
