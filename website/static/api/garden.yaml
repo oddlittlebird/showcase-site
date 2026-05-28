@@ -4,12 +4,25 @@ info:
   title: Garden companion API
   version: 1.0.0
   description: |
+    > **This is a sample API spec, not a live API.** The server does not exist,
+    > so requests made using the Try It feature will fail with a network error.
+    > Use the example responses in each endpoint to see what the API would return.
+
     The Garden Companion API provides plant information and companion planting
     recommendations to help gardeners plan healthy, productive gardens.
 
     Companion planting is the practice of growing different plants near each other
     for mutual benefit — improving growth, deterring pests, and making the most
     of garden space.
+
+    ## How to use this sample
+
+    1. Browse the endpoints in the left sidebar.
+    2. Open an endpoint to read its description and parameters.
+    3. Scroll to **Example** to see a realistic response — for example, `GET /plants/{plantId}`
+       shows all companion relationships for tomatoes.
+    4. To explore a specific plant, copy an ID from the `GET /plants` example (such as
+       `tomatoes-001`) and enter it in the `plantId` field of `GET /plants/{plantId}`.
 
     ## Base URL
 

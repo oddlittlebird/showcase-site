@@ -47,6 +47,17 @@ export default function Portfolio(): ReactNode {
         <ul>
           <Sample href={`${base}cockroachdb-tutorial.md`} title="CockroachDB tutorial" />
         </ul>
+
+        <Heading as="h2">API reference sample</Heading>
+        <p>
+          A sample OpenAPI 3.1 specification for a fictional Garden Companion API, rendered with{' '}
+          <a href="https://scalar.com" target="_blank" rel="noopener noreferrer">Scalar</a>.
+          The server is not real — requests made with the Try It feature will fail.
+          Use the example responses to explore the spec.
+        </p>
+        <ul>
+          <Sample href="/showcase-site/api" title="Garden Companion API" description="OpenAPI 3.1 sample" />
+        </ul>
       </main>
     </Layout>
   );
