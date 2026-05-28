@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#051F41"/>
+
+  <!-- Accent bar -->
+  <rect x="80" y="220" width="6" height="180" fill="#5ba3c9"/>
+
+  <!-- Name -->
+  <text x="112" y="305" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="#5ba3c9">Diana Payton</text>
+
+  <!-- Tagline line 1 -->
+  <text x="112" y="370" font-family="Arial, sans-serif" font-size="32" fill="#ffffff">Documentation systems that hold up —</text>
+
+  <!-- Tagline line 2 -->
+  <text x="112" y="415" font-family="Arial, sans-serif" font-size="32" fill="#ffffff">for humans and agents.</text>
+
+  <!-- Bottom rule -->
+  <rect x="80" y="500" width="1040" height="2" fill="#1d6fa0" opacity="0.5"/>
+
+  <!-- URL -->
+  <text x="80" y="540" font-family="Arial, sans-serif" font-size="24" fill="#5ba3c9" opacity="0.8">oddlittlebird.github.io/showcase-site</text>
+</svg>
