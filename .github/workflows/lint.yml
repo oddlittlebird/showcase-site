@@ -14,6 +14,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install MDX parser
+        run: npm install -g mdx2vast
+
       - name: Download Vale packages
         uses: errata-ai/vale-action@reviewdog
         with:
