@@ -7,14 +7,30 @@ tags: [website]
 
 Today I had an object lesson in why I need to supervise my workflow.
 
-{/* truncate */}
-
 I've been making updates around the site, as one does, and realized that Vale wasn't running on my home page or portfolio site. I inquired of Claude Code as to why, and it said that those pages were .tsx files, which Vale ignores.
 
-Mind you, I hadn't asked it to make them .tsx files. It just did it. So I asked if there was any reason they shouldn't be .mdx files. It said there wasn't, so I had it change them to .mdx.
+Mind you, I hadn't asked it to make them .tsx files. It just did it. So I asked if there was any reason they shouldn't be .mdx files. It said there wasn't, so I had it change them to .mdx. That way Vale would review them.
 
 No biggie, right?
 
 Well, today I checked the home page again, and lo and behold, there was a new sidebar on it. Grr.
 
-![Top of home page with sidebar](../static/img/blog/blog-post-3.png)
+{/* truncate */}
+
+![Top of home page with sidebar](/img/blog/blog-post-3.png)
+
+Turns out that when Claude Code changed the home page to .mdx, Docusaurus did its thing and added a sidebar.
+
+Now, a human knows at a glance that is wrong. My robot minion, of course, did not.
+
+So I had it change the home page back to .tsx and all was well.
+
+The moral of this story, and the point of the exercise of building and using an AI-assisted workflow, is to find these stumbling blocks and identify them.
+
+Right now, this POC site is about the smallest use case you could realistically imagine for a production system. It's dead simple: a portfolio site plus a blog. Small things compound — and the earlier you find them, the easier (and cheaper) they are to fix.
+
+Now take this site and multiply it exponentially, pages and problems, to extrapolate what an enterprise production system will look like. How much planning, training, and supervision will that take?
+
+Scary, no?
+
+This is why we practice. This is why we test. This is why we iterate.
