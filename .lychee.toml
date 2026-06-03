@@ -1,17 +1,18 @@
 # Lychee link checker configuration
 
-# Skip URLs that are known to be unreachable in CI (localhost, examples, etc.)
-# Root-relative paths (/blog, /portfolio, etc.) are Docusaurus client-side routes —
-# they do not exist as standalone HTTP endpoints and cannot be checked by Lychee.
+# Root-relative paths (/blog, /portfolio, etc.) are Docusaurus client-side routes.
+# Setting base to localhost causes them to resolve to http://localhost/..., which
+# is then caught by the localhost exclude below.
+base = "http://localhost"
+
 exclude = [
   "^http://localhost",
   "^https?://.*\\.example\\.com",
   "^mailto:",
-  "^/",
 ]
 
-# Treat these status codes as valid (some sites return 403/429 to bots)
-accept = [200, 403, 429]
+# Treat these status codes as valid (some sites return 403/429/999 to bots)
+accept = [200, 403, 429, 999]
 
 timeout = 20
 max_retries = 3

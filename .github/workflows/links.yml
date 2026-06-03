@@ -25,6 +25,7 @@ jobs:
             'website/docs/**/*.mdx'
             'website/blog/**/*.md'
             'website/blog/**/*.mdx'
+            'website/blog/**/*.mdx'
             'website/src/pages/**/*.mdx'
             'website/static/llms.txt'
             'README.md'
