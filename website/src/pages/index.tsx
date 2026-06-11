@@ -30,6 +30,10 @@ export default function Home(): ReactNode {
             <li><strong>Accuracy</strong> — Doc Detective tests that documented steps still match the product</li>
           </ul>
           <p>
+            The pipeline also includes Claude Code skills — agentic workflows that automate
+            repetitive tasks like starting the dev server, running checks, and scaffolding new posts.
+          </p>
+          <p>
             The site also includes an <Link to="/showcase-site/api">API reference sample</Link> built
             with OpenAPI 3.1 and a <a href="/showcase-site/llms.txt">llms.txt</a> file that structures
             content for AI agents.
