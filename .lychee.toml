@@ -3,7 +3,7 @@
 # Root-relative paths (/blog, /portfolio, etc.) are Docusaurus client-side routes.
 # Setting base to localhost causes them to resolve to http://localhost/..., which
 # is then caught by the localhost exclude below.
-base = "http://localhost"
+base_url = "http://localhost"
 
 exclude = [
   "^http://localhost",
