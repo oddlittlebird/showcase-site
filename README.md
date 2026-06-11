@@ -1,4 +1,4 @@
-# Diana Payton — Documentation Systems Portfolio
+# Diana Payton — Documentation systems portfolio
 
 An agent confidently using wrong documentation is worse than an agent that finds nothing. This repo demonstrates the process that makes sure it finds the right thing — and that the right thing is true.
 
@@ -19,7 +19,8 @@ This repo demonstrates a documentation system that addresses both layers: the te
 | [codespell](https://github.com/codespell-project/codespell) | Spell checking | Misspellings in docs, blog, and pages |
 | [Doc Detective](https://doc-detective.com) | Docs-as-tests framework | Procedural content that doesn't match the actual product |
 | [Lychee](https://lychee.cli.rs) | Link checking | Broken external links across all content |
-| [skill.md](https://skill.md) | Agent capability manifest | Missing or incomplete agent-facing instruction layer |
+| pipeline.md | Agent capability manifest | Missing or incomplete agent-facing instruction layer |
+| Claude Code skills | Agentic workflow automation | Repetitive tasks handled by AI agents (start server, run checks, scaffold posts) |
 | GitHub Actions | CI/CD hooks | Enforces the pipeline so it runs automatically, not voluntarily |
 
 ## How the pipeline works
@@ -40,12 +41,13 @@ This repo demonstrates a documentation system that addresses both layers: the te
 ## What's in this repo
 
 ```
+.claude/commands/     Custom Claude Code skills (start, check, new-post)
 .github/workflows/    GitHub Actions pipeline definitions
 .vale/                Vale configuration and custom style rules
 doc-detective/tests/  Doc Detective test specifications
 website/              Docusaurus site (docs, blog, config)
-website/docs/skill.md Agent capability manifest (handcrafted)
-website/static/llms.txt  Agent discovery file (handcrafted)
+website/docs/pipeline.md  Agent capability manifest (handcrafted)
+website/static/llms.txt   Agent discovery file (handcrafted)
 portfolio/            PDF portfolio samples
 ```
 
@@ -57,4 +59,4 @@ This repo is licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/
 
 **You cannot** incorporate this repo or its contents into any paid coaching, training, or consulting program without a commercial license.
 
-If you want help building your own documentation portfolio — including setting up this pipeline, improving your resume, and positioning yourself for AI-era technical writing roles — that's exactly what I offer. [Get in touch](mailto:diana@hackmamba.io).
+If you want help building your own documentation portfolio — including setting up this pipeline, improving your resume, and positioning yourself for AI-era technical writing roles — that's exactly what I offer. [Get in touch](mailto:diana@dianapayton.com).
