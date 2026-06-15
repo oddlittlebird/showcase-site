@@ -5,3 +5,4 @@ website/.docusaurus/
 .vale/styles/Google/
 .vale/styles/Vale/
 /.claude/worktrees/suspicious-leavitt-0f69d9
+doc-detective/testResults-*.json

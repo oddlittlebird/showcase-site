@@ -1,5 +1,8 @@
 {
-  "testDirectory": "doc-detective/tests",
+  "input": [
+    "doc-detective/tests",
+    "website/src/pages/doc-detective/doodle-test.mdx"
+  ],
   "recursive": true,
-  "filePattern": "*.json"
+  "relativePathBase": "cwd"
 }

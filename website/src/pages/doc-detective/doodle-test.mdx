@@ -1,0 +1,50 @@
+---
+sidebar_position: 1
+title: Doodle test
+---
+
+This page demonstrates how Doc Detective keeps images in sync with a live website. Automated Doc Detective tests update the images daily.
+
+## How the test works
+
+Doc Detective updates these images by running the following steps each day:
+
+1. Navigate to [google.com](https://www.google.com).
+{/* step {"goTo": "https://www.google.com"} */}
+
+2. Capture a screenshot of the doodle and save it as `doodle.png`.
+{/* step {"screenshot": {"path": "website/static/doc-detective/doodle.png", "crop": "#hplogo", "overwrite": "true"}} */}
+
+3. Download the animated GIF and save it as `doodle.gif`.
+{/* step {"runShell": "bash doc-detective/scripts/download-doodle.sh"} */}
+
+## Dynamic doodle (animated GIF)
+
+![Today's Google doodle GIF](/doc-detective/doodle.gif)
+
+## Still doodle (PNG)
+
+![Today's Google doodle PNG](/doc-detective/doodle.png)
+
+## Run the test manually
+
+If you clone this repo, then you can run the test manually.
+
+### Run the test on Git
+
+The test runs automatically every day at 08:00 UTC. To trigger it on demand:
+
+1. Go to the **Actions** tab in the GitHub repository.
+2. Select **Update doodle**.
+3. Click **Run workflow**.
+
+### Run the test locally
+
+To run the test locally, install Doc Detective and then run the test file:
+
+```bash
+npm install -g doc-detective
+doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/doodle-test.mdx
+```
+
+This updates the images in `website/static/doc-detective/` on your local machine. You can then commit and push the changes manually.
