@@ -1,0 +1,34 @@
+name: Update doodle
+
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-doodle:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Doc Detective
+        run: npm install -g doc-detective
+
+      - name: Run doodle test
+        run: doc-detective --config doc-detective/config.json --input doc-detective/tests/doodle-test.json
+
+      - name: Commit updated doodle images
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add website/static/doc-detective/doodle.gif website/static/doc-detective/doodle.png
+          git diff --staged --quiet || git commit -m "chore: update daily Google doodle"
+          git push
