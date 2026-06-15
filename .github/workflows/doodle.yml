@@ -23,7 +23,7 @@ jobs:
         run: npm install -g doc-detective
 
       - name: Run doodle test
-        run: doc-detective --config doc-detective/config.json --input doc-detective/tests/doodle-test.json
+        run: doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/doodle-test.mdx
 
       - name: Commit updated doodle images
         run: |
