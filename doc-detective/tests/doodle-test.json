@@ -1,23 +1,23 @@
 {
-  "id": "doodle-test",
+  "specId": "doodle-test",
   "description": "Fetches today's Google doodle and saves it as a GIF and PNG.",
   "tests": [
     {
-      "id": "fetch-doodle",
+      "testId": "fetch-doodle",
       "description": "Navigate to Google, screenshot the doodle element as a PNG, and download the animated GIF.",
       "steps": [
         {
-          "action": "goTo",
-          "url": "https://www.google.com"
+          "goTo": "https://www.google.com"
         },
         {
-          "action": "find",
-          "selector": "#hplogo",
-          "screenshot": "website/static/doc-detective/doodle.png"
+          "screenshot": {
+            "path": "website/static/doc-detective/doodle.png",
+            "crop": "#hplogo",
+            "overwrite": "true"
+          }
         },
         {
-          "action": "runShell",
-          "command": "bash doc-detective/scripts/download-doodle.sh"
+          "runShell": "bash doc-detective/scripts/download-doodle.sh"
         }
       ]
     }

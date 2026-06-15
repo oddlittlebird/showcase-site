@@ -1,5 +1,5 @@
 {
-  "testDirectory": "doc-detective/tests",
+  "input": "doc-detective/tests",
   "recursive": true,
-  "filePattern": "*.json"
+  "relativePathBase": "cwd"
 }
