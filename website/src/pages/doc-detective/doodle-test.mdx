@@ -16,3 +16,16 @@ This page shows how Doc Detective can keep a site's images up to date.
 ## Still doodle (PNG)
 
 ![Today's Google doodle PNG](/doc-detective/doodle.png)
+
+## Run the test manually
+
+The test runs automatically every day at 08:00 UTC. To trigger it on demand, go to the **Actions** tab in the GitHub repository, select **Update doodle**, and click **Run workflow**.
+
+To run the test locally, install Doc Detective and run the test file:
+
+```bash
+npm install -g doc-detective
+doc-detective --config doc-detective/config.json --input doc-detective/tests/doodle-test.json
+```
+
+This updates the images in `website/static/doc-detective/` on your local machine. You can then commit and push the changes manually.
