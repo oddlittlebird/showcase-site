@@ -22,7 +22,7 @@ jobs:
       - name: Install Doc Detective
         run: |
           npm install -g doc-detective
-          cd $(npm root -g)/doc-detective && npm install --os=linux --cpu=x64 sharp
+          cd $(npm root -g)/doc-detective && npm install --include=optional sharp
 
       - name: Run doodle test
         run: doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/doodle-test.mdx
