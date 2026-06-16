@@ -21,8 +21,7 @@ jobs:
 
       - name: Install Doc Detective
         run: |
-          npm install -g doc-detective
-          cd $(npm root -g)/doc-detective && npm install @img/sharp-linux-x64 @img/sharp-libvips-linux-x64
+          npm install -g --include=optional doc-detective
 
       - name: Run doodle test
         run: doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/doodle-test.mdx
