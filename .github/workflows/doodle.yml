@@ -32,4 +32,5 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add website/static/doc-detective/doodle.gif website/static/doc-detective/doodle.png
           git diff --staged --quiet || git commit -m "chore: update daily Google doodle"
+          git pull --rebase origin main
           git push
