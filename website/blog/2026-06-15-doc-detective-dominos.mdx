@@ -44,6 +44,22 @@ So since I don't want it to bug me every single time I use those acronyms, I had
 
 And then it turned out I somehow hadn't installed Vale or codespell locally, only on the remote repository, so I had to install those and told Claude to make sure the local and remote Vale configs stayed the same.
 
+Once all of that was finished and merged...it didn't work. So I began to troubleshoot.
+
+## Troubleshooting and fixing
+
+Here's a partial list of things that went wrong before it worked:
+
+- The schema I was writing tests against was two major versions out of date
+- A `sharp`/`libvips` dependency was silently missing from global npm installs in CI, causing cryptic `ERR_DLOPEN_FAILED` errors across five separate debugging sessions
+- The `GITHUB_TOKEN` that GitHub Actions uses can push commits, but those commits deliberately cannot trigger other workflows — a loop-prevention feature I had never had to think about before
+- The workflow was running at midnight Pacific time, before Google had actually updated the doodle for the day
+- Two workflow runs fired at the same time and one of them rejected the other's push
+
+Each one of these felt, in the moment, like a dead end.
+
+What eventually worked: upgrading to the latest version of Doc Detective (which bundled its own sharp), adding a `workflow_run` trigger so the deploy fires after the doodle commit, and moving the schedule to 2 AM — which Google has reliably beaten.
+
 ## Dominos
 
 How many dominos did I tip over in this workflow?
@@ -55,4 +71,6 @@ Let's see...
 
 Mind you, this workflow is still pretty immature. As I continue to iterate and improve the site, I expect that there will either be fewer workflow dominos that fall over with each new change, or at least, they will be new and different ones.
 
-I said it before, I will say it again: This is why we test. Test code, test docs, test everything.
+The bigger lesson? Automation doesn't save you from debugging. It just means the debugging happens at scale, in CI logs, instead of on your own machine.
+
+But when it works? The page updates itself while I sleep. That still feels like magic.

@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+  workflow_run:
+    workflows:
+      - Update doodle
+    types:
+      - completed
   workflow_dispatch:
 
 env:
