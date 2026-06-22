@@ -1,0 +1,56 @@
+---
+slug: testing-the-pipeline-description
+title: Testing the pipeline description
+authors: [diana]
+tags: [workflow]
+---
+
+Most documentation tooling checks how a page is written, not what it claims. Vale catches style. codespell catches typos. Lychee catches broken links. None of them check whether the page is still describing something true.
+
+This site has a page that describes its own pipeline: it involves Vale, codespell, Lychee, and Doc Detective, each doing a specific job. I wanted to know if that description would still be accurate next month, not just whether it read well today. So I wrote a test for it.
+
+{/* truncate */}
+
+## Treating a description as a claim
+
+The [pipeline overview page](/showcase-site/docs/pipeline) has a clean table naming each tool and what it does. Until this week, nothing checked whether that table stayed accurate. If I swapped Lychee for a different link checker and forgot to update the page, then nothing would tell me. The page would keep naming a tool that wasn't there anymore, misleading the reader.
+
+So I wrote a Doc Detective test that treats the page as a claim instead of a description: load the page, confirm the heading is right, and confirm the body still names all four tools. If any of that stops being true, then the test fails.
+
+## What happens when the requirement changes
+
+If I add a fifth tool to the pipeline tomorrow, or swap Lychee for something else, the test doesn't update itself. The page changes, the test does not, and the test fails. That's not a flaw, that's the design. The failure is a forced checkpoint: a human has to look at the diff between what changed and what the test still expects, and decide whether to update the test to match the new reality.
+
+This is the same shape as a requirements test in any other system. Nothing automatically keeps a test in sync with intent, because the test's whole job is to represent intent as it was last confirmed. If it auto-updated whenever the implementation changed, then it would stop being a test and start being a mirror, agreeing with whatever it's pointed at.
+
+The tradeoff shows up at scale. Four strings hand-typed into a JSON file works fine for one table with four rows. It doesn't work for a documentation set with fifty pages each making a handful of claims, because now the claims live in two places, the page and the test, and keeping them in sync is manual labor that someone eventually skips.
+
+## How to fix it
+
+The fix at that scale is to stop hand-typing assertions and generate them from the documentation itself. Doc Detective already has a feature for exactly this, called [detected tests](https://docs.doc-detective.com/docs/tests/detected-tests). You define markup patterns in your config, things like "bold text generates a `find` action" or "a Markdown link generates a `checkLink` action," set `detectSteps` to `true`, and Doc Detective scans your docs and regenerates the test steps from the content on every run. The table on the page becomes the source of truth, not a JSON file sitting next to it.
+
+Here's where it gets specific to this repo: the table on the rendered pipeline page isn't the only copy. The repo's `README.md` has its own version of the same table, written for anyone reading the code instead of the deployed site. If the README is the table I actually trust, the one a person edits first when a tool changes, then that's where detection should point. Mark up the tool names there as bold text, turn on detection, and the test would track the README automatically. Add a fifth tool, and the test picks it up the next time it runs, no edit to `sample.json` required.
+
+But Doc Detective loads the rendered `pipeline.md` page, not the README. So detection only solves half the problem. I'd also need something that checks the pipeline page's table against the README's table, so the two don't quietly drift from each other the same way the page and the old hand-typed test could. Detection would fix the test-versus-page gap. It would not fix the README-versus-page gap, that's a second, separate sync problem, and it's the same shape as the first one: two descriptions of one fact, with nothing forcing them to agree.
+
+I didn't build any of that here, because one table with four rows doesn't need it yet, and `sample.json` is currently the more honest reflection of how this specific test works for a reader trying to follow along. But it's the real answer to "how does this scale": not a generator I'd have to build, but a feature Doc Detective already ships, plus a second check I'd still need to write, because automating one sync point doesn't automatically close the others.
+
+At that point, I'd also want something downstream of detection that opens a pull request when a detected test changes shape, so a tool swap shows up as a reviewable diff instead of a silent regeneration. That's out of scope for this test, but it's the natural next step.
+
+## Making the result visible
+
+The [doodle test](/showcase-site/doc-detective/doodle-test) I wrote earlier updates two images on a schedule. It's a proof of concept for content automation: let the test keep something current so a person doesn't have to.
+
+This test is a proof of concept for something else. It's not about keeping content current, it's about catching the moment content stops being current. The two are different problems, and conflating them is how a lot of stale documentation happens.
+
+I also didn't want the result just sitting invisible inside a GitHub Actions log. So the workflow now writes a small status file with a pass/fail and a timestamp, and a [new page](/showcase-site/doc-detective/pipeline-test) reads it and shows a badge. Green or red, right there, next to an explanation of what's being checked and why.
+
+CI results that only live in CI tend to get ignored until something breaks loudly. Putting the result on the page it's protecting makes the check part of the documentation, not a separate system nobody looks at.
+
+## The actual lesson
+
+Style checkers and spell checkers verify that text is well-formed. Link checkers verify that references resolve. None of that tells you whether a sentence is still describing reality.
+
+That's a different kind of test, and it's worth treating as its own category: not "does this page read well," but "does this page still tell the truth." The pipeline page now runs that check on itself, every day.
+
+And if it is lying, then it says so right on the page as well as in an email to the overseer of its repo (me).
