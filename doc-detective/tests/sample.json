@@ -7,12 +7,40 @@
       "description": "The pipeline overview page exists and renders the expected heading.",
       "steps": [
         {
-          "goTo": "http://localhost:3000/showcase-site/docs/intro"
+          "goTo": "http://localhost:3000/showcase-site/docs/pipeline"
         },
         {
           "find": {
             "selector": "h1",
-            "elementText": "Introduction"
+            "elementText": "Documentation Pipeline Portfolio"
+          }
+        },
+        {
+          "find": {
+            "selector": "body",
+            "elementText": "Vale",
+            "matchMethod": "includes"
+          }
+        },
+        {
+          "find": {
+            "selector": "body",
+            "elementText": "codespell",
+            "matchMethod": "includes"
+          }
+        },
+        {
+          "find": {
+            "selector": "body",
+            "elementText": "Lychee",
+            "matchMethod": "includes"
+          }
+        },
+        {
+          "find": {
+            "selector": "body",
+            "elementText": "Doc Detective",
+            "matchMethod": "includes"
           }
         }
       ]
