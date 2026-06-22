@@ -19,7 +19,7 @@ jobs:
           node-version: '20'
 
       - name: Install Doc Detective
-        run: npm install -g doc-detective
+        run: npm install -g doc-detective@4.9.0
 
       - name: Run tests
         run: doc-detective --config doc-detective/config.json
