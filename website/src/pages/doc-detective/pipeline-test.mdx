@@ -1,0 +1,49 @@
+---
+sidebar_position: 2
+title: Pipeline test
+---
+import PipelineStatusBadge from '@site/src/components/PipelineStatusBadge';
+
+# Pipeline test
+
+This page shows the live result of the Doc Detective test that verifies the
+[pipeline overview page](/showcase-site/docs/pipeline). The test runs daily
+and on every push to main, and it fails if the page stops loading or stops
+mentioning any of the four pipeline tools.
+
+## Latest result
+
+<PipelineStatusBadge />
+
+## How the test works
+
+The test is defined in `doc-detective/tests/sample.json` and runs the
+following steps:
+
+1. Navigate to the pipeline overview page.
+2. Find the `h1` heading and confirm it reads "Documentation Pipeline
+   Portfolio".
+3. Confirm the page body mentions Vale, codespell, Lychee, and Doc Detective.
+
+If the page is renamed, restructured, or stops mentioning one of the tools,
+this test fails and the badge above turns red.
+
+## Run the test manually
+
+If you clone this repo, then you can run the test locally.
+
+```bash
+npm install -g doc-detective
+cd website && npm run build && npx docusaurus serve --no-open &
+doc-detective --config doc-detective/config.json --input doc-detective/tests/sample.json
+```
+
+### Run the test on GitHub Actions
+
+The test runs automatically every day at 10:00 UTC (3:00 AM Pacific) and on
+every push to main that touches `website/docs/` or `doc-detective/tests/`. To
+trigger it on demand:
+
+1. Go to the **Actions** tab in the GitHub repository.
+2. Select **Test**.
+3. Click **Run workflow**.

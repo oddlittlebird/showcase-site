@@ -18,29 +18,25 @@
         {
           "find": {
             "selector": "body",
-            "elementText": "Vale",
-            "matchMethod": "includes"
+            "elementText": "/Vale/"
           }
         },
         {
           "find": {
             "selector": "body",
-            "elementText": "codespell",
-            "matchMethod": "includes"
+            "elementText": "/codespell/"
           }
         },
         {
           "find": {
             "selector": "body",
-            "elementText": "Lychee",
-            "matchMethod": "includes"
+            "elementText": "/Lychee/"
           }
         },
         {
           "find": {
             "selector": "body",
-            "elementText": "Doc Detective",
-            "matchMethod": "includes"
+            "elementText": "/Doc Detective/"
           }
         }
       ]
