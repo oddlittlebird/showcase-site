@@ -3,6 +3,7 @@ name: Update doodle
 on:
   schedule:
     - cron: '0 9 * * *'
+    - cron: '0 15 * * *'
   workflow_dispatch:
 
 permissions:

@@ -1,4 +1,4 @@
-name: Test
+name: Pipeline page test
 
 on:
   push:
@@ -44,7 +44,7 @@ jobs:
 
       - name: Run tests
         id: run_tests
-        run: doc-detective --config doc-detective/config.json || echo "failed=true" >> "$GITHUB_OUTPUT"
+        run: doc-detective --config doc-detective/config.json --input doc-detective/tests || echo "failed=true" >> "$GITHUB_OUTPUT"
 
       - name: Record pipeline test status
         if: always()
