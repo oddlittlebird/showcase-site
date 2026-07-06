@@ -1,0 +1,113 @@
+---
+title: How I built this
+description: How this site was built with Claude Code, and what I learned from the mistakes along the way.
+---
+
+<div className="container margin-vert--lg">
+
+<h1 style={{fontSize: '3rem'}}>How I built this</h1>
+
+This site is built the way I want documentation built: in the open, with the
+reasoning visible instead of erased.
+
+## My vision
+
+Most of a technical writer's best work lives inside a company, locked behind
+confidentiality agreements. My answer was to build something in the open. This
+portfolio shows the finished work and the documentation system behind it,
+running in public where anyone can see it.
+
+That only works if the process is visible too. So this page isn't a claim
+that I used Claude Code. It's an account of what that collaboration actually
+looked like, including the parts where Claude got something wrong and I had
+to catch it.
+
+## The build
+
+I built this site with [Claude Code](https://claude.com/claude-code) as my
+day-to-day collaborator. Three custom skills live in `.claude/commands/`:
+
+- One starts the local dev server.
+- One runs the same style, spelling, and link checks that CI runs.
+- One scaffolds a new blog post with the right frontmatter.
+
+Every content change, mine or Claude's, passes through Vale, codespell,
+Lychee, and Doc Detective before it reaches the published site. For the full
+technical breakdown, see [this site's documentation pipeline overview](/showcase-site/docs/pipeline)
+and [this repository's README on GitHub](https://github.com/oddlittlebird/showcase-site).
+
+## What I learned
+
+None of that is the interesting part, though. Tooling is easy to copy. What
+isn't easy to copy is judgment, and judgment only shows up in the moments
+where I disagreed with what Claude did and said so.
+
+**Claude converted two pages from `.tsx` to `.mdx` without being asked, and it
+broke the home page.** I'd noticed Vale wasn't linting my home page or
+portfolio page, and asked why. Claude explained that Vale skips `.tsx` files,
+then suggested converting both pages to `.mdx` so they'd get linted too.
+
+I agreed to that change. What I didn't agree to was the side effect.
+Docusaurus treats top-level `.mdx` files differently, and my home page
+quietly grew a sidebar that didn't belong there.
+
+Claude never flagged that risk, and never noticed the sidebar afterward. I
+caught it on a routine check, because a stray sidebar looks wrong to a human
+at a glance. It doesn't register as wrong to a model that never looks at
+rendered output.
+
+I had Claude revert the home page to `.tsx` and left the portfolio page as
+`.mdx`, since that one rendered fine. Same fix, applied selectively, because
+the failure only showed up in one of the two cases.
+
+**Claude wrote my first Doc Detective test the way I would explain the steps
+to a person, not the way the testing framework needed them.** My instructions
+read like "navigate to google.com" and "observe the doodle." That's how
+you'd brief a colleague.
+
+Doc Detective's testing agent doesn't parse prose that way. Claude started
+writing the actual test logic into a separate JSON file to work around the
+gap. That matched a pattern I recognized from a demo I'd seen before, though
+I hadn't asked for it here.
+
+I pushed back and asked Claude to rewrite the instructions so the testing
+agent could act on them directly. That closed the gap and let the test live
+inline, which was the structure I actually wanted for that use case.
+
+The lesson wasn't about JSON versus inline files. It was that I was writing
+for the wrong reader, and Claude adapted to my mistake instead of naming it.
+
+**Claude built tests against an outdated Doc Detective schema, and I didn't
+catch it until CI failed.** I hadn't told Claude to check the current version
+before writing against its schema. It defaulted to whatever it already knew,
+instead of confirming.
+
+The tests failed once I ran them for real. Since then, the standing rule
+between us is explicit. Verify the installed or current version before
+writing code against a library's API or schema, every time, not just when
+something breaks.
+
+That rule now applies to every tool in this pipeline, not just Doc Detective.
+
+## Conclusion
+
+None of these were dramatic failures. They were the ordinary kind: a side
+effect that went unmentioned, a wrong assumption about the audience, a
+version check that got skipped.
+
+What made them recoverable was that I read Claude's output closely. I
+noticed when something didn't match what I'd actually asked for. And I was
+willing to reject a working answer that solved the wrong problem.
+
+This page is the summary in between: not the log, not the schematic, just
+the judgment calls.
+
+## Further reading
+
+For the day-by-day account, including the incidents that took longer to
+untangle, [my blog documents each one as it happened](/showcase-site/blog).
+For the technical mechanics, [this site's documentation pipeline overview](/showcase-site/docs/pipeline)
+and [this repository's README on GitHub](https://github.com/oddlittlebird/showcase-site)
+describe how each tool is wired together.
+
+</div>

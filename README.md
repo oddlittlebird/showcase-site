@@ -35,8 +35,9 @@ This repo demonstrates a documentation system that addresses both layers: the te
 - **Home / About** — who I am and what I do
 - **Resume** — linked PDF
 - **Portfolio** — linked PDF samples with descriptions
-- **Blog** — posts documenting real decisions made building this pipeline
 - **API** — companion planting and plant info lookup playground (spec forthcoming)
+- **Blog** — posts documenting real decisions made building this pipeline
+- **How I built this** — the judgment calls behind this pipeline, including decisions I overrode
 
 ## What's in this repo
 

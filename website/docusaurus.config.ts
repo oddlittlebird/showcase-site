@@ -94,6 +94,7 @@ const config: Config = {
         {to: '/portfolio', label: 'Portfolio', position: 'left'},
         {to: '/api', label: 'API sample', position: 'left'},
         {to: '/blog', label: 'Blog', position: 'left'},
+        {to: '/how-i-built-this', label: 'How I built this', position: 'left'},
         {
           href: 'https://github.com/oddlittlebird/showcase-site',
           label: 'GitHub',
