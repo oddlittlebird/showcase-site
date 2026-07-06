@@ -7,22 +7,20 @@ description: How this site was built with Claude Code, and what I learned from t
 
 <h1 style={{fontSize: '3rem'}}>How I built this</h1>
 
-This site is built the way I want documentation built: in the open, with the
-reasoning visible instead of erased.
+This site displays both my professional content (resume, portfolio, blog, and so on) and the testing apparatus behind it. It is my solution to the problem of how technical communicators can display both their documentation skills and their AI expertise. This site does that in the form of a documentation pipeline.
 
 ## My vision
 
 Most of a technical writer's best work lives inside a company, locked behind
-confidentiality agreements. My answer was to build something in the open. This
-portfolio shows the finished work and the documentation system behind it,
-running in public where anyone can see it.
+confidentiality agreements. How can tech writers (or context engineers or knowledge engineers or whatever we end up calling ourselves) display the full breadth of our skills?
 
-That only works if the process is visible too. So this page isn't a claim
-that I used Claude Code. It's an account of what that collaboration actually
-looked like, including the parts where Claude got something wrong and I had
-to catch it.
+My answer was to build a portfolio site that parallels a documentation website. This
+proof of concept shows the finished work _and_ the documentation system behind it.
+Anyone can see both the frontend, where the writer's words live, and the backend, where the testing and pipeline run.
 
-## The build
+That only works if the _process_ is visible too. This page gives the overall picture of how I built the site, while the blog dives into specific problems and solutions. The blog also provides continuing content that the pipeline can run against, allowing me to continue iterating and improving it.
+
+## What I built
 
 I built this site with [Claude Code](https://claude.com/claude-code) as my
 day-to-day collaborator. Three custom skills live in `.claude/commands/`:
@@ -52,30 +50,13 @@ Docusaurus treats top-level `.mdx` files differently, and my home page
 quietly grew a sidebar that didn't belong there.
 
 Claude never flagged that risk, and never noticed the sidebar afterward. I
-caught it on a routine check, because a stray sidebar looks wrong to a human
+caught it immediately, because a stray sidebar looks wrong to a human
 at a glance. It doesn't register as wrong to a model that never looks at
-rendered output.
+rendered output and lacks human judgment.
 
 I had Claude revert the home page to `.tsx` and left the portfolio page as
 `.mdx`, since that one rendered fine. Same fix, applied selectively, because
 the failure only showed up in one of the two cases.
-
-**Claude wrote my first Doc Detective test the way I would explain the steps
-to a person, not the way the testing framework needed them.** My instructions
-read like "navigate to google.com" and "observe the doodle." That's how
-you'd brief a colleague.
-
-Doc Detective's testing agent doesn't parse prose that way. Claude started
-writing the actual test logic into a separate JSON file to work around the
-gap. That matched a pattern I recognized from a demo I'd seen before, though
-I hadn't asked for it here.
-
-I pushed back and asked Claude to rewrite the instructions so the testing
-agent could act on them directly. That closed the gap and let the test live
-inline, which was the structure I actually wanted for that use case.
-
-The lesson wasn't about JSON versus inline files. It was that I was writing
-for the wrong reader, and Claude adapted to my mistake instead of naming it.
 
 **Claude built tests against an outdated Doc Detective schema, and I didn't
 catch it until CI failed.** I hadn't told Claude to check the current version
@@ -89,11 +70,28 @@ something breaks.
 
 That rule now applies to every tool in this pipeline, not just Doc Detective.
 
+**I wrote my first Doc Detective test the way I would explain the steps
+to a person, not the way the testing framework needed them.** My instructions
+read like "navigate to google.com" and "observe the doodle." That's how
+you'd write steps for a human.
+
+Doc Detective's testing agent doesn't parse prose that way. Claude started
+writing the actual test logic into a separate JSON file to work around the
+gap. That matched a pattern I recognized from a demo I'd seen before, though
+I hadn't asked for it here.
+
+I pushed back and asked Claude to rewrite the instructions so the testing
+agent could act on them directly. That closed the gap and let the test live
+inline, which was the structure I actually wanted for that use case.
+
+The lesson wasn't about JSON versus inline files. It was that I was writing
+for the wrong reader, and Claude adapted to my mistake instead of naming it.
+
 ## Conclusion
 
 None of these were dramatic failures. They were the ordinary kind: a side
-effect that went unmentioned, a wrong assumption about the audience, a
-version check that got skipped.
+effect that went unmentioned, a version check that got skipped, a wrong
+assumption about the audience.
 
 What made them recoverable was that I read Claude's output closely. I
 noticed when something didn't match what I'd actually asked for. And I was
