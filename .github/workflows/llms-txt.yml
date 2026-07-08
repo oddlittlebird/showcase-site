@@ -1,0 +1,55 @@
+name: llms.txt verification test
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'website/static/llms.txt'
+      - 'website/src/pages/doc-detective/llms-txt-test.mdx'
+  schedule:
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  doc-detective:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Doc Detective
+        run: npm install -g doc-detective@4.9.0
+
+      - name: Run tests
+        id: run_tests
+        run: doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/llms-txt-test.mdx || echo "failed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Record llms.txt test status
+        if: always()
+        run: |
+          mkdir -p website/static/doc-detective
+          status="pass"
+          if [ "${{ steps.run_tests.outputs.failed }}" = "true" ]; then status="fail"; fi
+          timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          printf '{"status": "%s", "timestamp": "%s"}\n' "$status" "$timestamp" > website/static/doc-detective/llms-txt-status.json
+
+      - name: Commit status file
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add website/static/doc-detective/llms-txt-status.json
+          git diff --staged --quiet || git commit -m "chore: update llms.txt test status"
+          git pull --rebase origin main
+          git push
+
+      - name: Fail if tests failed
+        if: steps.run_tests.outputs.failed == 'true'
+        run: exit 1

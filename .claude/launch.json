@@ -4,9 +4,10 @@
     {
       "name": "website",
       "runtimeExecutable": "bash",
-      "runtimeArgs": ["-c", "source ~/.nvm/nvm.sh && nvm use 20 && npm run start -- --no-open"],
+      "runtimeArgs": ["-c", "source ~/.nvm/nvm.sh && nvm use 20 && npm run start -- --no-open --port $PORT"],
       "cwd": "website",
-      "port": 3000
+      "port": 3000,
+      "autoPort": true
     }
   ]
 }

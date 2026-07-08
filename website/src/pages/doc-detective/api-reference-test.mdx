@@ -1,0 +1,55 @@
+---
+sidebar_position: 3
+title: API reference screenshot test
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import StatusBadge from '@site/src/components/StatusBadge';
+
+# API reference screenshot test
+
+This page shows a screenshot of the [API reference](/showcase-site/api), captured automatically by Doc Detective rather than pasted in by hand.
+
+## Why this matters
+
+A screenshot in a doc is a claim: "this is what the page looks like right now." That claim rots the moment the UI changes underneath it, and nobody notices until a reader does. Here, the same tool that renders the API reference also takes its own picture of the result. If the [Scalar](https://scalar.com) reference stops rendering, the OpenAPI spec fails to load, or the page changes shape, the test fails and the badge below turns red instead of the screenshot quietly going stale.
+
+## Latest result
+
+<StatusBadge statusFile="/doc-detective/api-reference-status.json" label="API reference screenshot test" />
+
+## How the test works
+
+The test is defined directly in this page's source as embedded Doc Detective steps and runs the following:
+
+1. Navigate to the [API reference](/showcase-site/api).
+{/* step {"goTo": "http://localhost:3000/showcase-site/api"} */}
+
+2. Confirm the Scalar reference finished rendering by finding the API title, "Garden companion API," in the page body.
+{/* step {"find": {"selector": "body", "elementText": "/Garden companion API/i", "timeout": 30000}} */}
+
+3. Capture a screenshot and save it as `api-reference.png`.
+{/* step {"screenshot": {"path": "website/static/doc-detective/api-reference.png", "overwrite": "true"}} */}
+
+If the reference fails to load, or Scalar's rendering breaks in a way that removes the title from the page, the `find` step fails before the screenshot is ever taken.
+
+## Screenshot
+
+<img src={`${useBaseUrl('/doc-detective/api-reference.png')}?v=${Date.now()}`} alt="Screenshot of the Garden companion API reference rendered by Scalar" style={{maxWidth: '100%', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '0.5rem'}} />
+
+## Run the test manually
+
+If you clone this repo, then you can run the test locally.
+
+```bash
+npm install -g doc-detective
+cd website && npm run build && npx docusaurus serve --no-open &
+doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/api-reference-test.mdx
+```
+
+### Run the test on GitHub Actions
+
+The test runs automatically every day and on every push to main that touches the API reference or this page. To trigger it on demand:
+
+1. Go to the **Actions** tab in the GitHub repository.
+2. Select **API reference screenshot test**.
+3. Click **Run workflow**.
