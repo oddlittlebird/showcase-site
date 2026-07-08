@@ -19,6 +19,10 @@ That said, this test proves the pipeline produced *something*, not that the some
 
 <StatusBadge statusFile="/doc-detective/api-reference-status.json" label="API reference screenshot test" />
 
+## Screenshot
+
+<img src={`${useBaseUrl('/doc-detective/api-reference.png')}?v=${Date.now()}`} alt="Screenshot of the Garden companion API reference rendered by Scalar" style={{maxWidth: '100%', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '0.5rem'}} />
+
 ## How the test works
 
 The test is defined directly in this page's source as embedded Doc Detective steps and runs the following:
@@ -37,10 +41,6 @@ The test is defined directly in this page's source as embedded Doc Detective ste
 The test fails only if `find` can't locate an `h1.section-header-label` element within 20 seconds. In practice that means the CDN script never loaded, the OpenAPI spec never fetched, or Scalar's render broke badly enough to produce no heading at all.
 
 It does *not* fail if the page renders with broken, wrong, or degraded content, as long as some element matching that selector exists. The screenshot itself is captured and saved unconditionally, but it's never compared against the previous version, so a visual regression that doesn't remove the heading won't turn the badge above red. That's a real, intentional gap: this test catches total pipeline failure, not visual drift. Catching visual drift is the job of screenshot comparison (`maxVariation`), which is a separate, later test in this series.
-
-## Screenshot
-
-<img src={`${useBaseUrl('/doc-detective/api-reference.png')}?v=${Date.now()}`} alt="Screenshot of the Garden companion API reference rendered by Scalar" style={{maxWidth: '100%', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '0.5rem'}} />
 
 {/* test ignore start */}
 
