@@ -7,6 +7,8 @@ on:
   workflow_run:
     workflows:
       - Update doodle
+      - llms.txt verification test
+      - API reference screenshot test
     types:
       - completed
   workflow_dispatch:

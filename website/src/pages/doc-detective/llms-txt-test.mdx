@@ -7,7 +7,7 @@ import StatusBadge from '@site/src/components/StatusBadge';
 # llms.txt verification test
 
 This page shows the live result of a Doc Detective test that verifies this
-site's `/llms.txt` file is reachable and contains the expected content.
+site's `/llms.txt` file is reachable and still describes the site it belongs to.
 
 ## Why this matters
 
@@ -25,8 +25,8 @@ an AI agent starts returning bad information about the site.
 
 This test catches that failure automatically. It makes an HTTP request to the
 live `llms.txt` endpoint and asserts that the file returns a 200 status and
-still contains a named author. If the file disappears or its content drifts,
-the test fails and the badge below turns red.
+still describes the pipeline. If the file disappears or a content update
+removes a section, the test fails and the badge below turns red.
 
 This is a test written for a non-human reader of your docs. It covers a newer
 and less obvious testing surface than "does this page render."
@@ -44,11 +44,11 @@ runs the following:
    HTTP 200.
 {/* step {"httpRequest": {"url": "https://oddlittlebird.github.io/showcase-site/llms.txt", "method": "GET", "responseCode": 200}} */}
 
-2. Make a second request and confirm the response body names the site author.
-{/* step {"httpRequest": {"url": "https://oddlittlebird.github.io/showcase-site/llms.txt", "method": "GET", "responseCode": 200, "responseText": "/Diana Payton/"}} */}
+2. Make a second request and confirm the response body still describes the pipeline section.
+{/* step {"httpRequest": {"url": "https://oddlittlebird.github.io/showcase-site/llms.txt", "method": "GET", "responseCode": 200, "responseText": "/The pipeline/"}} */}
 
-If the file is removed, its URL changes, or the author credit is deleted, one
-of these steps fails and the test is marked as failed.
+If the file is removed, its URL changes, or the pipeline section is renamed or
+deleted, one of these steps fails and the test is marked as failed.
 
 ## Run the test manually
 
