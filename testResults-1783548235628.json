@@ -1,0 +1,103 @@
+{
+  "runId": "2026-07-08T22-03-48-734Z",
+  "runDir": "/Users/dianapayton/Documents/GitHub/showcase-site/.doc-detective/run-2026-07-08T22-03-48-734Z",
+  "summary": {
+    "specs": {
+      "pass": 1,
+      "fail": 0,
+      "warning": 0,
+      "skipped": 0
+    },
+    "tests": {
+      "pass": 1,
+      "fail": 0,
+      "warning": 0,
+      "skipped": 0
+    },
+    "contexts": {
+      "pass": 1,
+      "fail": 0,
+      "warning": 0,
+      "skipped": 0
+    },
+    "steps": {
+      "pass": 2,
+      "fail": 0,
+      "warning": 0,
+      "skipped": 0
+    }
+  },
+  "specs": [
+    {
+      "specId": "diag-control",
+      "contentPath": "/private/tmp/claude-501/-Users-dianapayton-Documents-GitHub-showcase-site/9f9af773-9b12-444c-808d-0416d63a111b/scratchpad/diag-control.json",
+      "tests": [
+        {
+          "testId": "control-known-good",
+          "contexts": [
+            {
+              "contextId": "default",
+              "platform": "mac",
+              "browser": {
+                "name": "chrome"
+              },
+              "steps": [
+                {
+                  "goTo": {
+                    "url": "http://localhost:3000/showcase-site/docs/pipeline"
+                  },
+                  "location": {
+                    "line": 7,
+                    "startIndex": 112,
+                    "endIndex": 175
+                  },
+                  "stepId": "control-known-good~s7bb7efc7",
+                  "result": "PASS",
+                  "resultDescription": "Opened URL and all wait conditions met."
+                },
+                {
+                  "find": {
+                    "selector": "h1",
+                    "elementText": "Documentation Pipeline Portfolio"
+                  },
+                  "location": {
+                    "line": 8,
+                    "startIndex": 185,
+                    "endIndex": 268
+                  },
+                  "stepId": "control-known-good~s9a09fe41",
+                  "outputs": {
+                    "element": {
+                      "text": "Documentation Pipeline Portfolio",
+                      "html": "<h1>Documentation Pipeline Portfolio</h1>",
+                      "tag": "h1",
+                      "value": "",
+                      "location": {
+                        "x": 16,
+                        "y": 172.109375
+                      },
+                      "size": {
+                        "width": 709,
+                        "height": 120
+                      },
+                      "clickable": true,
+                      "enabled": true,
+                      "selected": false,
+                      "displayed": true,
+                      "displayedInViewport": true
+                    }
+                  },
+                  "result": "PASS",
+                  "resultDescription": "Found an element matching selector. Found element by selector,elementText."
+                }
+              ],
+              "result": "PASS"
+            }
+          ],
+          "result": "PASS"
+        }
+      ],
+      "result": "PASS"
+    }
+  ]
+}
