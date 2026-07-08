@@ -11,7 +11,9 @@ This page shows a screenshot of the [API reference](/showcase-site/api), capture
 
 ## Why this matters
 
-The [pipeline test](/showcase-site/doc-detective/pipeline-test) checks static content: markdown that Docusaurus renders once, at build time. This page checks something more fragile — a live, third-party render pipeline. The [API reference](/showcase-site/api) isn't part of this site's build output. Every time someone loads it, [Scalar](https://scalar.com) fetches a script from a CDN, fetches the OpenAPI spec, and renders the whole reference client-side, in the browser, on the spot. Any of those steps can break independently of anything in this repo: the CDN can be unreachable, a Scalar release can change how it renders, the spec file can go missing. A static content check would never catch that. A screenshot of the actual rendered result, retaken automatically, will.
+The [pipeline test](/showcase-site/doc-detective/pipeline-test) checks static content: markdown that Docusaurus renders once, at build time. This page checks something more fragile — a live, third-party render pipeline. The [API reference](/showcase-site/api) isn't part of this site's build output. Every time someone loads it, [Scalar](https://scalar.com) fetches a script from a CDN, fetches the OpenAPI spec, and renders the whole reference client-side, in the browser, on the spot. Any of those steps can break independently of anything in this repo: the CDN can be unreachable, a Scalar release can change how it renders, the spec file can go missing.
+
+That said, this test proves the pipeline produced *something*, not that the something is correct. See "What makes this test fail" below for the exact boundary.
 
 ## Latest result
 
@@ -30,7 +32,11 @@ The test is defined directly in this page's source as embedded Doc Detective ste
 3. Capture a screenshot and save it as `api-reference.png`.
 {/* step {"screenshot": {"path": "website/static/doc-detective/api-reference.png", "overwrite": "true"}} */}
 
-If the CDN script fails to load, the spec fails to fetch, or Scalar's rendering breaks in a way that never produces a heading, the `find` step fails before the screenshot is ever taken.
+## What makes this test fail
+
+The test fails only if `find` can't locate an `h1.section-header-label` element within 20 seconds. In practice that means the CDN script never loaded, the OpenAPI spec never fetched, or Scalar's render broke badly enough to produce no heading at all.
+
+It does *not* fail if the page renders with broken, wrong, or degraded content, as long as some element matching that selector exists. The screenshot itself is captured and saved unconditionally — it's never compared against the previous version, so a visual regression that doesn't remove the heading won't turn the badge above red. That's a real, intentional gap: this test catches total pipeline failure, not visual drift. Catching visual drift is the job of screenshot comparison (`maxVariation`), which is a separate, later test in this series.
 
 ## Screenshot
 
