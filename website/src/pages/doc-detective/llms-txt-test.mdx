@@ -35,6 +35,14 @@ section, the test fails and the badge below turns red.
 This is a test written for a non-human reader of your docs. It covers a newer
 and less obvious testing surface than "does this page render."
 
+## Current heading counts
+
+A separate workflow counts the headings in `llms.txt` on every push that
+touches the file and stores the result. The counts below update automatically
+when the file changes.
+
+<LlmsHeadingCounts />
+
 ## Latest result
 
 <StatusBadge statusFile="/doc-detective/llms-txt-status.json" label="llms.txt verification test" />
@@ -61,14 +69,6 @@ runs the following:
 If the file is removed, its URL changes, the response no longer conforms to
 the `llms.txt` format, or a section is added or removed without the baseline
 being updated, one of these steps fails and the test is marked as failed.
-
-## Current heading counts
-
-A separate workflow counts the headings in `llms.txt` on every push that
-touches the file and stores the result. The counts below update automatically
-when the file changes.
-
-<LlmsHeadingCounts />
 
 ## Run the test manually
 
