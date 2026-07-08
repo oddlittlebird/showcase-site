@@ -17,7 +17,7 @@ That's the problem I wanted to test.
 
 ## What to assert
 
-I worked with Claude Code to draft these tests. Its first suggestion was to assert on content: check that the file names a specific tool, or includes a particular heading, or contains the author's name.
+I worked with Claude Code to draft [Doc Detective](https://doc-detective.com) tests. Claude's first suggestion was to assert on content: check that the file names a specific tool, or includes a particular heading, or contains the author's name.
 
 I pushed back. Most documentation doesn't have a named author in the machine-readable index. And if you're maintaining `llms.txt` files across ten products, content assertions require hand-editing every time something changes — which means they quietly go stale, which is the exact problem you were trying to prevent.
 
