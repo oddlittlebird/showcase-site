@@ -1,0 +1,179 @@
+{
+  "summary": {
+    "specs": {
+      "pass": 0,
+      "fail": 1,
+      "warning": 0,
+      "skipped": 0
+    },
+    "tests": {
+      "pass": 0,
+      "fail": 1,
+      "warning": 0,
+      "skipped": 0
+    },
+    "contexts": {
+      "pass": 0,
+      "fail": 1,
+      "warning": 0,
+      "skipped": 0
+    },
+    "steps": {
+      "pass": 1,
+      "fail": 1,
+      "warning": 0,
+      "skipped": 8
+    }
+  },
+  "specs": [
+    {
+      "result": "FAIL",
+      "specId": "website/src/pages/doc-detective/api-reference-test.mdx",
+      "contentPath": "/Users/dianapayton/Documents/GitHub/showcase-site/website/src/pages/doc-detective/api-reference-test.mdx",
+      "tests": [
+        {
+          "result": "FAIL",
+          "testId": "db87f222-a36c-4f4e-bb57-b78227318f01",
+          "contentPath": "/Users/dianapayton/Documents/GitHub/showcase-site/website/src/pages/doc-detective/api-reference-test.mdx",
+          "contexts": [
+            {
+              "result": "FAIL",
+              "contextId": "3afc7fcd-c8f7-44e8-922d-874df554cab0",
+              "platform": "mac",
+              "browser": {
+                "name": "firefox"
+              },
+              "steps": [
+                {
+                  "checkLink": {
+                    "url": "https://scalar.com"
+                  },
+                  "location": {
+                    "line": 14,
+                    "startIndex": 651,
+                    "endIndex": 679
+                  },
+                  "stepId": "ff8fd03f-2136-4fa7-a58d-013d228c8f1b",
+                  "result": "PASS",
+                  "resultDescription": "Returned 200"
+                },
+                {
+                  "goTo": {
+                    "url": "http://localhost:3000/showcase-site/api"
+                  },
+                  "location": {
+                    "line": 25,
+                    "startIndex": 1173,
+                    "endIndex": 1237
+                  },
+                  "stepId": "2a13bd75-6012-499c-b516-889a68a935b9",
+                  "result": "FAIL",
+                  "resultDescription": "Couldn't open URL: WebDriverError: Reached error page: about:neterror?e=connectionFailure&u=http%3A//localhost%3A3000/showcase-site/api&c=UTF-8&d=Firefox%20can%E2%80%99t%20establish%20a%20connection%20to%20the%20server%20at%20localhost%3A3000.&a= when running \"url\" with method \"POST\""
+                },
+                {
+                  "find": {
+                    "selector": "body",
+                    "elementText": "/Garden companion API/i",
+                    "timeout": 90000
+                  },
+                  "location": {
+                    "line": 28,
+                    "startIndex": 1358,
+                    "endIndex": 1461
+                  },
+                  "stepId": "f5388195-f11b-45fc-a944-c92ac183e47b",
+                  "result": "SKIPPED",
+                  "resultDescription": "Skipped due to previous failure in context."
+                },
+                {
+                  "screenshot": {
+                    "path": "/Users/dianapayton/Documents/GitHub/showcase-site/website/static/doc-detective/api-reference.png",
+                    "overwrite": "true"
+                  },
+                  "location": {
+                    "line": 31,
+                    "startIndex": 1523,
+                    "endIndex": 1631
+                  },
+                  "stepId": "238fb7a2-d621-4878-a125-5b397575af7f",
+                  "result": "SKIPPED",
+                  "resultDescription": "Skipped due to previous failure in context."
+                },
+                {
+                  "unsafe": true,
+                  "runCode": {
+                    "language": "bash",
+                    "code": "npm install -g doc-detective\ncd website && npm run build && npx docusaurus serve --no-open &\ndoc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/api-reference-test.mdx"
+                  },
+                  "location": {
+                    "line": 43,
+                    "startIndex": 2161,
+                    "endIndex": 2377
+                  },
+                  "stepId": "39d952c7-e5ab-47c0-8d59-086d40abd751",
+                  "result": "SKIPPED",
+                  "resultDescription": "Skipped because unsafe steps aren't allowed."
+                },
+                {
+                  "find": "Actions",
+                  "location": {
+                    "line": 53,
+                    "startIndex": 2563,
+                    "endIndex": 2574
+                  },
+                  "stepId": "84652661-43cd-404b-9154-0aa6e1ea7da0",
+                  "result": "SKIPPED",
+                  "resultDescription": "Skipped due to previous failure in context."
+                },
+                {
+                  "click": "API reference screenshot test",
+                  "location": {
+                    "line": 54,
+                    "startIndex": 2608,
+                    "endIndex": 2648
+                  },
+                  "stepId": "8332a338-60d3-49c6-a2d3-70d36952deb9",
+                  "result": "SKIPPED",
+                  "resultDescription": "Skipped due to previous failure in context."
+                },
+                {
+                  "find": "API reference screenshot test",
+                  "location": {
+                    "line": 54,
+                    "startIndex": 2615,
+                    "endIndex": 2648
+                  },
+                  "stepId": "be132ef6-fd2c-4817-9062-1043091649b3",
+                  "result": "SKIPPED",
+                  "resultDescription": "Skipped due to previous failure in context."
+                },
+                {
+                  "click": "Run workflow",
+                  "location": {
+                    "line": 55,
+                    "startIndex": 2653,
+                    "endIndex": 2675
+                  },
+                  "stepId": "f71b0de7-c26e-42c1-848d-a7c840f9d633",
+                  "result": "SKIPPED",
+                  "resultDescription": "Skipped due to previous failure in context."
+                },
+                {
+                  "find": "Run workflow",
+                  "location": {
+                    "line": 55,
+                    "startIndex": 2659,
+                    "endIndex": 2675
+                  },
+                  "stepId": "5c914643-b529-44f9-9039-85df68249bb5",
+                  "result": "SKIPPED",
+                  "resultDescription": "Skipped due to previous failure in context."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "summary": {
+    "specs": {
+      "pass": 0,
+      "fail": 1,
+      "warning": 0,
+      "skipped": 0
+    },
+    "tests": {
+      "pass": 0,
+      "fail": 4,
+      "warning": 0,
+      "skipped": 0
+    },
+    "contexts": {
+      "pass": 0,
+      "fail": 4,
+      "warning": 0,
+      "skipped": 0
+    },
+    "steps": {
+      "pass": 4,
+      "fail": 4,
+      "warning": 0,
+      "skipped": 0
+    }
+  },
+  "specs": [
+    {
+      "result": "FAIL",
+      "specId": "diag-find-variants",
+      "tests": [
+        {
+          "result": "FAIL",
+          "testId": "plain-string-body",
+          "contexts": [
+            {
+              "result": "FAIL",
+              "contextId": "2e8a1b77-9ffb-42b2-bdc8-2f651f3c1617",
+              "platform": "mac",
+              "browser": {
+                "name": "firefox"
+              },
+              "steps": [
+                {
+                  "goTo": {
+                    "url": "http://localhost:3000/showcase-site/api"
+                  },
+                  "location": {
+                    "line": 7,
+                    "startIndex": 117,
+                    "endIndex": 170
+                  },
+                  "stepId": "d8d30573-3cbf-44e2-9f88-ebd2d7dc5a82",
+                  "result": "PASS",
+                  "resultDescription": "Opened URL and all wait conditions met."
+                },
+                {
+                  "find": {
+                    "selector": "body",
+                    "elementText": "Garden companion API",
+                    "timeout": 15000
+                  },
+                  "location": {
+                    "line": 8,
+                    "startIndex": 180,
+                    "endIndex": 271
+                  },
+                  "stepId": "2249d2cb-0683-4486-8951-bf00d9987722",
+                  "outputs": {},
+                  "result": "FAIL",
+                  "resultDescription": "Element not found within timeout"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "result": "FAIL",
+          "testId": "h1-regex",
+          "contexts": [
+            {
+              "result": "FAIL",
+              "contextId": "d0d62221-5fe1-4b5c-a417-fee3b31f1695",
+              "platform": "mac",
+              "browser": {
+                "name": "firefox"
+              },
+              "steps": [
+                {
+                  "goTo": {
+                    "url": "http://localhost:3000/showcase-site/api"
+                  },
+                  "location": {
+                    "line": 14,
+                    "startIndex": 346,
+                    "endIndex": 399
+                  },
+                  "stepId": "f75bc308-f17d-4bd6-b1d9-d25527aec2e9",
+                  "result": "PASS",
+                  "resultDescription": "Opened URL and all wait conditions met."
+                },
+                {
+                  "find": {
+                    "selector": "h1",
+                    "elementText": "/Garden companion API/i",
+                    "timeout": 15000
+                  },
+                  "location": {
+                    "line": 15,
+                    "startIndex": 409,
+                    "endIndex": 501
+                  },
+                  "stepId": "a5258cea-804b-4b13-87fa-7905af69ec42",
+                  "outputs": {},
+                  "result": "FAIL",
+                  "resultDescription": "Element not found within timeout"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "result": "FAIL",
+          "testId": "simple-string-find",
+          "contexts": [
+            {
+              "result": "FAIL",
+              "contextId": "381efe51-bd6a-432e-b5fd-9a00d7f9688a",
+              "platform": "mac",
+              "browser": {
+                "name": "firefox"
+              },
+              "steps": [
+                {
+                  "goTo": {
+                    "url": "http://localhost:3000/showcase-site/api"
+                  },
+                  "location": {
+                    "line": 21,
+                    "startIndex": 586,
+                    "endIndex": 639
+                  },
+                  "stepId": "ff7f1cac-d380-43c6-878d-ae9270fbd879",
+                  "result": "PASS",
+                  "resultDescription": "Opened URL and all wait conditions met."
+                },
+                {
+                  "find": "Garden companion API",
+                  "location": {
+                    "line": 22,
+                    "startIndex": 649,
+                    "endIndex": 683
+                  },
+                  "stepId": "a03b7a4e-2607-4053-aba1-1242a4875f38",
+                  "outputs": {},
+                  "result": "FAIL",
+                  "resultDescription": "No elements matched selector or text."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "result": "FAIL",
+          "testId": "body-only-word",
+          "contexts": [
+            {
+              "result": "FAIL",
+              "contextId": "fab3d030-6474-40b7-a5c1-59a6e3ff76f4",
+              "platform": "mac",
+              "browser": {
+                "name": "firefox"
+              },
+              "steps": [
+                {
+                  "goTo": {
+                    "url": "http://localhost:3000/showcase-site/api"
+                  },
+                  "location": {
+                    "line": 28,
+                    "startIndex": 764,
+                    "endIndex": 817
+                  },
+                  "stepId": "0db4b2a2-8dce-4d49-9eb6-8c9c2e591ec6",
+                  "result": "PASS",
+                  "resultDescription": "Opened URL and all wait conditions met."
+                },
+                {
+                  "find": {
+                    "selector": "body",
+                    "elementText": "/companion/i",
+                    "timeout": 15000
+                  },
+                  "location": {
+                    "line": 29,
+                    "startIndex": 827,
+                    "endIndex": 910
+                  },
+                  "stepId": "a14cab9f-fab8-4ce5-ab4d-f0c1a00d3273",
+                  "outputs": {},
+                  "result": "FAIL",
+                  "resultDescription": "Element not found within timeout"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
