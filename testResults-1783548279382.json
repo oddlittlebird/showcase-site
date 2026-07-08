@@ -1,0 +1,84 @@
+{
+  "runId": "2026-07-08T22-04-11-745Z",
+  "runDir": "/Users/dianapayton/Documents/GitHub/showcase-site/.doc-detective/run-2026-07-08T22-04-11-745Z",
+  "summary": {
+    "specs": {
+      "pass": 0,
+      "fail": 1,
+      "warning": 0,
+      "skipped": 0
+    },
+    "tests": {
+      "pass": 0,
+      "fail": 1,
+      "warning": 0,
+      "skipped": 0
+    },
+    "contexts": {
+      "pass": 0,
+      "fail": 1,
+      "warning": 0,
+      "skipped": 0
+    },
+    "steps": {
+      "pass": 1,
+      "fail": 1,
+      "warning": 0,
+      "skipped": 0
+    }
+  },
+  "specs": [
+    {
+      "specId": "diag-find",
+      "contentPath": "/private/tmp/claude-501/-Users-dianapayton-Documents-GitHub-showcase-site/9f9af773-9b12-444c-808d-0416d63a111b/scratchpad/diag-find-test.json",
+      "tests": [
+        {
+          "testId": "diag-find-1",
+          "contexts": [
+            {
+              "contextId": "default",
+              "platform": "mac",
+              "browser": {
+                "name": "chrome"
+              },
+              "steps": [
+                {
+                  "goTo": {
+                    "url": "http://localhost:3000/showcase-site/api"
+                  },
+                  "location": {
+                    "line": 7,
+                    "startIndex": 102,
+                    "endIndex": 155
+                  },
+                  "stepId": "diag-find-1~saf41e45d",
+                  "result": "PASS",
+                  "resultDescription": "Opened URL and all wait conditions met."
+                },
+                {
+                  "find": {
+                    "selector": "body",
+                    "elementText": "/Garden companion API/i",
+                    "timeout": 20000
+                  },
+                  "location": {
+                    "line": 8,
+                    "startIndex": 165,
+                    "endIndex": 259
+                  },
+                  "stepId": "diag-find-1~sb15affa5",
+                  "outputs": {},
+                  "result": "FAIL",
+                  "resultDescription": "Element not found within timeout"
+                }
+              ],
+              "result": "FAIL"
+            }
+          ],
+          "result": "FAIL"
+        }
+      ],
+      "result": "FAIL"
+    }
+  ]
+}
