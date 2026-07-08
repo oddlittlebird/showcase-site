@@ -12,8 +12,8 @@ site's `/llms.txt` file is reachable and contains the expected content.
 ## Why this matters
 
 [`llms.txt`](https://llmstxt.org/) is the emerging convention for giving AI
-tools a structured, machine-readable map of a site's content — the same idea
-as `robots.txt`, but for language models and AI-assisted search rather than
+tools a structured, machine-readable map of a site's content. It works like
+`robots.txt`, but for language models and AI-assisted search rather than
 web crawlers. The file tells AI agents what the site covers, where the key
 pages are, and who built it.
 
@@ -28,8 +28,8 @@ live `llms.txt` endpoint and asserts that the file returns a 200 status and
 still contains a named author. If the file disappears or its content drifts,
 the test fails and the badge below turns red.
 
-This is a test written for a non-human reader of your docs — a newer and less
-obvious testing surface than "does this page render."
+This is a test written for a non-human reader of your docs. It covers a newer
+and less obvious testing surface than "does this page render."
 
 ## Latest result
 
@@ -52,8 +52,8 @@ of these steps fails and the test is marked as failed.
 
 ## Run the test manually
 
-If you clone this repo, you can run the test locally against the live site —
-no local server needed, because this test hits the deployed URL directly.
+If you clone this repo, you can run the test locally against the live site.
+No local server is needed, because this test hits the deployed URL directly.
 
 ```bash
 npm install -g doc-detective
