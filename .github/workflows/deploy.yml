@@ -8,6 +8,7 @@ on:
     workflows:
       - Update doodle
       - llms.txt verification test
+      - Count llms.txt headings
       - API reference screenshot test
     types:
       - completed

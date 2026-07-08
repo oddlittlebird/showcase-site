@@ -3,6 +3,7 @@ sidebar_position: 4
 title: llms.txt verification test
 ---
 import StatusBadge from '@site/src/components/StatusBadge';
+import LlmsHeadingCounts from '@site/src/components/LlmsHeadingCounts';
 
 # llms.txt verification test
 
@@ -25,9 +26,11 @@ an AI agent starts returning bad information about the site.
 
 This test catches that failure automatically. It makes an HTTP request to the
 live `llms.txt` endpoint and asserts that the file returns a 200 status and
-is structurally valid: an H1 title and at least one `##` section heading. If
-the file disappears, returns an error page, or loses its structure, the test
-fails and the badge below turns red.
+is structurally valid: an H1 title and at least one `##` section heading. A
+third step runs a shell script that fetches the live file, counts its `##`
+headings, and compares the count against a stored baseline. If the file
+disappears, returns an error page, loses its structure, or gains or loses a
+section, the test fails and the badge below turns red.
 
 This is a test written for a non-human reader of your docs. It covers a newer
 and less obvious testing surface than "does this page render."
@@ -49,8 +52,23 @@ runs the following:
    section heading, which the [`llms.txt` spec](https://llmstxt.org/) requires.
 {/* step {"httpRequest": {"url": "https://oddlittlebird.github.io/showcase-site/llms.txt", "method": "GET", "responseCode": 200, "responseText": "/## /"}} */}
 
-If the file is removed, its URL changes, or the response no longer conforms to
-the `llms.txt` format, one of these steps fails and the test is marked as failed.
+3. Run a shell script that fetches the live `llms.txt`, counts its `##`
+   headings, and compares the count against the baseline stored in
+   `llms-txt-headings.json`. The baseline updates automatically whenever
+   `llms.txt` changes, so the count is never hardcoded.
+{/* step {"runShell": {"command": "bash scripts/check-llms-headings.sh", "exitCode": 0}} */}
+
+If the file is removed, its URL changes, the response no longer conforms to
+the `llms.txt` format, or a section is added or removed without the baseline
+being updated, one of these steps fails and the test is marked as failed.
+
+## Current heading counts
+
+A separate workflow counts the headings in `llms.txt` on every push that
+touches the file and stores the result. The counts below update automatically
+when the file changes.
+
+<LlmsHeadingCounts />
 
 ## Run the test manually
 
