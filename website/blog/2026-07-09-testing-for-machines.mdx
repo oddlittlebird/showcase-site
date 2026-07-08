@@ -37,7 +37,7 @@ When you intentionally add or remove a section, you update `llms.txt`, the count
 
 ## Making it visible
 
-The [test page](/showcase-site/doc-detective/llms-txt-test) shows the live heading counts alongside the pass/fail badge. That's the same pattern as the pipeline test: don't leave the result buried in a GitHub Actions log where nobody looks until something breaks loudly. Put it next to the thing it's checking.
+The [llms.txt verification test page](/showcase-site/doc-detective/llms-txt-test) shows the live heading counts alongside the pass/fail badge. That's the same pattern as the pipeline test: don't leave the result buried in a GitHub Actions log where nobody looks until something breaks loudly. Put it next to the thing it's checking.
 
 The heading counts also make the state of the file visible at a glance, independent of whether the test is passing. If the counts look wrong to a human reader, that's useful information regardless of what the automated assertion says.
 
