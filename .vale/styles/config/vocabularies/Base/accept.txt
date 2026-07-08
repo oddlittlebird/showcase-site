@@ -11,3 +11,5 @@ Hackmamba
 Macrometa
 Grafana
 repo
+hardcoding
+hardcoded

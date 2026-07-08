@@ -1,0 +1,52 @@
+---
+slug: testing-for-machines
+title: Testing for machines
+authors: [diana]
+tags: [workflow]
+---
+
+My portfolio site has an `llms.txt` file. It's not for you.
+
+{/* truncate */}
+
+[`llms.txt`](https://llmstxt.org/) is the emerging convention for giving AI tools a structured, machine-readable map of a site's content. The idea is the same as `robots.txt`, but aimed at language models and AI-assisted search rather than web crawlers. The file describes what the site covers, where the key pages are, and who made it, in plain markdown that a retrieval pipeline or AI agent can fetch and pass along as context without rendering a browser.
+
+Nobody clicks it. Nobody subscribes to it. If it disappears, or drifts out of sync with the site it's supposed to describe, no human notices. An AI agent might start returning wrong information about the site, and nothing in a normal deployment pipeline would catch it, because nothing in a normal deployment pipeline is watching a static file that no human is reading.
+
+That's the problem I wanted to test.
+
+## What to assert
+
+I worked with Claude Code to draft these tests. Its first suggestion was to assert on content: check that the file names a specific tool, or includes a particular heading, or contains the author's name.
+
+I pushed back. Most documentation doesn't have a named author in the machine-readable index. And if you're maintaining `llms.txt` files across ten products, content assertions require hand-editing every time something changes — which means they quietly go stale, which is the exact problem you were trying to prevent.
+
+The more useful assertion is structural. The [`llms.txt` spec](https://llmstxt.org/) requires an H1 title and at least one `##` section heading. Those are format requirements that hold across any site's implementation. A 200 response with no section headings is either a placeholder or a corrupted file, and you want to know either way.
+
+The tool doesn't decide what's worth testing. That part is still a human judgment call.
+
+## Going further without hardcoding
+
+Structural conformance catches a broken or missing file. It doesn't catch drift: a file that was valid six months ago and is still technically valid now, but no longer reflects the site's current shape because sections were added or removed.
+
+The obvious fix is to count headings and assert on the count. The problem is that hardcoding a number is just a more subtle version of the same mistake. It starts failing the moment the structure changes intentionally, and whoever runs the test has to remember to update the number, which is manual maintenance that someone will eventually skip.
+
+A baseline comparison works better. A script runs on every push that touches `llms.txt`, counts the headings by level, and writes the result to a JSON file in the repo. A Doc Detective test then fetches the live file, counts the headings, and compares against the stored baseline. If they match, the test passes. If the file has drifted from its last known-good state, the test fails.
+
+When you intentionally add or remove a section, you update `llms.txt`, the count script runs, the baseline updates, and the test passes again. The test only fails when the live file diverges from what was last committed. The count is never hardcoded anywhere.
+
+## Making it visible
+
+The [test page](/showcase-site/doc-detective/llms-txt-test) shows the live heading counts alongside the pass/fail badge. That's the same pattern as the pipeline test: don't leave the result buried in a GitHub Actions log where nobody looks until something breaks loudly. Put it next to the thing it's checking.
+
+The heading counts also make the state of the file visible at a glance, independent of whether the test is passing. If the counts look wrong to a human reader, that's useful information regardless of what the automated assertion says.
+
+## The testing surface nobody talks about
+
+Most documentation testing is aimed at human readers: page loads, links resolve, images render. Those are the things people notice when they go wrong.
+
+`llms.txt` has a different audience. It's read by retrieval pipelines and AI agents, not people — whatever sits in front of a chatbot that someone has pointed at your documentation. That audience won't open an issue when it gets a 404 instead of a site description. It just uses whatever it got.
+
+Testing for that audience means thinking about what "correct" looks like from the pipeline's side, not the reader's. A test that checks whether `llms.txt` is reachable, structurally valid, and still has the right shape is a test written for someone who will never tell you when it's broken.
+
+Not "does this page render well," but "is this file still describing something true, to a reader who won't complain if it isn't."
