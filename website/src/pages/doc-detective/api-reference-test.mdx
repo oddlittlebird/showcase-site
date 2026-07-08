@@ -11,7 +11,7 @@ This page shows a screenshot of the [API reference](/showcase-site/api), capture
 
 ## Why this matters
 
-A screenshot in a doc is a claim: "this is what the page looks like right now." That claim rots the moment the UI changes underneath it, and nobody notices until a reader does. Here, the same tool that renders the API reference also takes its own picture of the result. If the [Scalar](https://scalar.com) reference stops rendering, the OpenAPI spec fails to load, or the page changes shape, the test fails and the badge below turns red instead of the screenshot quietly going stale.
+The [pipeline test](/showcase-site/doc-detective/pipeline-test) checks static content: markdown that Docusaurus renders once, at build time. This page checks something more fragile — a live, third-party render pipeline. The [API reference](/showcase-site/api) isn't part of this site's build output. Every time someone loads it, [Scalar](https://scalar.com) fetches a script from a CDN, fetches the OpenAPI spec, and renders the whole reference client-side, in the browser, on the spot. Any of those steps can break independently of anything in this repo: the CDN can be unreachable, a Scalar release can change how it renders, the spec file can go missing. A static content check would never catch that. A screenshot of the actual rendered result, retaken automatically, will.
 
 ## Latest result
 
@@ -24,17 +24,19 @@ The test is defined directly in this page's source as embedded Doc Detective ste
 1. Navigate to the [API reference](/showcase-site/api).
 {/* step {"goTo": "http://localhost:3000/showcase-site/api"} */}
 
-2. Confirm the Scalar reference finished rendering by finding the API title, "Garden companion API," in the page body.
-{/* step {"find": {"selector": "body", "elementText": "/Garden companion API/i", "timeout": 90000}} */}
+2. Confirm Scalar mounted its rendered heading element, proving the client-side render pipeline actually produced output instead of an empty or broken page.
+{/* step {"find": {"selector": "h1.section-header-label", "timeout": 20000}} */}
 
 3. Capture a screenshot and save it as `api-reference.png`.
 {/* step {"screenshot": {"path": "website/static/doc-detective/api-reference.png", "overwrite": "true"}} */}
 
-If the reference fails to load, or Scalar's rendering breaks in a way that removes the title from the page, the `find` step fails before the screenshot is ever taken.
+If the CDN script fails to load, the spec fails to fetch, or Scalar's rendering breaks in a way that never produces a heading, the `find` step fails before the screenshot is ever taken.
 
 ## Screenshot
 
 <img src={`${useBaseUrl('/doc-detective/api-reference.png')}?v=${Date.now()}`} alt="Screenshot of the Garden companion API reference rendered by Scalar" style={{maxWidth: '100%', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '0.5rem'}} />
+
+{/* test ignore start */}
 
 ## Run the test manually
 
@@ -53,3 +55,5 @@ The test runs automatically every day and on every push to main that touches the
 1. Go to the **Actions** tab in the GitHub repository.
 2. Select **API reference screenshot test**.
 3. Click **Run workflow**.
+
+{/* test ignore end */}

@@ -1,0 +1,133 @@
+{
+  "runId": "2026-07-08T22-07-14-812Z",
+  "runDir": "/Users/dianapayton/Documents/GitHub/showcase-site/.doc-detective/run-2026-07-08T22-07-14-812Z",
+  "summary": {
+    "specs": {
+      "pass": 0,
+      "fail": 1,
+      "warning": 0,
+      "skipped": 0
+    },
+    "tests": {
+      "pass": 0,
+      "fail": 1,
+      "warning": 0,
+      "skipped": 0
+    },
+    "contexts": {
+      "pass": 0,
+      "fail": 1,
+      "warning": 0,
+      "skipped": 0
+    },
+    "steps": {
+      "pass": 2,
+      "fail": 1,
+      "warning": 0,
+      "skipped": 0
+    }
+  },
+  "specs": [
+    {
+      "specId": "diag-find-class-selector",
+      "contentPath": "/private/tmp/claude-501/-Users-dianapayton-Documents-GitHub-showcase-site/9f9af773-9b12-444c-808d-0416d63a111b/scratchpad/diag-find-class-selector.json",
+      "tests": [
+        {
+          "testId": "find-scalar-heading-class",
+          "contexts": [
+            {
+              "contextId": "default",
+              "platform": "mac",
+              "browser": {
+                "name": "chrome"
+              },
+              "steps": [
+                {
+                  "goTo": {
+                    "url": "http://localhost:3000/showcase-site/api"
+                  },
+                  "location": {
+                    "line": 7,
+                    "startIndex": 131,
+                    "endIndex": 184
+                  },
+                  "stepId": "find-scalar-heading-class~saf41e45d",
+                  "result": "PASS",
+                  "resultDescription": "Opened URL and all wait conditions met."
+                },
+                {
+                  "find": {
+                    "selector": "h1.section-header-label",
+                    "timeout": 8000
+                  },
+                  "location": {
+                    "line": 8,
+                    "startIndex": 194,
+                    "endIndex": 264
+                  },
+                  "stepId": "find-scalar-heading-class~s3486f76b",
+                  "outputs": {
+                    "element": {
+                      "text": "Garden companion API",
+                      "html": "<h1 data-v-f1ac6c38=\"\" data-v-d6744cde=\"\" class=\"section-header-label\">Garden companion API</h1>",
+                      "tag": "h1",
+                      "value": "",
+                      "location": {
+                        "x": 24,
+                        "y": 191.9375
+                      },
+                      "size": {
+                        "width": 249,
+                        "height": 28
+                      },
+                      "clickable": true,
+                      "enabled": true,
+                      "selected": false,
+                      "displayed": true,
+                      "displayedInViewport": true
+                    }
+                  },
+                  "result": "PASS",
+                  "resultDescription": "Found an element matching selector. Found element by selector,selector."
+                },
+                {
+                  "httpRequest": {
+                    "url": "http://localhost:3000/showcase-site/api/garden.yaml"
+                  },
+                  "location": {
+                    "line": 9,
+                    "startIndex": 274,
+                    "endIndex": 357
+                  },
+                  "stepId": "find-scalar-heading-class~s47ef54b1",
+                  "outputs": {
+                    "response": {
+                      "body": "openapi: 3.1.0\n\ninfo:\n  title: Garden companion API\n  version: 1.0.0\n  description: |\n    > **This is a sample API spec, not a live API.** The server does not exist,\n    > so requests made using the Try It feature will fail with a network error.\n    > Use the example responses in each endpoint to see what the API would return.\n\n    The Garden Companion API provides plant information and companion planting\n    recommendations to help gardeners plan healthy, productive gardens.\n\n    Companion planting is the practice of growing different plants near each other\n    for mutual benefit — improving growth, deterring pests, and making the most\n    of garden space.\n\n    ## How to use this sample\n\n    1. Browse the endpoints in the left sidebar.\n    2. Open an endpoint to read its description and parameters.\n    3. Scroll to **Example** to see a realistic response — for example, `GET /plants/{plantId}`\n       shows all companion relationships for tomatoes.\n    4. To explore a specific plant, copy an ID from the `GET /plants` example (such as\n       `tomatoes-001`) and enter it in the `plantId` field of `GET /plants/{plantId}`.\n\n    ## Base URL\n\n    ```\n    https://api.gardencompanion.example.com/v1\n    ```\n\nservers:\n  - url: https://api.gardencompanion.example.com/v1\n    description: Production\n\ntags:\n  - name: Plants\n    description: Look up plants and their companion relationships.\n  - name: Pairings\n    description: Browse all beneficial or harmful plant pairings.\n\npaths:\n  /plants:\n    get:\n      operationId: listPlants\n      summary: Get all plants\n      description: Returns a list of all plants in the database.\n      tags:\n        - Plants\n      responses:\n        '200':\n          description: A list of plants.\n          content:\n            application/json:\n              schema:\n                type: array\n                items:\n                  $ref: '#/components/schemas/Plant'\n              example:\n                - id: asparagus-001\n                  common_name: Asparagus\n                - id: beans-001\n                  common_name: Beans\n                - id: beets-001\n                  common_name: Beets\n                - id: cabbage-001\n                  common_name: Cabbage\n                - id: carrots-001\n                  common_name: Carrots\n                - id: corn-001\n                  common_name: Corn\n                - id: cucumbers-001\n                  common_name: Cucumbers\n                - id: dill-001\n                  common_name: Dill\n                - id: fennel-001\n                  common_name: Fennel\n                - id: garlic-001\n                  common_name: Garlic\n                - id: lettuce-001\n                  common_name: Lettuce\n                - id: onions-001\n                  common_name: Onions\n                - id: peas-001\n                  common_name: Peas\n                - id: peppers-001\n                  common_name: Peppers\n                - id: potatoes-001\n                  common_name: Potatoes\n                - id: pumpkins-001\n                  common_name: Pumpkins and winter squash\n                - id: radishes-001\n                  common_name: Radishes\n                - id: spinach-001\n                  common_name: Spinach\n                - id: tomatoes-001\n                  common_name: Tomatoes\n        '429':\n          $ref: '#/components/responses/TooManyRequests'\n\n  /plants/{plantId}:\n    get:\n      operationId: getPlant\n      summary: Get a plant\n      description: >-\n        Returns a plant and all of its companion planting relationships,\n        both beneficial and harmful.\n      tags:\n        - Plants\n      parameters:\n        - name: plantId\n          in: path\n          required: true\n          description: The unique identifier for the plant.\n          schema:\n            type: string\n            example: tomatoes-001\n      responses:\n        '200':\n          description: The plant and its companion relationships.\n          content:\n            application/json:\n              schema:\n                $ref: '#/components/schemas/PlantWithCompanions'\n              example:\n                id: tomatoes-001\n                common_name: Tomatoes\n                companions:\n                  - plant:\n                      id: asparagus-001\n                      common_name: Asparagus\n                    relationship: beneficial\n                  - plant:\n                      id: basil-001\n                      common_name: Basil\n                    relationship: beneficial\n                    reason: Enhances growth and pest resistance.\n                  - plant:\n                      id: beans-001\n                      common_name: Beans\n                    relationship: beneficial\n                  - plant:\n                      id: borage-001\n                      common_name: Borage\n                    relationship: beneficial\n                    reason: Attracts beneficial insects and pollinators.\n                  - plant:\n                      id: celery-001\n                      common_name: Celery\n                    relationship: beneficial\n                  - plant:\n                      id: marigold-001\n                      common_name: Marigold\n                    relationship: beneficial\n                    reason: Reduce whitefly populations.\n                  - plant:\n                      id: parsley-001\n                      common_name: Parsley\n                    relationship: beneficial\n                    reason: Attracts beneficial insects.\n                  - plant:\n                      id: radishes-001\n                      common_name: Radishes\n                    relationship: beneficial\n                  - plant:\n                      id: rosemary-001\n                      common_name: Rosemary\n                    relationship: beneficial\n                  - plant:\n                      id: thyme-001\n                      common_name: Thyme\n                    relationship: beneficial\n                  - plant:\n                      id: broccoli-001\n                      common_name: Broccoli\n                    relationship: harmful\n                    reason: Can stunt the growth of nightshades.\n                  - plant:\n                      id: cabbage-001\n                      common_name: Cabbage\n                    relationship: harmful\n                    reason: Can stunt the growth of nightshades.\n                  - plant:\n                      id: cauliflower-001\n                      common_name: Cauliflower\n                    relationship: harmful\n                  - plant:\n                      id: corn-001\n                      common_name: Corn\n                    relationship: harmful\n                    reason: >-\n                      Tomatoes and corn are both heavy feeders and can deplete\n                      the soil of nutrients.\n                  - plant:\n                      id: dill-001\n                      common_name: Dill\n                    relationship: harmful\n                  - plant:\n                      id: eggplant-001\n                      common_name: Eggplant\n                    relationship: harmful\n                  - plant:\n                      id: fennel-001\n                      common_name: Fennel\n                    relationship: harmful\n                  - plant:\n                      id: peppers-001\n                      common_name: Peppers\n                    relationship: harmful\n                  - plant:\n                      id: potatoes-001\n                      common_name: Potatoes\n                    relationship: harmful\n        '404':\n          $ref: '#/components/responses/NotFound'\n        '429':\n          $ref: '#/components/responses/TooManyRequests'\n\n  /pairings/beneficial:\n    get:\n      operationId: listBeneficialPairings\n      summary: Get all beneficial pairings\n      description: >-\n        Returns all plants that have at least one beneficial companion,\n        along with their beneficial companions and reasons where available.\n      tags:\n        - Pairings\n      responses:\n        '200':\n          description: All beneficial plant pairings.\n          content:\n            application/json:\n              schema:\n                type: array\n                items:\n                  $ref: '#/components/schemas/PlantPairing'\n              example:\n                - plant:\n                    id: asparagus-001\n                    common_name: Asparagus\n                  companions:\n                    - plant:\n                        id: basil-001\n                        common_name: Basil\n                    - plant:\n                        id: marigold-001\n                        common_name: Marigold\n                    - plant:\n                        id: nasturtium-001\n                        common_name: Nasturtiums\n                    - plant:\n                        id: parsley-001\n                        common_name: Parsley\n                - plant:\n                    id: beans-001\n                    common_name: Beans\n                  companions:\n                    - plant:\n                        id: corn-001\n                        common_name: Corn\n                      reason: >-\n                        Provides a natural trellis for climbing beans and\n                        improves sunlight access.\n                    - plant:\n                        id: lovage-001\n                        common_name: Lovage\n                      reason: >-\n                        Attracts beneficial insects such as parasitoid wasps\n                        that prey on aphids and beetles.\n                    - plant:\n                        id: rosemary-001\n                        common_name: Rosemary\n                      reason: Repels common garden pests with natural aromatic compounds.\n                    - plant:\n                        id: sunflower-001\n                        common_name: Sunflowers\n                      reason: >-\n                        Provides a natural trellis for climbing beans and\n                        improves sunlight access.\n                - plant:\n                    id: beets-001\n                    common_name: Beets\n                  companions:\n                    - plant:\n                        id: beans-001\n                        common_name: Bush beans\n                      reason: Fixes nitrogen in the soil, improves fertility.\n                    - plant:\n                        id: garlic-001\n                        common_name: Garlic\n                      reason: Improves beet growth and flavor.\n                    - plant:\n                        id: lettuce-001\n                        common_name: Lettuce\n                      reason: Complements root depth and suppresses weeds.\n                    - plant:\n                        id: onions-001\n                        common_name: Onions\n                      reason: Reduces pest pressure and improves yields.\n        '429':\n          $ref: '#/components/responses/TooManyRequests'\n\n  /pairings/harmful:\n    get:\n      operationId: listHarmfulPairings\n      summary: Get all harmful pairings\n      description: >-\n        Returns all plants that have at least one harmful companion,\n        along with their harmful companions and reasons where available.\n      tags:\n        - Pairings\n      responses:\n        '200':\n          description: All harmful plant pairings.\n          content:\n            application/json:\n              schema:\n                type: array\n                items:\n                  $ref: '#/components/schemas/PlantPairing'\n              example:\n                - plant:\n                    id: asparagus-001\n                    common_name: Asparagus\n                  companions:\n                    - plant:\n                        id: fennel-001\n                        common_name: Fennel\n                    - plant:\n                        id: garlic-001\n                        common_name: Garlic\n                      reason: Can inhibit growth of asparagus.\n                    - plant:\n                        id: onions-001\n                        common_name: Onions\n                      reason: Can inhibit growth of asparagus.\n                    - plant:\n                        id: potatoes-001\n                        common_name: Potatoes\n                - plant:\n                    id: beans-001\n                    common_name: Beans\n                  companions:\n                    - plant:\n                        id: broccoli-001\n                        common_name: Broccoli\n                    - plant:\n                        id: cauliflower-001\n                        common_name: Cauliflower\n                    - plant:\n                        id: chives-001\n                        common_name: Chives\n                      reason: Can inhibit growth of beans.\n                    - plant:\n                        id: garlic-001\n                        common_name: Garlic\n                      reason: Can inhibit growth of beans.\n                    - plant:\n                        id: kale-001\n                        common_name: Kale\n                    - plant:\n                        id: leeks-001\n                        common_name: Leeks\n                      reason: Can inhibit growth of beans.\n                    - plant:\n                        id: onions-001\n                        common_name: Onions\n                      reason: Can inhibit growth of beans.\n                - plant:\n                    id: beets-001\n                    common_name: Beets\n                  companions:\n                    - plant:\n                        id: beans-001\n                        common_name: Pole beans\n                      reason: The two plants can stunt each other's growth.\n        '429':\n          $ref: '#/components/responses/TooManyRequests'\n\ncomponents:\n  schemas:\n    Plant:\n      type: object\n      description: A plant in the database.\n      properties:\n        id:\n          type: string\n          description: Unique identifier for the plant.\n          example: tomatoes-001\n        common_name:\n          type: string\n          description: The plant's common name.\n          example: Tomatoes\n\n    Companion:\n      type: object\n      description: A companion planting relationship.\n      properties:\n        plant:\n          $ref: '#/components/schemas/Plant'\n        relationship:\n          type: string\n          enum: [beneficial, harmful]\n          description: |\n            The relationship between the two plants.\n\n            - `beneficial` — These plants benefit each other in some manner. Plant them near each other when possible.\n            - `harmful` — These plants damage the well-being of one plant or the other. Do not plant them near each other.\n          example: beneficial\n        reason:\n          type: string\n          description: An explanation of why this pairing works or doesn't.\n          example: Enhances growth and pest resistance.\n\n    PlantWithCompanions:\n      type: object\n      description: A plant and all of its companion relationships.\n      properties:\n        id:\n          type: string\n          description: Unique identifier for the plant.\n          example: tomatoes-001\n        common_name:\n          type: string\n          description: The plant's common name.\n          example: Tomatoes\n        companions:\n          type: array\n          description: All companion relationships for this plant.\n          items:\n            $ref: '#/components/schemas/Companion'\n\n    PairingCompanion:\n      type: object\n      description: A companion plant in a pairing, with an optional reason.\n      properties:\n        plant:\n          $ref: '#/components/schemas/Plant'\n        reason:\n          type: string\n          description: An explanation of why this pairing works or doesn't.\n          example: Attracts beneficial insects and pollinators.\n\n    PlantPairing:\n      type: object\n      description: A plant and its companions of a single relationship type.\n      properties:\n        plant:\n          $ref: '#/components/schemas/Plant'\n        companions:\n          type: array\n          description: Plants in this pairing relationship.\n          items:\n            $ref: '#/components/schemas/PairingCompanion'\n\n    Error:\n      type: object\n      description: A standard error response.\n      properties:\n        code:\n          type: integer\n          description: The HTTP status code.\n          example: 404\n        message:\n          type: string\n          description: A human-readable description of the error.\n          example: Plant not found.\n\n  responses:\n    NotFound:\n      description: The requested plant does not exist in the database.\n      content:\n        application/json:\n          schema:\n            $ref: '#/components/schemas/Error'\n          example:\n            code: 404\n            message: Plant not found. That plant isn't part of the database.\n\n    TooManyRequests:\n      description: The request limit has been exceeded.\n      content:\n        application/json:\n          schema:\n            $ref: '#/components/schemas/Error'\n          example:\n            code: 429\n            message: Request limit exceeded. Try again in 60 seconds.\n",
+                      "statusCode": 200,
+                      "headers": {
+                        "x-powered-by": "Express",
+                        "access-control-allow-origin": "*",
+                        "accept-ranges": "bytes",
+                        "content-type": "text/yaml; charset=utf-8",
+                        "vary": "Accept-Encoding",
+                        "date": "Wed, 08 Jul 2026 22:07:22 GMT",
+                        "connection": "keep-alive",
+                        "keep-alive": "timeout=5",
+                        "transfer-encoding": "chunked"
+                      }
+                    }
+                  },
+                  "result": "FAIL",
+                  "resultDescription": "Returned 200. Expected response body type didn't match actual response body type."
+                }
+              ],
+              "result": "FAIL"
+            }
+          ],
+          "result": "FAIL"
+        }
+      ],
+      "result": "FAIL"
+    }
+  ]
+}
