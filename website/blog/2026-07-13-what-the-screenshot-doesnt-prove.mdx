@@ -1,0 +1,52 @@
+---
+slug: what-the-screenshot-doesnt-prove
+title: What the screenshot doesn't prove
+authors: [diana]
+tags: [workflow]
+---
+
+As part of my continuing journey into documentation testing, I set out to write a test that takes a screenshot of a live API reference. It sounded simple: load the page, wait for it to render, take a picture. Then I asked Claude Code what the test was actually checking, and had to admit the honest answer was "not much."
+
+{/* truncate */}
+
+## A different kind of fragile
+
+The [pipeline test](/showcase-site/doc-detective/pipeline-test) checks static content, markdown that Docusaurus renders once at build time. The [API reference test](/showcase-site/doc-detective/api-reference-test) checks something that isn't part of this site's build output at all. Every time someone loads the [API reference](/showcase-site/api), [Scalar](https://scalar.com) fetches a script from a CDN, fetches an OpenAPI spec, and renders the whole reference client-side, on the spot. Any of those steps can break independently of anything in this repo. A static content check would never catch that.
+
+My first draft's plan was to confirm the page loaded, then screenshot it. That was also my first mistake, because I hadn't yet worked out what "confirm it loaded" needed to mean.
+
+## The bug that ate an afternoon
+
+My first version of the test navigated to the page, then used Doc Detective's `find` step to check that the text "Garden companion API" appeared somewhere in the body, before taking the screenshot. It failed. Every time. Even at a 90-second timeout, which ruled out simple slowness.
+
+I spent a long stretch assuming the problem was the browser, or the CDN, or a shadow DOM boundary hiding the text from a plain query. None of that held up. A screenshot taken a few seconds after page load, with no assertion at all, showed the heading rendered clearly, right where it should be. The content was there. The `find` step just couldn't see it.
+
+The actual cause was narrower and stranger: matching against live text on a page that Scalar keeps re-rendering seems to break whatever polling mechanism Doc Detective uses to retry the check. The fix wasn't a longer timeout, it was a smaller claim. Instead of asking "does this page contain the text 'Garden companion API,'" I asked "does an element matching `h1.section-header-label` exist." Same page, same moment, a check on structure instead of content, and it passed immediately.
+
+I don't fully know why the text-matching path fails on this specific page. I know the selector-based path doesn't, and I know which one to reach for next time a client-rendered page needs a check like this.
+
+## The second bug was in my own writing
+
+Once the render check passed, a different set of steps started failing, ones I hadn't written on purpose. Doc Detective doesn't just run the steps you write; it also scans the surrounding markdown for patterns that look like instructions, and turns them into steps automatically. My "run this test manually" section told a human reader to go to the **Actions** tab and click **Run workflow**. Doc Detective read that bold text as literal `find` and `click` targets, and tried to execute them against a page that had never heard of a "Run workflow" button.
+
+The instructions for a human running the test by hand had become test steps of their own, silently, because of formatting I'd chosen for readability. The fix was to wrap that section in an explicit ignore marker, telling Doc Detective not to scan it. I later found the same bug sitting untouched in an earlier test on this site, unnoticed because its real steps had been failing for an unrelated reason and never got far enough to trigger it.
+
+## A test that always passes is worthless
+
+Once I'd fixed both of those, the test ran cleanly, which is when I got asked the question that mattered: how does the test know the screenshot is valid?
+
+It doesn't, not in any deep sense. The `find` check proves that *something* with the right shape rendered before the picture was taken. It does not check that the picture shows the right content, and Doc Detective saves the screenshot unconditionally, with no comparison against the last one. A visual regression that still produces the same heading element, broken styling, wrong body text, a layout that fell apart, would sail through untouched.
+
+That's not a bug I fixed. It's a boundary I hadn't stated. The [API reference test page](/showcase-site/doc-detective/api-reference-test) now spells it out directly: the test fails only if Scalar's render pipeline produces nothing at all, not if it produces something wrong. Catching the second case is a different kind of test, one that diffs a new screenshot against a trusted baseline instead of just checking that a screenshot was possible. That's a real gap, and pretending otherwise would have made this test look more capable than it is.
+
+## The environment lied more convincingly than the test did
+
+The last wrinkle had nothing to do with Doc Detective. My local sandbox couldn't run the finished test reliably, failing on browser automation bootstrap issues that had nothing to do with the test logic, three different infrastructure errors across three attempts, no zombie processes, no obvious cause. I'd already proven the underlying check worked in isolation, more than once, but I couldn't get a single clean end-to-end run locally to point to as proof.
+
+The real proof came from GitHub Actions, which ran the finished workflow on a clean runner and passed on the first try, with a genuine screenshot and a status file to show for it. The lesson wasn't about Doc Detective. It was a reminder that a flaky local environment and a flaky test look identical from the inside, and the only way to tell them apart is a clean environment you trust.
+
+## What this test is actually for
+
+This is the narrowest test in the series so far, and I mean that as a description, not a complaint. It proves that a third-party render pipeline, one entirely outside this repo's control, still produces output. It doesn't prove the output is correct, and now it says so, on the page, next to the badge.
+
+A test that claims more than it checks is worse than no test at all, because it teaches you to stop looking. This one only promises what it can back up.
