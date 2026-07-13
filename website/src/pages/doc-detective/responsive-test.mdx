@@ -1,0 +1,89 @@
+---
+sidebar_position: 5
+title: Responsive screenshot test
+---
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import StatusBadge from '@site/src/components/StatusBadge';
+
+# Responsive screenshot test
+
+This page shows two screenshots of the [homepage](/showcase-site/), captured automatically by Doc Detective at two different viewport sizes: a typical mobile width and a typical desktop width.
+
+## Why this matters
+
+The [pipeline test](/showcase-site/doc-detective/pipeline-test) and the [API reference test](/showcase-site/doc-detective/api-reference-test) both check a page at a single, fixed viewport. Neither one would notice if a layout change broke the mobile experience while leaving desktop untouched, or the other way around. Responsive bugs are exactly that kind of failure: the markup and the content are both fine, but the page falls apart at a width nobody happened to be looking at.
+
+This test runs the same steps, navigate to the homepage and take a screenshot, once requesting a 375×812 viewport (a common mobile breakpoint) and once requesting 1280×800 (a common desktop breakpoint), by defining two separate tests on this page that differ only in their `runOn` viewport configuration.
+
+Requested and rendered aren't always identical: some browser automation setups enforce a minimum window width regardless of the viewport a test asks for. Treat the two screenshots below as the ground truth for what actually rendered, not the numbers above.
+
+## Latest result
+
+<StatusBadge statusFile="/doc-detective/responsive-status.json" label="Responsive screenshot test" />
+
+## Screenshots
+
+<div style={{display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-start'}}>
+  <figure style={{margin: 0, flex: '0 0 auto'}}>
+    <img src={`${useBaseUrl('/doc-detective/homepage-mobile.png')}?v=${Date.now()}`} alt="Screenshot of the homepage at a narrow mobile viewport" style={{maxWidth: '250px', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '0.5rem'}} />
+    <figcaption>Mobile (375×812 requested)</figcaption>
+  </figure>
+  <figure style={{margin: 0, flex: '1 1 auto', minWidth: 0}}>
+    <img src={`${useBaseUrl('/doc-detective/homepage-desktop.png')}?v=${Date.now()}`} alt="Screenshot of the homepage at a 1280 by 800 desktop viewport" style={{maxWidth: '100%', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '0.5rem'}} />
+    <figcaption>Desktop (1280×800 requested)</figcaption>
+  </figure>
+</div>
+
+## How the test works
+
+This page defines two separate embedded tests, each scoped to its own `runOn` block so it runs in its own browser viewport.
+
+### Mobile
+
+{/* test {"testId": "responsive-mobile", "runOn": [{"platforms": ["linux", "mac", "windows"], "browsers": [{"name": "chrome", "viewport": {"width": 375, "height": 812}}]}]} */}
+
+1. Navigate to the [homepage](/showcase-site/).
+{/* step {"goTo": "http://localhost:3000/showcase-site/"} */}
+
+2. Capture a screenshot and save it as `homepage-mobile.png`.
+{/* step {"screenshot": {"path": "website/static/doc-detective/homepage-mobile.png", "overwrite": "true"}} */}
+
+{/* test end */}
+
+### Desktop
+
+{/* test {"testId": "responsive-desktop", "runOn": [{"platforms": ["linux", "mac", "windows"], "browsers": [{"name": "chrome", "viewport": {"width": 1280, "height": 800}}]}]} */}
+
+1. Navigate to the [homepage](/showcase-site/).
+{/* step {"goTo": "http://localhost:3000/showcase-site/"} */}
+
+2. Capture a screenshot and save it as `homepage-desktop.png`.
+{/* step {"screenshot": {"path": "website/static/doc-detective/homepage-desktop.png", "overwrite": "true"}} */}
+
+{/* test end */}
+
+## What makes this test fail
+
+Each test only fails if the browser can't reach the homepage at all. Neither test compares the screenshot against a previous version, so a layout that renders but looks wrong, content overflowing its container, a broken breakpoint, an element overlapping another, will not turn the badge above red. This test proves the page still renders at both widths, not that it renders well. Catching a visual regression like that is the job of screenshot comparison (`maxVariation`), a separate, later test in this series.
+
+{/* test ignore start */}
+
+## Run the test manually
+
+If you clone this repo, then you can run the test locally.
+
+```bash
+npm install -g doc-detective
+cd website && npm run build && npx docusaurus serve --no-open &
+doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/responsive-test.mdx
+```
+
+### Run the test on GitHub Actions
+
+The test runs automatically every day and on every push to main that touches this page. To trigger it on demand:
+
+1. Go to the **Actions** tab in the GitHub repository.
+2. Select **Responsive screenshot test**.
+3. Click **Run workflow**.
+
+{/* test ignore end */}
