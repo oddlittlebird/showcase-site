@@ -5,15 +5,13 @@ title: Responsive screenshot test
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import StatusBadge from '@site/src/components/StatusBadge';
 
-# Responsive screenshot test
-
 This page shows two screenshots of the [homepage](/showcase-site/), captured automatically by Doc Detective at two different viewport sizes: a typical mobile width and a typical desktop width.
 
 ## Why this matters
 
-The [pipeline test](/showcase-site/doc-detective/pipeline-test) and the [API reference test](/showcase-site/doc-detective/api-reference-test) both check a page at a single, fixed viewport. Neither one would notice if a layout change broke the mobile experience while leaving desktop untouched, or the other way around. Responsive bugs are exactly that kind of failure: the markup and the content are both fine, but the page falls apart at a width nobody happened to be looking at.
+The [pipeline test](/showcase-site/doc-detective/pipeline-test) and the [API reference test](/showcase-site/doc-detective/api-reference-test) both check a page at a single, fixed viewport. Neither one would notice if a layout change broke the mobile experience while leaving desktop untouched, or the other way around. Responsive bugs are exactly that kind of failure: the markup and the content are both fine, but the page falls apart at a width nobody happened to be looking at. This could conceivably happen if CSS were updated with insufficient testing or something else updated.
 
-This test runs the same steps, navigate to the homepage and take a screenshot, once requesting a 375×812 viewport (a common mobile breakpoint) and once requesting 1280×800 (a common desktop breakpoint), by defining two separate tests on this page that differ only in their `runOn` viewport configuration.
+This page defines two separate tests that each run the same two steps: navigate to the homepage, then take a screenshot. The only difference between them is the `runOn` viewport configuration. One requests a 375×812 viewport (a common mobile breakpoint). The other requests 1280×800 (a common desktop breakpoint).
 
 Requested and rendered aren't always identical: some browser automation setups enforce a minimum window width regardless of the viewport a test asks for. Treat the two screenshots below as the ground truth for what actually rendered, not the numbers above.
 
@@ -45,7 +43,7 @@ This page defines two separate embedded tests, each scoped to its own `runOn` bl
 1. Navigate to the [homepage](/showcase-site/).
 {/* step {"goTo": "http://localhost:3000/showcase-site/"} */}
 
-2. Capture a screenshot and save it as `homepage-mobile.png`.
+2. Capture a screenshot at 375×812 and save it as `homepage-mobile.png`.
 {/* step {"screenshot": {"path": "website/static/doc-detective/homepage-mobile.png", "overwrite": "true"}} */}
 
 {/* test end */}
@@ -57,7 +55,7 @@ This page defines two separate embedded tests, each scoped to its own `runOn` bl
 1. Navigate to the [homepage](/showcase-site/).
 {/* step {"goTo": "http://localhost:3000/showcase-site/"} */}
 
-2. Capture a screenshot and save it as `homepage-desktop.png`.
+2. Capture a screenshot at 1280×800 and save it as `homepage-desktop.png`.
 {/* step {"screenshot": {"path": "website/static/doc-detective/homepage-desktop.png", "overwrite": "true"}} */}
 
 {/* test end */}
