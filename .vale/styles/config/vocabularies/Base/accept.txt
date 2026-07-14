@@ -13,3 +13,9 @@ Grafana
 repo
 hardcoding
 hardcoded
+viewport
+viewports
+breakpoint
+breakpoints
+config
+configs
