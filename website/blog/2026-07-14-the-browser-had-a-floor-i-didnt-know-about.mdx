@@ -1,0 +1,67 @@
+---
+slug: the-browser-had-a-floor-i-didnt-know-about
+title: The browser had a floor I didn't know about
+authors: [diana]
+tags: [workflow]
+---
+
+I set out to write a test that takes two screenshots of the homepage: one small picture, one big picture. The idea was simple enough that I expected to spend most of my time on the page copy, not the test. Instead, I hit a crash in Doc Detective itself, and then a browser that quietly refused to be as narrow as I asked it to be.
+
+Really, now. I do not expect that kind of recalcitrance from my apps.
+
+{/* truncate */}
+
+## Why this test is different
+
+The [pipeline test](/showcase-site/doc-detective/pipeline-test) and the [API reference test](/showcase-site/doc-detective/api-reference-test) each check a page at one fixed viewport. Neither would notice if a layout change broke the mobile experience while leaving desktop untouched, or the other way around. That's a real gap: the markup and the content can both be fine, and the page can still fall apart at a width nobody happened to be looking at.
+
+The fix seemed straightforward: define two tests on one page, identical steps, different `runOn` viewport. Navigate to the homepage, take screenshots: one at 375×812, one at 1280×800.
+
+## The crash
+
+The first time I ran it, Doc Detective printed its usual parsed-test summary, both tests looking exactly as I'd written them, and then:
+
+```
+Cannot read properties of undefined (reading 'forEach')
+```
+
+No stack trace pointing at my file, no line number, nothing. I assumed I'd gotten the JSON wrong somewhere, so I stripped the test down to the smallest possible case: one `runOn` block, one browser, no viewport at all. Same crash. I removed `runOn` entirely and the test ran fine, screenshot and all.
+
+So the crash wasn't about viewport, or about my specific config. It was `runOn` itself.
+
+I read the installed package's source rather than guess further. The context-resolution code loops over `context.platforms` unconditionally:
+
+```js
+context.platforms.forEach((platform) => {
+  ...
+});
+```
+
+The schema marks `platforms` as optional. Nothing defaults it to an array when it's missing. Any `runOn` context that specifies only `browsers`, which is the natural thing to write when you don't care what OS the test runs on, hits `undefined.forEach` and dies. This is a genuine bug in the installed version (doc-detective 4.9.0), not a mistake in my markup.
+
+The workaround was to always list `platforms` explicitly, even though the schema doesn't require it:
+
+```json
+{"platforms": ["linux", "mac", "windows"], "browsers": [{"name": "chrome", "viewport": {"width": 375, "height": 812}}]}
+```
+
+With that in place, both tests parsed, resolved, and ran.
+
+## The width that wasn't
+
+Both screenshots saved. Both looked like real, distinct layouts. One had a collapsed hamburger nav, one had a full top bar. I checked the file dimensions to confirm before moving on, and the desktop one read exactly 1280×800, as requested. The mobile one read 500×812.
+
+I'd asked for 375. I tried narrower values, 320, even smaller, and kept landing on exactly 500. I tried a wider value, 550, and got exactly what I asked for. That bracketed it precisely: something in my local browser automation setup enforces a 500-pixel-wide floor, silently, regardless of what viewport a test requests. Anything narrower gets rounded up. Anything at or above passes through untouched.
+
+Nothing failed. Nothing logged a warning. The test reported success, because by its own definition, success just means the browser reached the page and a screenshot got saved. It never claimed to guarantee the exact width.
+
+## What the page says now
+
+I could have picked a viewport value this setup happens to honor and called it "mobile." That would have made the numbers line up and told a smaller truth. Instead, the [responsive screenshot test](/showcase-site/doc-detective/responsive-test) still requests 375×812, because that's a real, common mobile breakpoint and the honest target, and it says plainly, right above the screenshots, that requested and rendered aren't always identical, and that the images are the ground truth, not the caption.
+
+I only caught the gap because I checked the file dimensions instead of trusting the green result. The [API reference test](/showcase-site/doc-detective/api-reference-test) passed on a similar assumption a few days ago, and that one turned out fine. This one didn't. The only way to tell the difference in advance is to look.
+
+The [responsive screenshot test](/showcase-site/doc-detective/responsive-test) page shows the result and updates it every day:
+- A pass/fail badge with the timestamp of the last run
+- A screenshot of the mobile-width homepage
+- A screenshot of the desktop-width homepage
