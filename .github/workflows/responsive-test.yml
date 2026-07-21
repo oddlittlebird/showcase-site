@@ -22,7 +22,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install website dependencies
         working-directory: website
@@ -40,7 +40,7 @@ jobs:
         run: npx wait-on http://localhost:3000/showcase-site/
 
       - name: Install Doc Detective
-        run: npm install -g doc-detective@4.9.0
+        run: npm install -g doc-detective@4.29.1
 
       - name: Run tests
         id: run_tests

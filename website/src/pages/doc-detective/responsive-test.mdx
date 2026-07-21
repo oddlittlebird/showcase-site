@@ -38,7 +38,7 @@ This page defines two separate embedded tests, each scoped to its own `runOn` bl
 
 ### Mobile
 
-{/* test {"testId": "responsive-mobile", "runOn": [{"platforms": ["linux", "mac", "windows"], "browsers": [{"name": "chrome", "viewport": {"width": 375, "height": 812}}]}]} */}
+{/* test {"testId": "responsive-mobile", "runOn": [{"browsers": [{"name": "chrome", "viewport": {"width": 375, "height": 812}}]}]} */}
 
 1. Navigate to the [homepage](/showcase-site/).
 {/* step {"goTo": "http://localhost:3000/showcase-site/"} */}
@@ -50,7 +50,7 @@ This page defines two separate embedded tests, each scoped to its own `runOn` bl
 
 ### Desktop
 
-{/* test {"testId": "responsive-desktop", "runOn": [{"platforms": ["linux", "mac", "windows"], "browsers": [{"name": "chrome", "viewport": {"width": 1280, "height": 800}}]}]} */}
+{/* test {"testId": "responsive-desktop", "runOn": [{"browsers": [{"name": "chrome", "viewport": {"width": 1280, "height": 800}}]}]} */}
 
 1. Navigate to the [homepage](/showcase-site/).
 {/* step {"goTo": "http://localhost:3000/showcase-site/"} */}
@@ -63,8 +63,6 @@ This page defines two separate embedded tests, each scoped to its own `runOn` bl
 ## What makes this test fail
 
 Each test only fails if the browser can't reach the homepage at all. Neither test compares the screenshot against a previous version, so a layout that renders but looks wrong, content overflowing its container, a broken breakpoint, an element overlapping another, will not turn the badge above red. This test proves the page still renders at both widths, not that it renders well. Catching a visual regression like that is the job of screenshot comparison (`maxVariation`), a separate, later test in this series.
-
-{/* test ignore start */}
 
 ## Run the test manually
 
@@ -83,5 +81,3 @@ The test runs automatically every day and on every push to main that touches thi
 1. Go to the **Actions** tab in the GitHub repository.
 2. Select **Responsive screenshot test**.
 3. Click **Run workflow**.
-
-{/* test ignore end */}

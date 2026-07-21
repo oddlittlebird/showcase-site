@@ -42,8 +42,6 @@ The test fails only if `find` can't locate an `h1.section-header-label` element 
 
 It does *not* fail if the page renders with broken, wrong, or degraded content, as long as some element matching that selector exists. The screenshot itself is captured and saved unconditionally, but it's never compared against the previous version, so a visual regression that doesn't remove the heading won't turn the badge above red. That's a real, intentional gap: this test catches total pipeline failure, not visual drift. Catching visual drift is the job of screenshot comparison (`maxVariation`), which is a separate, later test in this series.
 
-{/* test ignore start */}
-
 ## Run the test manually
 
 If you clone this repo, then you can run the test locally.
@@ -61,5 +59,3 @@ The test runs automatically every day and on every push to main that touches the
 1. Go to the **Actions** tab in the GitHub repository.
 2. Select **API reference screenshot test**.
 3. Click **Run workflow**.
-
-{/* test ignore end */}

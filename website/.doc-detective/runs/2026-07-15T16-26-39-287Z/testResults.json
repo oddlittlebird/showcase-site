@@ -1,0 +1,144 @@
+{
+  "runId": "2026-07-15T16-26-39-287Z",
+  "runDir": "/Users/dianapayton/Documents/GitHub/showcase-site/website/.doc-detective/runs/2026-07-15T16-26-39-287Z",
+  "summary": {
+    "specs": {
+      "pass": 0,
+      "fail": 1,
+      "warning": 0,
+      "skipped": 0
+    },
+    "tests": {
+      "pass": 0,
+      "fail": 1,
+      "warning": 0,
+      "skipped": 0
+    },
+    "contexts": {
+      "pass": 0,
+      "fail": 1,
+      "warning": 0,
+      "skipped": 0
+    },
+    "steps": {
+      "pass": 2,
+      "fail": 1,
+      "warning": 0,
+      "skipped": 2
+    }
+  },
+  "specs": [
+    {
+      "specId": "/tmp/dd-verify/test2.mdx",
+      "contentPath": "/tmp/dd-verify/test2.mdx",
+      "tests": [
+        {
+          "testId": "debug-detect",
+          "contentPath": "/tmp/dd-verify/test2.mdx",
+          "contexts": [
+            {
+              "contextId": "default",
+              "platform": "mac",
+              "browser": {
+                "name": "chrome",
+                "headless": true
+              },
+              "steps": [
+                {
+                  "goTo": {
+                    "url": "http://localhost:3000/showcase-site/"
+                  },
+                  "location": {
+                    "line": 6,
+                    "startIndex": 91,
+                    "endIndex": 152
+                  },
+                  "stepId": "debug-detect~s51046df5",
+                  "result": "PASS",
+                  "resultDescription": "Opened URL and all wait conditions met."
+                },
+                {
+                  "screenshot": {
+                    "path": "/tmp/dd-verify/shot2.png",
+                    "overwrite": "true"
+                  },
+                  "location": {
+                    "line": 9,
+                    "startIndex": 169,
+                    "endIndex": 255
+                  },
+                  "stepId": "debug-detect~s92c65994",
+                  "outputs": {
+                    "changed": true,
+                    "screenshotPath": "/tmp/dd-verify/shot2.png"
+                  },
+                  "assertions": [],
+                  "result": "PASS",
+                  "resultDescription": "Saved screenshot. Overwrote existing file."
+                },
+                {
+                  "find": "Actions",
+                  "location": {
+                    "line": 13,
+                    "startIndex": 293,
+                    "endIndex": 304
+                  },
+                  "stepId": "debug-detect~s87efbe9b",
+                  "outputs": {
+                    "found": false
+                  },
+                  "assertions": [
+                    {
+                      "statement": "$$outputs.found == true",
+                      "source": "implicit",
+                      "result": "FAIL"
+                    }
+                  ],
+                  "result": "FAIL",
+                  "resultDescription": "No elements matched selector or text."
+                },
+                {
+                  "click": "Run workflow",
+                  "location": {
+                    "line": 13,
+                    "startIndex": 313,
+                    "endIndex": 335
+                  },
+                  "stepId": "debug-detect~s7d4499b5",
+                  "result": "SKIPPED",
+                  "resultDescription": "Skipped due to previous failure in context."
+                },
+                {
+                  "find": "Run workflow",
+                  "location": {
+                    "line": 13,
+                    "startIndex": 319,
+                    "endIndex": 335
+                  },
+                  "stepId": "debug-detect~sf6e8759c",
+                  "result": "SKIPPED",
+                  "resultDescription": "Skipped due to previous failure in context."
+                }
+              ],
+              "result": "FAIL"
+            }
+          ],
+          "result": "FAIL"
+        }
+      ],
+      "result": "FAIL"
+    }
+  ],
+  "warm": {
+    "durationMs": 1,
+    "tasks": [
+      {
+        "name": "browser-install:chrome",
+        "kind": "browser-install",
+        "outcome": "skipped",
+        "durationMs": 1,
+        "note": "'chrome' is already available"
+      }
+    ]
+  }
+}

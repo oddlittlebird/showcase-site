@@ -7,5 +7,6 @@
     "website/src/pages/doc-detective/responsive-test.mdx"
   ],
   "recursive": true,
-  "relativePathBase": "cwd"
+  "relativePathBase": "cwd",
+  "detectSteps": false
 }

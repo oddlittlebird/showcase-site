@@ -1,0 +1,106 @@
+{
+  "runId": "2026-07-15T16-25-33-294Z",
+  "runDir": "/Users/dianapayton/Documents/GitHub/showcase-site/website/.doc-detective/runs/2026-07-15T16-25-33-294Z",
+  "summary": {
+    "specs": {
+      "pass": 1,
+      "fail": 0,
+      "warning": 0,
+      "skipped": 0
+    },
+    "tests": {
+      "pass": 1,
+      "fail": 0,
+      "warning": 0,
+      "skipped": 0
+    },
+    "contexts": {
+      "pass": 1,
+      "fail": 0,
+      "warning": 0,
+      "skipped": 0
+    },
+    "steps": {
+      "pass": 2,
+      "fail": 0,
+      "warning": 0,
+      "skipped": 0
+    }
+  },
+  "specs": [
+    {
+      "specId": "/tmp/dd-verify/test1.mdx",
+      "contentPath": "/tmp/dd-verify/test1.mdx",
+      "tests": [
+        {
+          "testId": "debug-runon",
+          "contentPath": "/tmp/dd-verify/test1.mdx",
+          "contexts": [
+            {
+              "contextId": "chrome",
+              "platform": "mac",
+              "browser": {
+                "name": "chrome",
+                "viewport": {
+                  "width": 375,
+                  "height": 812
+                },
+                "explicit": true,
+                "headless": true
+              },
+              "steps": [
+                {
+                  "goTo": {
+                    "url": "http://localhost:3000/showcase-site/"
+                  },
+                  "location": {
+                    "line": 6,
+                    "startIndex": 192,
+                    "endIndex": 253
+                  },
+                  "stepId": "debug-runon~s51046df5",
+                  "result": "PASS",
+                  "resultDescription": "Opened URL and all wait conditions met."
+                },
+                {
+                  "screenshot": {
+                    "path": "/tmp/dd-verify/shot.png",
+                    "overwrite": "true"
+                  },
+                  "location": {
+                    "line": 9,
+                    "startIndex": 270,
+                    "endIndex": 355
+                  },
+                  "stepId": "debug-runon~s9aacc6a2",
+                  "outputs": {
+                    "changed": true,
+                    "screenshotPath": "/tmp/dd-verify/shot.png"
+                  },
+                  "assertions": [],
+                  "result": "PASS",
+                  "resultDescription": "Saved screenshot."
+                }
+              ],
+              "result": "PASS"
+            }
+          ],
+          "result": "PASS"
+        }
+      ],
+      "result": "PASS"
+    }
+  ],
+  "warm": {
+    "durationMs": 0,
+    "tasks": [
+      {
+        "name": "browser-install:chrome",
+        "kind": "browser-install",
+        "outcome": "skipped",
+        "durationMs": 0,
+        "note": "'chrome' is already available"
+      }
+    ]
+  }
+}
