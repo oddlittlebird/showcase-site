@@ -6,19 +6,21 @@ import VariationBadge from '@site/src/components/VariationBadge';
 
 # Screenshot comparison test
 
-This page explains `maxVariation`, the Doc Detective option that compares a new screenshot against the one already saved from the previous run, and shows the live results from the two tests it's wired into.
+This page explains `maxVariation`, the Doc Detective option that compares a new screenshot against a saved reference image, and shows the live results from the two tests it's wired into.
 
 ## Why this matters
 
-Every other screenshot test on this site captures an image and either shows it unconditionally or checks that something rendered. None of them check whether today's capture looks like yesterday's. `maxVariation` closes that gap, applied here to two screenshots with very different expectations: the [API reference test](/showcase-site/doc-detective/api-reference-test)'s screenshot, which should almost never change, and the [doodle test](/showcase-site/doc-detective/doodle-test)'s screenshot, which changes on purpose whenever Google ships a new doodle. Comparing both shows what a pixel diff actually measures — a real regression signal on a stable page, and a genuinely fluctuating number on a page that's supposed to change.
+Every other screenshot test on this site captures an image and either shows it unconditionally or checks that something rendered. None of them check whether today's capture looks like the one already saved. `maxVariation` closes that gap, applied here to two screenshots with very different expectations: the [API reference screenshot test](/showcase-site/doc-detective/api-reference-test)'s screenshot, which should almost never change, and the [doodle test](/showcase-site/doc-detective/doodle-test)'s screenshot, which changes on purpose whenever Google ships a new doodle. Comparing both shows what a pixel diff actually measures — a real regression signal on a stable page, and a genuinely fluctuating number on a page that's supposed to change.
+
+Both comparisons use the same mechanism: a reference image that only gets replaced when a new capture differs from it by more than the threshold (see "How the test works" below). It's not a fixed baseline pinned forever, and it's not strictly "yesterday's" capture either — it's whatever was last saved, which could be from the last run or from weeks ago if nothing has crossed the threshold since.
 
 ## Latest result
 
-**API reference** — a rendered API spec, not day-to-day content. A second, `aboveVariation`-gated capture (`api-reference-baseline.png`, 2% threshold) sits alongside the existing display screenshot. A WARNING here is a real signal that something in the render shifted.
+**API reference** — a rendered API spec, not day-to-day content. Its reference image should almost never need to change, at a 2% threshold, so a WARNING here is a real signal that something in the render shifted.
 
 <VariationBadge dataFile="/doc-detective/api-reference-variation.json" label="API reference" />
 
-**Doodle** — compared against yesterday's capture at a 10% threshold. Most days that's near zero; on days Google ships a new doodle it's large. Neither outcome is a failure.
+**Doodle** — content that's supposed to change, at a 10% threshold. Most days the reference image stays untouched because the plain logo hasn't moved; on days Google ships a new doodle, the difference is large enough to replace it. Neither outcome is a failure.
 
 <VariationBadge dataFile="/doc-detective/doodle-variation.json" label="Doodle" />
 
@@ -38,4 +40,4 @@ Neither comparison can turn a badge red. Exceeding `maxVariation` reports **WARN
 
 ## Run the test manually
 
-There's no separate test file for this page. See [the API reference test](/showcase-site/doc-detective/api-reference-test#run-the-test-manually) and [the doodle test](/showcase-site/doc-detective/doodle-test#run-the-test-manually) for how to run each comparison locally.
+There's no separate test file for this page. See [the API reference screenshot test](/showcase-site/doc-detective/api-reference-test#run-the-test-manually) and [the doodle test](/showcase-site/doc-detective/doodle-test#run-the-test-manually) for how to run each comparison locally.

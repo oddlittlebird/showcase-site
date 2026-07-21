@@ -9,7 +9,7 @@ This page shows two screenshots of the [homepage](/showcase-site/), captured aut
 
 ## Why this matters
 
-The [pipeline test](/showcase-site/doc-detective/pipeline-test) and the [API reference test](/showcase-site/doc-detective/api-reference-test) both check a page at a single, fixed viewport. Neither one would notice if a layout change broke the mobile experience while leaving desktop untouched, or the other way around. Responsive bugs are exactly that kind of failure: the markup and the content are both fine, but the page falls apart at a width nobody happened to be looking at. This can happen when CSS changes without enough test coverage, or when some other update shifts the layout without anyone noticing.
+The [pipeline test](/showcase-site/doc-detective/pipeline-test) and the [API reference screenshot test](/showcase-site/doc-detective/api-reference-test) both check a page at a single, fixed viewport. Neither one would notice if a layout change broke the mobile experience while leaving desktop untouched, or the other way around. Responsive bugs are exactly that kind of failure: the markup and the content are both fine, but the page falls apart at a width nobody happened to be looking at. This can happen when CSS changes without enough test coverage, or when some other update shifts the layout without anyone noticing.
 
 This page defines two separate tests that each run the same two steps: navigate to the homepage, then take a screenshot. The only difference between them is the `runOn` viewport configuration. One requests a 375×812 viewport (a common mobile breakpoint). The other requests 1280×800 (a common desktop breakpoint).
 
