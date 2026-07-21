@@ -25,13 +25,56 @@ jobs:
           npm install -g doc-detective@4.29.1
 
       - name: Run doodle test
-        run: doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/doodle-test.mdx
+        run: doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/doodle-test.mdx || true
 
-      - name: Commit updated doodle images
+      - name: Parse test results
+        id: parse_results
+        if: always()
+        run: |
+          # doc-detective's CLI exits 0 regardless of pass/fail, so read the
+          # actual result from its own JSON report instead of the exit code.
+          RESULTS=$(ls -t testResults-*.json 2>/dev/null | head -1)
+          if [ -z "$RESULTS" ]; then
+            echo "failed=true" >> "$GITHUB_OUTPUT"
+            echo "variation=0" >> "$GITHUB_OUTPUT"
+            echo "maxVariation=0.1" >> "$GITHUB_OUTPUT"
+            echo "exceeded=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          FAIL_COUNT=$(jq '.summary.tests.fail' "$RESULTS")
+          FAILED="false"
+          if [ "$FAIL_COUNT" != "0" ]; then FAILED="true"; fi
+          VARIATION=$(jq '([.specs[].tests[].contexts[].steps[] | select(.outputs.variation != null)][0].outputs.variation) // 0' "$RESULTS")
+          MAXVAR=$(jq '([.specs[].tests[].contexts[].steps[] | select(.outputs.variation != null)][0].screenshot.maxVariation) // 0.1' "$RESULTS")
+          EXCEEDED=$(jq -n --argjson v "$VARIATION" --argjson m "$MAXVAR" '$v > $m')
+          echo "failed=$FAILED" >> "$GITHUB_OUTPUT"
+          echo "variation=$VARIATION" >> "$GITHUB_OUTPUT"
+          echo "maxVariation=$MAXVAR" >> "$GITHUB_OUTPUT"
+          echo "exceeded=$EXCEEDED" >> "$GITHUB_OUTPUT"
+
+      - name: Record doodle test status
+        if: always()
+        run: |
+          mkdir -p website/static/doc-detective
+          timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          status="pass"
+          if [ "${{ steps.parse_results.outputs.failed }}" = "true" ]; then status="fail"; fi
+          printf '{"status": "%s", "timestamp": "%s"}\n' "$status" "$timestamp" > website/static/doc-detective/doodle-status.json
+          printf '{"variation": %s, "maxVariation": %s, "exceeded": %s, "timestamp": "%s"}\n' "${{ steps.parse_results.outputs.variation }}" "${{ steps.parse_results.outputs.maxVariation }}" "${{ steps.parse_results.outputs.exceeded }}" "$timestamp" > website/static/doc-detective/doodle-variation.json
+
+      - name: Commit updated doodle images and status
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add website/static/doc-detective/doodle.gif website/static/doc-detective/doodle.png
+          git add website/static/doc-detective/doodle.gif website/static/doc-detective/doodle.png website/static/doc-detective/doodle-status.json website/static/doc-detective/doodle-variation.json website/static/doc-detective/doodle-gif-updated.json
           git diff --staged --quiet || git commit -m "chore: update daily Google doodle"
           git pull --rebase origin main
           git push
+
+      - name: Fail workflow if doodle test failed
+        if: always()
+        run: |
+          if [ "${{ steps.parse_results.outputs.failed }}" = "true" ]; then
+            exit 1
+          fi

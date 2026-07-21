@@ -3,6 +3,9 @@ sidebar_position: 1
 title: Doodle test
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import StatusBadge from '@site/src/components/StatusBadge';
+import VariationBadge from '@site/src/components/VariationBadge';
+import GifFreshnessCaption from '@site/src/components/GifFreshnessCaption';
 
 # Doodle test
 
@@ -12,46 +15,50 @@ This page demonstrates how Doc Detective keeps images in sync with a live websit
 
 This is a proof of concept for using Doc Detective to keep screenshots current automatically. Documentation often goes stale because someone has to remember to manually go through and retake screenshots. Here, the test itself captures the image on a schedule, so the page never shows an outdated picture of a UI that changes daily.
 
-Minor caveat: the animated GIF only updates if the doodle is an animated GIF. If it is a static image, then it does not update.
+The test also compares each day's capture against the previous one and reports how different they are. Most days that difference is small — Google is showing its plain logo, same as yesterday. On days Google ships a new doodle, the difference is large. Either way is a legitimate outcome, not a failure: the comparison exists to show *how much* changed, not to gate pass/fail. See "How the test works" below.
+
+## Latest result
+
+<StatusBadge statusFile="/doc-detective/doodle-status.json" label="Doodle test" />
+
+<VariationBadge dataFile="/doc-detective/doodle-variation.json" label="Homepage screenshot" />
+
+## Homepage screenshot
+
+<img src={`${useBaseUrl('/doc-detective/doodle.png')}?v=${Date.now()}`} alt="Today's Google homepage, including the doodle if one is active" style={{maxWidth: '100%', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '0.5rem'}} />
+
+## Animated doodle (GIF)
+
+<GifFreshnessCaption />
+
+<img src={`${useBaseUrl('/doc-detective/doodle.gif')}?v=${Date.now()}`} alt="Most recent animated Google doodle" />
 
 ## How the test works
 
-Doc Detective updates these images by running the following steps each day:
+Doc Detective runs the following steps twice a day, at a fixed desktop viewport:
+
+{/* test {"testId": "doodle", "runOn": [{"browsers": [{"name": "chrome", "viewport": {"width": 1280, "height": 800}}]}]} */}
 
 1. Navigate to [google.com](https://www.google.com).
 {/* step {"goTo": "https://www.google.com"} */}
 
-2. Capture a screenshot of the doodle and save it as `doodle.png`.
-{/* step {"screenshot": {"path": "website/static/doc-detective/doodle.png", "crop": "#hplogo", "overwrite": "true"}} */}
+2. Capture a screenshot of the full homepage and save it as `doodle.png`, comparing it against yesterday's capture. If the two differ by more than 10%, the comparison is reported as exceeding the threshold and the reference image is replaced with today's capture; either way, the step never fails the test.
+{/* step {"screenshot": {"path": "website/static/doc-detective/doodle.png", "maxVariation": 0.1, "overwrite": "aboveVariation"}} */}
 
-3. Download the animated GIF and save it as `doodle.gif`.
+3. Download the animated GIF, if today's doodle has one, and save it as `doodle.gif`.
 {/* step {"runShell": "bash doc-detective/scripts/download-doodle.sh"} */}
 
-## Dynamic doodle (animated GIF)
+{/* test end */}
 
-If today's doodle is not animated, then this GIF will not be updated. It will display the last animated Google doodle.
+An earlier version of this test cropped the screenshot to a specific element on Google's homepage (`#hplogo`). That element only exists on days Google is running a special doodle — on every other day the crop target couldn't be found, the step failed, and the whole run silently produced no update. Capturing the full page instead of a cropped element sidesteps that: Google's internal class and ID names are obfuscated and rotate across builds, but the page itself always renders.
 
-<img src={`${useBaseUrl('/doc-detective/doodle.gif')}?v=${Date.now()}`} alt="Today's Google doodle GIF" />
+## What makes this test fail
 
-## Still doodle (PNG)
-
-<img src={`${useBaseUrl('/doc-detective/doodle.png')}?v=${Date.now()}`} alt="Today's Google doodle PNG" />
+The test fails only if the browser can't reach google.com at all, or the GIF download script errors for a reason other than "no animated doodle today" (see the script's own error handling). A large difference between today's and yesterday's screenshot is expected behavior, not a failure — it's exactly what a new doodle looks like from this test's point of view.
 
 ## Run the test manually
 
-If you clone this repo, then you can run the test manually.
-
-### Run the test on Git
-
-The test runs automatically twice a day, at 09:00 UTC (2:00 AM Pacific) and 15:00 UTC (8:00 AM Pacific), as a fallback in case the doodle hasn't rolled out yet during the first run. To trigger it on demand:
-
-1. Go to the **Actions** tab in the GitHub repository.
-2. Select **Update doodle**.
-3. Click **Run workflow**.
-
-### Run the test locally
-
-To run the test locally, install Doc Detective and then run the test file:
+If you clone this repo, then you can run the test locally.
 
 ```bash
 npm install -g doc-detective
@@ -59,3 +66,11 @@ doc-detective --config doc-detective/config.json --input website/src/pages/doc-d
 ```
 
 This updates the images in `website/static/doc-detective/` on your local machine. You can then commit and push the changes manually.
+
+### Run the test on GitHub Actions
+
+The test runs automatically twice a day, at 09:00 UTC (2:00 AM Pacific) and 15:00 UTC (8:00 AM Pacific), as a fallback in case the doodle hasn't rolled out yet during the first run. To trigger it on demand:
+
+1. Go to the **Actions** tab in the GitHub repository.
+2. Select **Update doodle**.
+3. Click **Run workflow**.

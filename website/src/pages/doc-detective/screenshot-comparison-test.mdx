@@ -1,0 +1,42 @@
+---
+sidebar_position: 6
+title: Screenshot comparison test
+---
+import VariationBadge from '@site/src/components/VariationBadge';
+
+# Screenshot comparison test
+
+The [API reference test](/showcase-site/doc-detective/api-reference-test) and the [doodle test](/showcase-site/doc-detective/doodle-test) both capture screenshots, but until now neither compared one capture against the next. This page explains `maxVariation`, the Doc Detective option that does — and the two tests it's now wired into.
+
+## What maxVariation actually does
+
+A Doc Detective `screenshot` step can take two related options:
+
+- **`maxVariation`** — the fraction of pixels (0 to 1) allowed to differ between a new capture and the image already saved at that path, before the comparison is flagged. Defaults to 0.05 (5%).
+- **`overwrite`** — what to do with the existing file. There are three modes, and they behave less alike than the names suggest:
+  - `"true"` replaces the file unconditionally and runs **no comparison at all**. This is what the display screenshots on this site used before this test existed, and what the API reference page's main screenshot still does.
+  - `"false"` captures once. On every later run, if a file already exists at that path, the step is **skipped outright** — no new capture, no comparison. It freezes a reference image; it doesn't repeatedly check anything against it.
+  - `"aboveVariation"` is the only mode that actually compares on every run: it captures, diffs against the existing file, and replaces the file only if the difference exceeds `maxVariation`. This is what both tests below use.
+
+The comparison itself reports **WARNING**, not FAIL, when it exceeds the threshold. That's a deliberate severity choice in Doc Detective, not a gap in this site's setup — exceeding `maxVariation` means "this looks different," which is information, not necessarily breakage. It never fails the run, and the status badges on this site treat WARNING the same as PASS: a screenshot comparison result never turns a badge red.
+
+## Two different comparisons, two different meanings
+
+**The API reference screenshot rarely changes.** It's a rendered API spec, not day-to-day content, so a second, `aboveVariation`-gated capture (`api-reference-baseline.png`, 2% threshold) sits alongside the existing display screenshot. On this page, a WARNING is a real signal — something in that render shifted.
+
+<VariationBadge dataFile="/doc-detective/api-reference-variation.json" label="API reference" />
+
+**The doodle screenshot changes on purpose, every time Google ships a new doodle.** Comparing it against yesterday's capture (10% threshold) produces a genuinely different number most days — near zero on plain-logo days, large on doodle days — which is a more honest demonstration of what a pixel diff measures than a page that never changes. Neither outcome is wrong.
+
+<VariationBadge dataFile="/doc-detective/doodle-variation.json" label="Doodle" />
+
+## Why this needed fixing first
+
+Building this surfaced two bugs in the existing doodle test, both fixed as part of this change:
+
+1. The old crop target (`#hplogo`) only exists on days a special doodle is active. Google's DOM has no stable selector on plain-logo days — every id and class is build-specific and obfuscated — so the crop silently failed and the whole run produced nothing, days at a time. The fix was to stop cropping and capture the full page, which doesn't depend on any particular element existing.
+2. Doc Detective's CLI exits `0` regardless of test outcome — there's no flag to change that in the installed version. The existing `|| echo "failed=true"` pattern in this site's other workflows relies on a non-zero exit code that never actually happens. The doodle workflow and this test's new comparison step read the real result from Doc Detective's own JSON report instead.
+
+## Run the tests manually
+
+Both comparisons run as part of their existing tests — there's no separate test file for this page. See [the doodle test](/showcase-site/doc-detective/doodle-test#run-the-test-manually) and [the API reference test](/showcase-site/doc-detective/api-reference-test#run-the-test-manually) for how to run each one locally.
