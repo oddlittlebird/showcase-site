@@ -54,17 +54,17 @@ runs the following:
 
 1. Make a GET request to the live `llms.txt` endpoint and confirm it returns
    HTTP 200.
-{/* step {"httpRequest": {"url": "https://oddlittlebird.github.io/showcase-site/llms.txt", "method": "GET", "responseCode": 200}} */}
+{/* step {"httpRequest": {"url": "https://oddlittlebird.github.io/showcase-site/llms.txt", "method": "GET", "statusCodes": [200]}} */}
 
-2. Make a second request and confirm the response body contains at least one `##`
-   section heading, which the [`llms.txt` spec](https://llmstxt.org/) requires.
-{/* step {"httpRequest": {"url": "https://oddlittlebird.github.io/showcase-site/llms.txt", "method": "GET", "responseCode": 200, "responseText": "/## /"}} */}
+2. Confirm the response contains at least one `##` section heading, which the
+   [`llms.txt` spec](https://llmstxt.org/) requires.
+{/* step {"runShell": {"command": "curl -sf https://oddlittlebird.github.io/showcase-site/llms.txt | grep -q '^## '", "exitCodes": [0]}} */}
 
 3. Run a shell script that fetches the live `llms.txt`, counts its `##`
    headings, and compares the count against the baseline stored in
    `llms-txt-headings.json`. The baseline updates automatically whenever
    `llms.txt` changes, so the count is never hardcoded.
-{/* step {"runShell": {"command": "bash scripts/check-llms-headings.sh", "exitCode": 0}} */}
+{/* step {"runShell": {"command": "bash scripts/check-llms-headings.sh", "exitCodes": [0]}} */}
 
 If the file is removed, its URL changes, the response no longer conforms to
 the `llms.txt` format, or a section is added or removed without the baseline
