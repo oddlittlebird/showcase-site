@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react';
+import type {ReactNode} from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './styles.module.css';
 
@@ -14,7 +15,7 @@ interface StatusBadgeProps {
   label: string;
 }
 
-export default function StatusBadge({statusFile, label}: StatusBadgeProps): JSX.Element {
+export default function StatusBadge({statusFile, label}: StatusBadgeProps): ReactNode {
   const statusUrl = useBaseUrl(statusFile);
   const [data, setData] = useState<Status | null>(null);
   const [error, setError] = useState(false);

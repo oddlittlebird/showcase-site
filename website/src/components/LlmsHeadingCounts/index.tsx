@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react';
+import type {ReactNode} from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './styles.module.css';
 
@@ -9,7 +10,7 @@ interface HeadingCounts {
   timestamp: string;
 }
 
-export default function LlmsHeadingCounts(): JSX.Element {
+export default function LlmsHeadingCounts(): ReactNode {
   const url = useBaseUrl('/doc-detective/llms-txt-headings.json');
   const [data, setData] = useState<HeadingCounts | null>(null);
   const [error, setError] = useState(false);

@@ -42,6 +42,15 @@ headings with no prose between them. Uses `scope: text` with a raw
 multiline regex — a pattern that requires understanding how Vale's scope
 system works at the document level, beyond what most users ever reach.
 
+**Acronyms.yml** — extends Vale's `conditional` rule to require that an
+acronym be spelled out on first use, with an exception list of acronyms
+common enough to skip (API, HTML, URL, and similar). Level: suggestion.
+
+**Headings.yml** — extends Vale's `capitalization` rule to enforce
+sentence-style capitalization in headings, with an exception list for
+proper nouns and product names (TypeScript, Kubernetes, macOS, and
+similar). Level: warning.
+
 ### codespell — spell checking
 
 codespell runs against all content files on every pull request. A
@@ -69,15 +78,31 @@ do not exist as HTTP endpoints Lychee can reach.
 
 ### GitHub Actions — the pipeline itself
 
-Five workflows wire the tools together. Path filtering keeps each workflow
+Ten workflows wire the tools together. Path filtering keeps each workflow
 focused: a CSS change does not trigger a lint run; a workflow change does not
 trigger a doc test. The filters reduce noise and make failures meaningful.
+
+The four gates described above:
 
 - `lint.yml` — Vale on pull request, filtered to content files
 - `spellcheck.yml` — codespell on pull request, filtered to content files
 - `links.yml` — Lychee on push and weekly schedule
 - `test.yml` — Doc Detective on push to main, filtered to docs and test files
-- `deploy.yml` — Docusaurus build and GitHub Pages deployment
+
+Five more granular checks, each a separate Doc Detective or verification job:
+
+- `llms-txt.yml` — verifies `llms.txt` against the live site on push to main
+- `llms-txt-headings.yml` — counts `llms.txt` headings and commits the result as JSON
+- `api-reference.yml` — Doc Detective screenshot test against the API reference page
+- `responsive-test.yml` — Doc Detective screenshot test across viewport sizes
+- `doodle.yml` — regenerates a daily doodle on a cron schedule
+
+And the deploy itself:
+
+- `deploy.yml` — Docusaurus build and GitHub Pages deployment, triggered on
+  push to main and by `workflow_run` completion of `doodle.yml`,
+  `llms-txt.yml`, `llms-txt-headings.yml`, and `api-reference.yml`, so the
+  site republishes once all upstream checks have run
 
 ### OpenAPI 3.1 — API documentation
 
@@ -104,8 +129,8 @@ worse than no file, because an agent acts on it with confidence.
 ## Repository structure
 
 ```
-.github/workflows/       Five CI/CD workflow definitions
-.vale/styles/Diana/      Three custom Vale rules
+.github/workflows/       Ten CI/CD workflow definitions
+.vale/styles/Diana/      Five custom Vale rules
 doc-detective/           Doc Detective config and test specs
 website/docs/            Documentation pages
 website/static/api/      OpenAPI 3.1 spec (garden.yaml)
