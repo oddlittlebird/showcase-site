@@ -6,37 +6,36 @@ import VariationBadge from '@site/src/components/VariationBadge';
 
 # Screenshot comparison test
 
-The [API reference test](/showcase-site/doc-detective/api-reference-test) and the [doodle test](/showcase-site/doc-detective/doodle-test) both capture screenshots, but until now neither compared one capture against the next. This page explains `maxVariation`, the Doc Detective option that does — and the two tests it's now wired into.
+This page explains `maxVariation`, the Doc Detective option that compares a new screenshot against the one already saved from the previous run, and shows the live results from the two tests it's wired into.
 
-## What maxVariation actually does
+## Why this matters
 
-A Doc Detective `screenshot` step can take two related options:
+Every other screenshot test on this site captures an image and either shows it unconditionally or checks that something rendered. None of them check whether today's capture looks like yesterday's. `maxVariation` closes that gap, applied here to two screenshots with very different expectations: the [API reference test](/showcase-site/doc-detective/api-reference-test)'s screenshot, which should almost never change, and the [doodle test](/showcase-site/doc-detective/doodle-test)'s screenshot, which changes on purpose whenever Google ships a new doodle. Comparing both shows what a pixel diff actually measures — a real regression signal on a stable page, and a genuinely fluctuating number on a page that's supposed to change.
 
-- **`maxVariation`** — the fraction of pixels (0 to 1) allowed to differ between a new capture and the image already saved at that path, before the comparison is flagged. Defaults to 0.05 (5%).
-- **`overwrite`** — what to do with the existing file. There are three modes, and they behave less alike than the names suggest:
-  - `"true"` replaces the file unconditionally and runs **no comparison at all**. This is what the display screenshots on this site used before this test existed, and what the API reference page's main screenshot still does.
-  - `"false"` captures once. On every later run, if a file already exists at that path, the step is **skipped outright** — no new capture, no comparison. It freezes a reference image; it doesn't repeatedly check anything against it.
-  - `"aboveVariation"` is the only mode that actually compares on every run: it captures, diffs against the existing file, and replaces the file only if the difference exceeds `maxVariation`. This is what both tests below use.
+## Latest result
 
-The comparison itself reports **WARNING**, not FAIL, when it exceeds the threshold. That's a deliberate severity choice in Doc Detective, not a gap in this site's setup — exceeding `maxVariation` means "this looks different," which is information, not necessarily breakage. It never fails the run, and the status badges on this site treat WARNING the same as PASS: a screenshot comparison result never turns a badge red.
-
-## Two different comparisons, two different meanings
-
-**The API reference screenshot rarely changes.** It's a rendered API spec, not day-to-day content, so a second, `aboveVariation`-gated capture (`api-reference-baseline.png`, 2% threshold) sits alongside the existing display screenshot. On this page, a WARNING is a real signal — something in that render shifted.
+**API reference** — a rendered API spec, not day-to-day content. A second, `aboveVariation`-gated capture (`api-reference-baseline.png`, 2% threshold) sits alongside the existing display screenshot. A WARNING here is a real signal that something in the render shifted.
 
 <VariationBadge dataFile="/doc-detective/api-reference-variation.json" label="API reference" />
 
-**The doodle screenshot changes on purpose, every time Google ships a new doodle.** Comparing it against yesterday's capture (10% threshold) produces a genuinely different number most days — near zero on plain-logo days, large on doodle days — which is a more honest demonstration of what a pixel diff measures than a page that never changes. Neither outcome is wrong.
+**Doodle** — compared against yesterday's capture at a 10% threshold. Most days that's near zero; on days Google ships a new doodle it's large. Neither outcome is a failure.
 
 <VariationBadge dataFile="/doc-detective/doodle-variation.json" label="Doodle" />
 
-## Why this needed fixing first
+## How the test works
 
-Building this surfaced two bugs in the existing doodle test, both fixed as part of this change:
+This isn't a standalone test with its own steps — it's the same `screenshot` step option, `maxVariation`, applied to a step already defined on each of the two pages above. A Doc Detective `screenshot` step can take:
 
-1. The old crop target (`#hplogo`) only exists on days a special doodle is active. Google's DOM has no stable selector on plain-logo days — every id and class is build-specific and obfuscated — so the crop silently failed and the whole run produced nothing, days at a time. The fix was to stop cropping and capture the full page, which doesn't depend on any particular element existing.
-2. Doc Detective's CLI exits `0` regardless of test outcome — there's no flag to change that in the installed version. The existing `|| echo "failed=true"` pattern in this site's other workflows relies on a non-zero exit code that never actually happens. The doodle workflow and this test's new comparison step read the real result from Doc Detective's own JSON report instead.
+- **`maxVariation`** — the fraction of pixels (0 to 1) allowed to differ between a new capture and the image already saved at that path, before the comparison is flagged. Defaults to 0.05 (5%).
+- **`overwrite`** — what to do with the existing file. There are three modes, and they behave less alike than the names suggest:
+  - `"true"` replaces the file unconditionally and runs **no comparison at all**. This is what the API reference page's main display screenshot still does.
+  - `"false"` captures once. On every later run, if a file already exists at that path, the step is **skipped outright** — no new capture, no comparison. It freezes a reference image; it doesn't repeatedly check anything against it.
+  - `"aboveVariation"` is the only mode that actually compares on every run: it captures, diffs against the existing file, and replaces the file only if the difference exceeds `maxVariation`. This is what both comparisons above use.
 
-## Run the tests manually
+## What makes this test fail
 
-Both comparisons run as part of their existing tests — there's no separate test file for this page. See [the doodle test](/showcase-site/doc-detective/doodle-test#run-the-test-manually) and [the API reference test](/showcase-site/doc-detective/api-reference-test#run-the-test-manually) for how to run each one locally.
+Neither comparison can turn a badge red. Exceeding `maxVariation` reports **WARNING**, not FAIL — a deliberate severity choice in Doc Detective, not a gap in this site's setup. "This looks different" is information, not necessarily breakage, and the status badges on this site treat WARNING the same as PASS.
+
+## Run the test manually
+
+There's no separate test file for this page. See [the API reference test](/showcase-site/doc-detective/api-reference-test#run-the-test-manually) and [the doodle test](/showcase-site/doc-detective/doodle-test#run-the-test-manually) for how to run each comparison locally.
