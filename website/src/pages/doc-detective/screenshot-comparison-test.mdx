@@ -12,7 +12,7 @@ This page explains `maxVariation`, the Doc Detective option that compares a new 
 
 Every other screenshot test on this site captures an image and either shows it unconditionally or checks that something rendered. None of them check whether today's capture looks like the one already saved. `maxVariation` closes that gap, applied here to two screenshots with very different expectations: the [API reference screenshot test](/showcase-site/doc-detective/api-reference-test)'s screenshot, which should almost never change, and the [doodle test](/showcase-site/doc-detective/doodle-test)'s screenshot, which changes on purpose whenever Google ships a new doodle. Comparing both shows what a pixel diff actually measures — a real regression signal on a stable page, and a genuinely fluctuating number on a page that's supposed to change.
 
-Both comparisons use the same mechanism: a reference image that only gets replaced when a new capture differs from it by more than the threshold (see "How the test works" below). It's not a fixed baseline pinned forever, and it's not strictly "yesterday's" capture either — it's whatever was last saved, which could be from the last run or from weeks ago if nothing has crossed the threshold since.
+Both comparisons use the same mechanism: a reference image that only gets replaced when a new capture differs from it by more than the threshold (see [How the test works](#how-the-test-works)). It's not a fixed baseline pinned forever, and it's not strictly "yesterday's" capture either — it's whatever was last saved, which could be from the last run or from weeks ago if nothing has crossed the threshold since.
 
 ## Latest result
 
@@ -26,13 +26,13 @@ Both comparisons use the same mechanism: a reference image that only gets replac
 
 ## How the test works
 
-This isn't a standalone test with its own steps — it's the same `screenshot` step option, `maxVariation`, applied to a step already defined on each of the two pages above. A Doc Detective `screenshot` step can take:
+This isn't a standalone test with its own steps — it's the same `screenshot` step option, `maxVariation`, applied to a step already defined on the [API reference screenshot test](/showcase-site/doc-detective/api-reference-test) and [doodle test](/showcase-site/doc-detective/doodle-test) pages. A Doc Detective `screenshot` step can take:
 
 - **`maxVariation`** — the fraction of pixels (0 to 1) allowed to differ between a new capture and the image already saved at that path, before the comparison is flagged. Defaults to 0.05 (5%).
 - **`overwrite`** — what to do with the existing file. There are three modes, and they behave less alike than the names suggest:
   - `"true"` replaces the file unconditionally and runs **no comparison at all**. This is what the API reference page's main display screenshot still does.
   - `"false"` captures once. On every later run, if a file already exists at that path, the step is **skipped outright** — no new capture, no comparison. It freezes a reference image; it doesn't repeatedly check anything against it.
-  - `"aboveVariation"` is the only mode that actually compares on every run: it captures, diffs against the existing file, and replaces the file only if the difference exceeds `maxVariation`. This is what both comparisons above use.
+  - `"aboveVariation"` is the only mode that actually compares on every run: it captures, diffs against the existing file, and replaces the file only if the difference exceeds `maxVariation`. This is what both comparisons on this page use.
 
 ## What makes this test fail
 
