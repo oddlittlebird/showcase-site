@@ -13,7 +13,7 @@ The [pipeline test](/showcase-site/doc-detective/pipeline-test) and the [API ref
 
 This page defines two separate tests that each run the same two steps: navigate to the homepage, then take a screenshot. The only difference between them is the `runOn` viewport configuration. One requests a 375×812 viewport (a common mobile breakpoint). The other requests 1280×800 (a common desktop breakpoint).
 
-Requested and rendered aren't always identical: some browser automation setups enforce a minimum window width regardless of the viewport a test asks for. Treat the two screenshots below as the ground truth for what actually rendered, not the numbers above.
+Requested and rendered aren't always identical: some browser automation setups enforce a minimum window width regardless of the viewport a test asks for. Treat the [screenshots](#screenshots) as the ground truth for what actually rendered, not the requested viewport dimensions.
 
 ## Latest result
 
@@ -62,7 +62,7 @@ This page defines two separate embedded tests, each scoped to its own `runOn` bl
 
 ## What makes this test fail
 
-Each test only fails if the browser can't reach the homepage at all. Neither test compares the screenshot against a previous version, so a layout that renders but looks wrong, content overflowing its container, a broken breakpoint, an element overlapping another, will not turn the badge above red. This test proves the page still renders at both widths, not that it renders well. Catching a visual regression like that is the job of the [screenshot comparison test](/showcase-site/doc-detective/screenshot-comparison-test) (`maxVariation`), which isn't wired into this page's own screenshots but is demonstrated on the API reference and doodle pages.
+Each test only fails if the browser can't reach the homepage at all. Neither test compares the screenshot against a previous version, so a layout that renders but looks wrong, content overflowing its container, a broken breakpoint, an element overlapping another, will not turn [the badge](#latest-result) red. This test proves the page still renders at both widths, not that it renders well. Catching a visual regression like that is the job of the [screenshot comparison test](/showcase-site/doc-detective/screenshot-comparison-test) (`maxVariation`), which isn't wired into this page's own screenshots but is demonstrated on the API reference and doodle pages.
 
 ## Run the test manually
 

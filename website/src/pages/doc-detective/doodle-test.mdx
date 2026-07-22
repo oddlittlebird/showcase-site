@@ -15,7 +15,7 @@ This page demonstrates how Doc Detective keeps images in sync with a live websit
 
 This is a proof of concept for using Doc Detective to keep screenshots current automatically. Documentation often goes stale because someone has to remember to manually go through and retake screenshots. Here, the test itself captures the image on a schedule, so the page never shows an outdated picture of a UI that changes daily.
 
-The test also compares each capture against a saved reference image and reports how different they are. That reference only gets replaced when a capture differs from it by more than the threshold, so it isn't strictly "yesterday's" image — it's whatever was last saved. Most days the difference is small, because Google is showing the same plain logo the reference already has. On days Google ships a new doodle, the difference is large enough to replace it. Either way is a legitimate outcome, not a failure: the comparison exists to show *how much* changed, not to gate pass/fail. See "How the test works" below.
+The test also compares each capture against a saved reference image and reports how different they are. That reference only gets replaced when a capture differs from it by more than the threshold, so it isn't strictly "yesterday's" image — it's whatever was last saved. Most days the difference is small, because Google is showing the same plain logo the reference already has. On days Google ships a new doodle, the difference is large enough to replace it. Either way is a legitimate outcome, not a failure: the comparison exists to show *how much* changed, not to gate pass/fail. See [How the test works](#how-the-test-works).
 
 ## Latest result
 

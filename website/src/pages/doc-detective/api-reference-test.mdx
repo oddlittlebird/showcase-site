@@ -14,7 +14,7 @@ This page shows a screenshot of the [API reference](/showcase-site/api), capture
 
 The [pipeline test](/showcase-site/doc-detective/pipeline-test) checks static content: markdown that Docusaurus renders once, at build time. This page checks something more fragile — a live, third-party render pipeline. The [API reference](/showcase-site/api) isn't part of this site's build output. Every time someone loads it, [Scalar](https://scalar.com) fetches a script from a CDN, fetches the OpenAPI spec, and renders the whole reference client-side, in the browser, on the spot. Any of those steps can break independently of anything in this repo: the CDN can be unreachable, a Scalar release can change how it renders, the spec file can go missing.
 
-That said, this test proves the pipeline produced *something*, not that the something is correct. A separate comparison step (below) narrows that gap by checking the rendered output against a reference image, not just its presence.
+That said, this test proves the pipeline produced *something*, not that the something is correct. A separate [comparison step](#how-the-test-works) narrows that gap by checking the rendered output against a reference image, not just its presence.
 
 ## Latest result
 
@@ -46,7 +46,7 @@ The test is defined directly in this page's source as embedded Doc Detective ste
 
 The test fails only if `find` can't locate an `h1.section-header-label` element within 20 seconds. In practice that means the CDN script never loaded, the OpenAPI spec never fetched, or Scalar's render broke badly enough to produce no heading at all.
 
-It does *not* fail if the page renders with broken, wrong, or degraded content, as long as some element matching that selector exists. The comparison step above narrows this gap without turning it into a hard failure: because this page rarely changes, a WARNING here is a meaningful signal that something visual actually shifted, worth checking even though it doesn't redden the badge above.
+It does *not* fail if the page renders with broken, wrong, or degraded content, as long as some element matching that selector exists. The [comparison step](#how-the-test-works) narrows this gap without turning it into a hard failure: because this page rarely changes, a WARNING here is a meaningful signal that something visual actually shifted, worth checking even though it doesn't redden [the badge](#latest-result).
 
 ## Run the test manually
 
