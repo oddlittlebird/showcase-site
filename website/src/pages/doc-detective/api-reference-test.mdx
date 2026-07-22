@@ -4,6 +4,7 @@ title: API reference screenshot test
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import StatusBadge from '@site/src/components/StatusBadge';
+import VariationBadge from '@site/src/components/VariationBadge';
 
 # API reference screenshot test
 
@@ -13,11 +14,13 @@ This page shows a screenshot of the [API reference](/showcase-site/api), capture
 
 The [pipeline test](/showcase-site/doc-detective/pipeline-test) checks static content: markdown that Docusaurus renders once, at build time. This page checks something more fragile — a live, third-party render pipeline. The [API reference](/showcase-site/api) isn't part of this site's build output. Every time someone loads it, [Scalar](https://scalar.com) fetches a script from a CDN, fetches the OpenAPI spec, and renders the whole reference client-side, in the browser, on the spot. Any of those steps can break independently of anything in this repo: the CDN can be unreachable, a Scalar release can change how it renders, the spec file can go missing.
 
-That said, this test proves the pipeline produced *something*, not that the something is correct. See "What makes this test fail" below for the exact boundary.
+That said, this test proves the pipeline produced *something*, not that the something is correct. A separate comparison step (below) narrows that gap by checking the rendered output against a reference image, not just its presence.
 
 ## Latest result
 
 <StatusBadge statusFile="/doc-detective/api-reference-status.json" label="API reference screenshot test" />
+
+<VariationBadge dataFile="/doc-detective/api-reference-variation.json" label="Comparison against reference image" />
 
 ## Screenshot
 
@@ -36,11 +39,14 @@ The test is defined directly in this page's source as embedded Doc Detective ste
 3. Capture a screenshot and save it as `api-reference.png`.
 {/* step {"screenshot": {"path": "website/static/doc-detective/api-reference.png", "overwrite": "true"}} */}
 
+4. Capture a second screenshot and compare it against the reference image saved at `api-reference-baseline.png`, allowing up to 2% pixel difference. This step doesn't fail the test either way — see [the screenshot comparison test](/showcase-site/doc-detective/screenshot-comparison-test) for what `maxVariation` actually does and why it reports WARNING instead of FAIL.
+{/* step {"screenshot": {"path": "website/static/doc-detective/api-reference-baseline.png", "maxVariation": 0.02, "overwrite": "aboveVariation"}} */}
+
 ## What makes this test fail
 
 The test fails only if `find` can't locate an `h1.section-header-label` element within 20 seconds. In practice that means the CDN script never loaded, the OpenAPI spec never fetched, or Scalar's render broke badly enough to produce no heading at all.
 
-It does *not* fail if the page renders with broken, wrong, or degraded content, as long as some element matching that selector exists. The screenshot itself is captured and saved unconditionally, but it's never compared against the previous version, so a visual regression that doesn't remove the heading won't turn the badge above red. That's a real, intentional gap: this test catches total pipeline failure, not visual drift. Catching visual drift is the job of screenshot comparison (`maxVariation`), which is a separate, later test in this series.
+It does *not* fail if the page renders with broken, wrong, or degraded content, as long as some element matching that selector exists. The comparison step above narrows this gap without turning it into a hard failure: because this page rarely changes, a WARNING here is a meaningful signal that something visual actually shifted, worth checking even though it doesn't redden the badge above.
 
 ## Run the test manually
 

@@ -47,6 +47,24 @@ jobs:
         id: run_tests
         run: doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/api-reference-test.mdx || echo "failed=true" >> "$GITHUB_OUTPUT"
 
+      - name: Parse comparison variation
+        id: parse_variation
+        if: always()
+        run: |
+          RESULTS=$(ls -t testResults-*.json 2>/dev/null | head -1)
+          if [ -z "$RESULTS" ]; then
+            echo "variation=0" >> "$GITHUB_OUTPUT"
+            echo "maxVariation=0.02" >> "$GITHUB_OUTPUT"
+            echo "exceeded=false" >> "$GITHUB_OUTPUT"
+          else
+            VARIATION=$(jq '([.specs[].tests[].contexts[].steps[] | select(.outputs.variation != null)][0].outputs.variation) // 0' "$RESULTS")
+            MAXVAR=$(jq '([.specs[].tests[].contexts[].steps[] | select(.outputs.variation != null)][0].screenshot.maxVariation) // 0.02' "$RESULTS")
+            EXCEEDED=$(jq -n --argjson v "$VARIATION" --argjson m "$MAXVAR" '$v > $m')
+            echo "variation=$VARIATION" >> "$GITHUB_OUTPUT"
+            echo "maxVariation=$MAXVAR" >> "$GITHUB_OUTPUT"
+            echo "exceeded=$EXCEEDED" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Record API reference test status
         if: always()
         run: |
@@ -55,13 +73,14 @@ jobs:
           if [ "${{ steps.run_tests.outputs.failed }}" = "true" ]; then status="fail"; fi
           timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           printf '{"status": "%s", "timestamp": "%s"}\n' "$status" "$timestamp" > website/static/doc-detective/api-reference-status.json
+          printf '{"variation": %s, "maxVariation": %s, "exceeded": %s, "timestamp": "%s"}\n' "${{ steps.parse_variation.outputs.variation }}" "${{ steps.parse_variation.outputs.maxVariation }}" "${{ steps.parse_variation.outputs.exceeded }}" "$timestamp" > website/static/doc-detective/api-reference-variation.json
 
       - name: Commit updated screenshot and status
         if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add website/static/doc-detective/api-reference.png website/static/doc-detective/api-reference-status.json
+          git add website/static/doc-detective/api-reference.png website/static/doc-detective/api-reference-baseline.png website/static/doc-detective/api-reference-status.json website/static/doc-detective/api-reference-variation.json
           git diff --staged --quiet || git commit -m "chore: update API reference screenshot"
           git pull --rebase origin main
           git push
