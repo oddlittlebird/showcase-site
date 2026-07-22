@@ -1,0 +1,43 @@
+---
+sidebar_position: 2
+title: CLAUDE.md
+description: The standing instructions file Claude Code reads automatically in this repo, and why it's CLAUDE.md rather than AGENTS.md.
+---
+
+# CLAUDE.md
+
+[CLAUDE.md](https://github.com/oddlittlebird/showcase-site/blob/main/CLAUDE.md) is a different mechanism from [the three custom commands](/showcase-site/agents-and-skills/skills). It isn't invoked by name; Claude Code reads it automatically at the start of every session in this repo, without anyone typing anything. Where a command is a set of steps run on request, CLAUDE.md is standing context: instructions that apply to the whole session, every time.
+
+## What it does
+
+CLAUDE.md currently encodes two rules, both specific to this repo.
+
+### Keep pipeline.md honest
+
+[website/docs/pipeline.md](/showcase-site/docs/pipeline) makes factual claims about this site's own pipeline, including how many GitHub Actions workflows exist, how many custom Vale rules exist, and what each tool does. Those claims have to keep matching the repo, not just read plausibly. CLAUDE.md tells Claude Code to re-check and update pipeline.md in the same change whenever a workflow, Vale rule, or other pipeline component it describes gets added, removed, or renamed, and gives the exact commands to compare against:
+
+```
+ls .github/workflows/ | wc -l
+ls .vale/styles/Diana/ | wc -l
+```
+
+This is the same rule that [the pipeline test](/showcase-site/doc-detective/pipeline-test)
+checks by machine, on a schedule. CLAUDE.md is the manual half: a standing
+instruction Claude Code follows *while making a change*, rather than a check
+that runs *after* one lands.
+
+### Keep Doc Detective test pages consistent
+
+Pages under `website/src/pages/doc-detective/` each document one Doc Detective test and share a structure: a heading matching the page's title, a "Why this matters" section, a "Latest result" section with the relevant status badge, a "How the test works" section with numbered steps, and a "Run the test manually" section with the exact commands to run it locally. CLAUDE.md tells Claude Code to read an existing sibling page before adding a new one and match its heading order rather than inventing a new shape, and to say why in the prose if a page genuinely needs to deviate rather than silently dropping a section its siblings have.
+
+## Why CLAUDE.md instead of AGENTS.md
+
+[AGENTS.md](https://agents.md) is an open, tool-agnostic convention that Copilot, Codex, Cursor, and several other AI coding tools read natively. Claude Code doesn't read it; Claude Code reads CLAUDE.md. This repo uses CLAUDE.md rather than AGENTS.md (or a setup that supports both) for a specific, local reason: there's exactly one contributor to this repo, and that contributor works through Claude Code by choice. Cross-tool portability isn't buying anything here, because there's no second tool in the picture.
+
+That reasoning is specific to this repo, not a general recommendation. A project with contributors spread across different coding agents would get real value from AGENTS.md, since it's the file more of those tools already read. A project that wants both could keep AGENTS.md as the source of truth and have CLAUDE.md import it, or symlink one to the other, instead of maintaining two versions of the same instructions by hand.
+
+## See also
+
+- [Skills](/showcase-site/agents-and-skills/skills) — the three commands Claude Code runs on request, rather than automatically.
+- [Documentation pipeline overview](/showcase-site/docs/pipeline) — what pipeline.md itself documents.
+- [Pipeline test](/showcase-site/doc-detective/pipeline-test) — the automated counterpart to the pipeline.md rule.
