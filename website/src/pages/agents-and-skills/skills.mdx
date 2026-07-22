@@ -1,21 +1,16 @@
 ---
 sidebar_position: 1
-title: Skills and CLAUDE.md
-description: The custom Claude Code commands and standing repo instructions behind this site's day-to-day workflow.
+title: Skills
+description: The custom Claude Code commands behind this site's day-to-day workflow.
 ---
 
-# Skills and CLAUDE.md
+# Skills
 
-This site is built with [Claude Code](https://claude.com/claude-code) as a day-to-day collaborator, using two different mechanisms: three custom commands that run on demand, and one instructions file that Claude Code reads automatically at the start of every session. Both have been in use since early in the project. This page is the first write-up of either.
+This site is built with [Claude Code](https://claude.com/claude-code) as a day-to-day collaborator. Three custom commands live in `.claude/commands/` as Markdown files. Each filename becomes a slash command — `check.md` runs as `/check`, and so on. Claude Code reads the file's contents as instructions when the command runs. They've been in use since early in the project; this page is the first write-up of any of them.
 
-## Custom commands
+## /check
 
-Three commands live in `.claude/commands/` as Markdown files. Each filename becomes a slash command — `check.md` runs as `/check`, and so on. Claude Code reads the file's contents as instructions when the command runs.
-
-### /check
-
-Runs the same style, spelling, and link checks that CI runs, so issues
-surface locally before a push instead of in a failed GitHub Actions run.
+Runs the same style, spelling, and link checks that CI runs, so issues surface locally before a push instead of in a failed GitHub Actions run.
 
 1. Run Vale against `website/docs`, `website/blog`, and `website/src/pages`.
 2. Run codespell against those same paths, plus `website/static/llms.txt`
@@ -31,7 +26,7 @@ codespell website/docs website/blog website/src/pages website/static/llms.txt RE
 lychee --config .lychee.toml 'website/docs/**/*.md' 'website/docs/**/*.mdx' 'website/blog/**/*.mdx' 'website/src/pages/**/*.mdx' 'website/static/llms.txt' 'README.md'
 ```
 
-### /new-post
+## /new-post
 
 Scaffolds a new blog post with correct frontmatter, so every post starts
 from the same shape instead of copy-pasted from whatever post came before.
@@ -44,7 +39,7 @@ from the same shape instead of copy-pasted from whatever post came before.
 4. Remind the reviewer to replace the placeholder content, check the tag
    list, and add any images to `website/static/img/blog/`.
 
-### /start
+## /start
 
 Starts the local Docusaurus dev server, checking first so a second one
 doesn't get started by accident.
@@ -56,27 +51,10 @@ doesn't get started by accident.
    message before reporting it's ready.
 4. Report the local URL: `http://localhost:3000/showcase-site/`.
 
-## CLAUDE.md
-
-[CLAUDE.md](https://github.com/oddlittlebird/showcase-site/blob/main/CLAUDE.md) is a different mechanism from the preceding three commands. It isn't invoked by name; Claude Code reads it automatically at the start of every session in this repo, without anyone typing anything. Where a command is a set of steps run on request, CLAUDE.md is standing context: instructions that apply to the whole session, every time.
-
-Right now it encodes one rule, specific to this repo: [website/docs/pipeline.md](/showcase-site/docs/pipeline) makes factual claims about this site's own pipeline, including how many GitHub Actions workflows exist, how many custom Vale rules exist, and what each tool does. Those claims have to keep matching the repo, not just read plausibly. CLAUDE.md tells Claude Code to re-check and update pipeline.md in the same change whenever a workflow, Vale rule, or other pipeline component it describes gets added, removed, or renamed, and gives the exact commands to compare against:
-
-```
-ls .github/workflows/ | wc -l
-ls .vale/styles/Diana/ | wc -l
-```
-
-This is the same rule that [the pipeline test](/showcase-site/doc-detective/pipeline-test)
-checks by machine, on a schedule. CLAUDE.md is the manual half: a standing
-instruction Claude Code follows *while making a change*, rather than a check
-that runs *after* one lands.
-
 ## See also
 
+- [CLAUDE.md](/showcase-site/agents-and-skills/claude-md) — the other
+  mechanism Claude Code reads in this repo, automatically rather than on
+  request.
 - [How I built this](/showcase-site/how-i-built-this) — the broader story of
   building this site with Claude Code.
-- [Documentation pipeline overview](/showcase-site/docs/pipeline) — what
-  pipeline.md itself documents.
-- [Pipeline test](/showcase-site/doc-detective/pipeline-test) — the
-  automated counterpart to CLAUDE.md's pipeline.md rule.
