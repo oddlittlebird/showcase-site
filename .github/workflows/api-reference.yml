@@ -44,36 +44,42 @@ jobs:
         run: npm install -g doc-detective@4.29.1
 
       - name: Run tests
-        id: run_tests
-        run: doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/api-reference-test.mdx || echo "failed=true" >> "$GITHUB_OUTPUT"
+        run: doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/api-reference-test.mdx || true
 
-      - name: Parse comparison variation
-        id: parse_variation
+      - name: Parse test results
+        id: parse_results
         if: always()
         run: |
+          # doc-detective's CLI exits 0 regardless of pass/fail, so read the
+          # actual result from its own JSON report instead of the exit code.
           RESULTS=$(ls -t testResults-*.json 2>/dev/null | head -1)
           if [ -z "$RESULTS" ]; then
+            echo "failed=true" >> "$GITHUB_OUTPUT"
             echo "variation=0" >> "$GITHUB_OUTPUT"
             echo "maxVariation=0.02" >> "$GITHUB_OUTPUT"
             echo "exceeded=false" >> "$GITHUB_OUTPUT"
-          else
-            VARIATION=$(jq '([.specs[].tests[].contexts[].steps[] | select(.outputs.variation != null)][0].outputs.variation) // 0' "$RESULTS")
-            MAXVAR=$(jq '([.specs[].tests[].contexts[].steps[] | select(.outputs.variation != null)][0].screenshot.maxVariation) // 0.02' "$RESULTS")
-            EXCEEDED=$(jq -n --argjson v "$VARIATION" --argjson m "$MAXVAR" '$v > $m')
-            echo "variation=$VARIATION" >> "$GITHUB_OUTPUT"
-            echo "maxVariation=$MAXVAR" >> "$GITHUB_OUTPUT"
-            echo "exceeded=$EXCEEDED" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+          FAIL_COUNT=$(jq '.summary.tests.fail' "$RESULTS")
+          FAILED="false"
+          if [ "$FAIL_COUNT" != "0" ]; then FAILED="true"; fi
+          VARIATION=$(jq '([.specs[].tests[].contexts[].steps[] | select(.outputs.variation != null)][0].outputs.variation) // 0' "$RESULTS")
+          MAXVAR=$(jq '([.specs[].tests[].contexts[].steps[] | select(.outputs.variation != null)][0].screenshot.maxVariation) // 0.02' "$RESULTS")
+          EXCEEDED=$(jq -n --argjson v "$VARIATION" --argjson m "$MAXVAR" '$v > $m')
+          echo "failed=$FAILED" >> "$GITHUB_OUTPUT"
+          echo "variation=$VARIATION" >> "$GITHUB_OUTPUT"
+          echo "maxVariation=$MAXVAR" >> "$GITHUB_OUTPUT"
+          echo "exceeded=$EXCEEDED" >> "$GITHUB_OUTPUT"
 
       - name: Record API reference test status
         if: always()
         run: |
           mkdir -p website/static/doc-detective
           status="pass"
-          if [ "${{ steps.run_tests.outputs.failed }}" = "true" ]; then status="fail"; fi
+          if [ "${{ steps.parse_results.outputs.failed }}" = "true" ]; then status="fail"; fi
           timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           printf '{"status": "%s", "timestamp": "%s"}\n' "$status" "$timestamp" > website/static/doc-detective/api-reference-status.json
-          printf '{"variation": %s, "maxVariation": %s, "exceeded": %s, "timestamp": "%s"}\n' "${{ steps.parse_variation.outputs.variation }}" "${{ steps.parse_variation.outputs.maxVariation }}" "${{ steps.parse_variation.outputs.exceeded }}" "$timestamp" > website/static/doc-detective/api-reference-variation.json
+          printf '{"variation": %s, "maxVariation": %s, "exceeded": %s, "timestamp": "%s"}\n' "${{ steps.parse_results.outputs.variation }}" "${{ steps.parse_results.outputs.maxVariation }}" "${{ steps.parse_results.outputs.exceeded }}" "$timestamp" > website/static/doc-detective/api-reference-variation.json
 
       - name: Commit updated screenshot and status
         if: always()
@@ -86,5 +92,5 @@ jobs:
           git push
 
       - name: Fail if tests failed
-        if: steps.run_tests.outputs.failed == 'true'
+        if: steps.parse_results.outputs.failed == 'true'
         run: exit 1
