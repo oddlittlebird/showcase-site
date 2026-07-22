@@ -22,10 +22,10 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install Doc Detective
-        run: npm install -g doc-detective@4.9.0
+        run: npm install -g doc-detective@4.29.1
 
       - name: Run tests
         run: doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/llms-txt-test.mdx || true
