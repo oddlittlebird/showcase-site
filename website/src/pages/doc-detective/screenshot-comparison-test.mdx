@@ -38,6 +38,8 @@ This isn't a standalone test with its own steps — it's the same `screenshot` s
 
 Neither comparison can turn a badge red. Exceeding `maxVariation` reports **WARNING**, not FAIL — a deliberate severity choice in Doc Detective, not a gap in this site's setup. "This looks different" is information, not necessarily breakage, and the status badges on this site treat WARNING the same as PASS.
 
+That's deliberate, but it created a gap: nothing surfaced a WARNING anywhere a human would actually see it. Both workflows now open (or comment on, if one's already open) a GitHub issue when a comparison exceeds its threshold, so exceeding `maxVariation` is quiet on the badge but not silent — it still reaches someone.
+
 ## Run the test manually
 
 There's no separate test file for this page. See [the API reference screenshot test](/showcase-site/doc-detective/api-reference-test#run-the-test-manually) and [the doodle test](/showcase-site/doc-detective/doodle-test#run-the-test-manually) for how to run each comparison locally.

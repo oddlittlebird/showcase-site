@@ -11,7 +11,12 @@ My AI coding assistant spent days confidently describing a test that wasn't actu
 
 ## Picking a target that actually changes
 
-I didn't want to reinvent the wheel, so I built on two existing image tests: the [API reference test](/showcase-site/doc-detective/api-reference-test) and the [doodle test](/showcase-site/doc-detective/doodle-test). Claude Code suggested pairing the API reference test with the [responsive screenshot test](/showcase-site/doc-detective/responsive-test) instead. That probably would have worked, but I wanted to isolate the doodle specifically. My API sample won't change. Google's doodle definitely will.
+I didn't want to reinvent the wheel, so I built on two existing image tests: 
+- the [API reference test](/showcase-site/doc-detective/api-reference-test)
+and
+- the [doodle test](/showcase-site/doc-detective/doodle-test)
+
+Claude Code suggested pairing the API reference test with the [responsive screenshot test](/showcase-site/doc-detective/responsive-test) instead. That probably would have worked, but I wanted to isolate the doodle specifically. My API sample won't change very often, and never without my actions. Google's doodle definitely will.
 
 That distinction turned out to matter more than I expected.
 
@@ -19,11 +24,13 @@ That distinction turned out to matter more than I expected.
 
 As we worked, Claude Code kept talking about the doodle test as if it changed every day. It hadn't noticed that the test wasn't actually updating on days Google wasn't running an animated doodle.
 
-I suspected — and it confirmed — why: the old test cropped the screenshot to a specific element, `#hplogo`, before saving it. That element only exists on days Google is running a special doodle. On an ordinary day, the crop target isn't there, the step fails, and the run produces nothing. Not a red badge, not an error anyone would see. Just silence.
+I suspected — and it confirmed — why: the old test cropped the screenshot to a specific element, `#hplogo`, before saving it. That element only exists on days Google is running a special doodle. On an ordinary day, the crop target isn't there, the step fails, and the run produces nothing. No red badge, no error thrown. Just silent, invisible failure.
 
-Once I pointed that out, Claude Code checked the dates on the doodle images already committed to the repo and started investigating from there. The evidence was sitting in plain sight: multi-day gaps in the commit history, days at a time with no update, because the crop target simply wasn't there to find. Claude Code's live inspection of Google's homepage confirmed it — no `#hplogo`, no `#lga`, no stable selector of any kind on a plain-logo day, just obfuscated, build-specific class names.
+Once I pointed that out, Claude Code checked the dates on the doodle images already committed to the repo and started investigating from there. The evidence was sitting in plain sight: multi-day gaps in the commit history, days at a time with no update, because the crop target simply wasn't there to find. Claude Code's live inspection of Google's homepage confirmed it: no `#hplogo`, and no fallback either. `#lga`, an older, once-standard Google logo-container ID, wasn't there. Just obfuscated, build-specific class names, no stable selector of any kind on a plain-logo day.
 
-The fix was to stop cropping. The test now captures the full page at a fixed viewport instead of a specific element, so it doesn't depend on anything existing that might not be there.
+Claude Code's first suggestion was to stop cropping and just capture the full page. I countered: could we crop it after the fact instead, or use a narrower viewport? I didn't want my Google account photo or bookmarks bar showing up in a screenshot on a public site.
+
+Claude Code checked, and it turned out not to matter — CI runs in a fresh, unauthenticated browser session, so there's no account or bookmarks to leak in the first place. We went with the full page, uncropped, at a fixed viewport instead of a specific element, so it doesn't depend on anything existing that might not be there.
 
 That's a real shortcoming in AI: it only notices what you tell it to. It means we still need to be the observant ones, watching for things that aren't behaving as expected, and the imaginative ones, describing the edge cases worth checking in the first place.
 
@@ -40,6 +47,8 @@ A screenshot step can take `maxVariation`, a threshold for how much of the image
 That third mode is what both tests use now. The doodle screenshot compares against its reference image at a 10% threshold. Most days, nothing crosses it. On doodle days, it does, and the reference image updates. The API reference screenshot got the same treatment at a tighter 2% threshold, since that page should barely ever change — a comparison flag there is a much stronger signal.
 
 One more detail worth knowing if you use this yourself: exceeding `maxVariation` doesn't fail the test. It reports WARNING. That's a deliberate severity choice in Doc Detective, not a gap in my setup — "this looks different" is information, not automatically breakage.
+
+It didn't occur to Claude Code that a WARNING which can't redden a badge is also a WARNING nobody would ever see. I had to ask directly: if this doesn't fail and doesn't show up anywhere, how would I actually find out it happened? Once I asked, the fix was easy — both workflows now open, or comment on, a GitHub issue when a comparison exceeds its threshold. But the question had to come from me first.
 
 ## The investigation found a second bug
 

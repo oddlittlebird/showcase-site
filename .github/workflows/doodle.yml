@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   update-doodle:
@@ -71,6 +72,20 @@ jobs:
           git diff --staged --quiet || git commit -m "chore: update daily Google doodle"
           git pull --rebase origin main
           git push
+
+      - name: Notify on visual drift
+        if: steps.parse_results.outputs.exceeded == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="Doodle screenshot exceeded maxVariation threshold"
+          EXISTING=$(gh issue list --repo "$GITHUB_REPOSITORY" --search "$TITLE in:title" --state open --json number --jq '.[0].number // empty')
+          BODY="Doodle screenshot comparison exceeded its maxVariation threshold. Variation: ${{ steps.parse_results.outputs.variation }} (threshold: ${{ steps.parse_results.outputs.maxVariation }}). See the [doodle test page](https://oddlittlebird.github.io/showcase-site/doc-detective/doodle-test) for the current screenshot. Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --repo "$GITHUB_REPOSITORY" --body "$BODY"
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body "$BODY"
+          fi
 
       - name: Fail workflow if doodle test failed
         if: always()
