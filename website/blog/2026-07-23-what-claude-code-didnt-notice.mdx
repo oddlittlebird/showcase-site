@@ -1,0 +1,70 @@
+---
+slug: what-claude-code-didnt-notice
+title: "What Claude Code didn't notice"
+authors: [diana]
+tags: [workflow]
+---
+
+My AI coding assistant spent days confidently describing a test that wasn't actually running. Here's how I caught it — and what that says about who still needs to be doing the noticing.
+
+{/* truncate */}
+
+## Picking a target that actually changes
+
+I didn't want to reinvent the wheel, so I built on two existing image tests: the [API reference test](/showcase-site/doc-detective/api-reference-test) and the [doodle test](/showcase-site/doc-detective/doodle-test). Claude Code suggested pairing the API reference test with the [responsive screenshot test](/showcase-site/doc-detective/responsive-test) instead. That probably would have worked, but I wanted to isolate the doodle specifically. My API sample won't change. Google's doodle definitely will.
+
+That distinction turned out to matter more than I expected.
+
+## The bug Claude Code didn't notice
+
+As we worked, Claude Code kept talking about the doodle test as if it changed every day. It hadn't noticed that the test wasn't actually updating on days Google wasn't running an animated doodle.
+
+I suspected — and it confirmed — why: the old test cropped the screenshot to a specific element, `#hplogo`, before saving it. That element only exists on days Google is running a special doodle. On an ordinary day, the crop target isn't there, the step fails, and the run produces nothing. Not a red badge, not an error anyone would see. Just silence.
+
+Once I pointed that out, Claude Code checked the dates on the doodle images already committed to the repo and started investigating from there. The evidence was sitting in plain sight: multi-day gaps in the commit history, days at a time with no update, because the crop target simply wasn't there to find. Claude Code's live inspection of Google's homepage confirmed it — no `#hplogo`, no `#lga`, no stable selector of any kind on a plain-logo day, just obfuscated, build-specific class names.
+
+The fix was to stop cropping. The test now captures the full page at a fixed viewport instead of a specific element, so it doesn't depend on anything existing that might not be there.
+
+That's a real shortcoming in AI: it only notices what you tell it to. It means we still need to be the observant ones, watching for things that aren't behaving as expected, and the imaginative ones, describing the edge cases worth checking in the first place.
+
+## What the test actually does now
+
+With the crop gone, the test needed a real comparison mechanism, which is the actual point of Test #5: Doc Detective's `maxVariation` option.
+
+A screenshot step can take `maxVariation`, a threshold for how much of the image (0 to 1, as a fraction of pixels) is allowed to differ from the image already saved at that path, and `overwrite`, which decides what happens to that saved image. There are three modes, and they're less alike than they sound:
+
+- `"true"` replaces the file every run and never compares anything.
+- `"false"` captures once, then skips every later run outright, no comparison at all.
+- `"aboveVariation"` is the only mode that compares every run: it diffs the new capture against the saved one, and only replaces the saved image if the difference crosses the threshold.
+
+That third mode is what both tests use now. The doodle screenshot compares against its reference image at a 10% threshold. Most days, nothing crosses it. On doodle days, it does, and the reference image updates. The API reference screenshot got the same treatment at a tighter 2% threshold, since that page should barely ever change — a comparison flag there is a much stronger signal.
+
+One more detail worth knowing if you use this yourself: exceeding `maxVariation` doesn't fail the test. It reports WARNING. That's a deliberate severity choice in Doc Detective, not a gap in my setup — "this looks different" is information, not automatically breakage.
+
+## The investigation found a second bug
+
+Digging into why the doodle test was failing silently turned up something else: Doc Detective's CLI exits `0` no matter what happens in the test. Claude Code confirmed it directly, running a test it knew would fail on a bad URL and getting a clean exit code back anyway. There's no flag in the current version to change that.
+
+That mattered here because every workflow on this site checks for failure with a pattern like `|| echo "failed=true"`, which depends on a non-zero exit code that, it turns out, never comes. I had Claude Code rewrite the workflows this test touches to read Doc Detective's own JSON results file directly instead of trusting the exit code, and it flagged the same fix as still needed for the rest of the site's workflows, since they're all quietly making the same assumption.
+
+That was a fun find. I don't usually get to be this hands-on with testing. I filed it upstream as [doc-detective/doc-detective#674](https://github.com/doc-detective/doc-detective/issues/674).
+
+## Writing the page took more rounds than the test did
+
+When it came time to write up the test page itself, Claude Code dutifully drafted everything it had observed while we worked, the crop bug, the exit-code bug, the whole investigation, right there on the page.
+
+Except no. Like an overeager intern, it got lost in the details. Every test page on this site follows the same shape: why it matters, the latest result, how it works, what makes it fail, how to run it yourself. That consistency is the point. A migration story about a bug that no longer exists doesn't belong in a page explaining what the test currently does — it belongs here, in a post, where the history is the content instead of noise on top of it.
+
+It took a few more rounds of edits before the page said only what it needed to say.
+
+Again: human input. AI-assisted workflows are genuinely useful, but they're fragile, and they still need someone deciding what belongs on the page and what belongs in the commit history.
+
+## Is this slop?
+
+Which brings me to this post. I'm skeptical of the "60% of long-form LinkedIn content is AI slop" stat that's been going around, mostly because the so-called AI detectors behind it have an atrociously high false-positive rate. But it did get me wondering: does this post count?
+
+I wrote it with the help of an LLM. The test I'm writing about was built with one too. But the ideas are mine. This was collaborative, and I was in the driver's seat the whole time. Would this article add to the AI slop stat? What if I threw in a typo or twoe? Maybe a double  space?
+
+Either way, I'll keep building these Doc Detective tests as long as I keep coming up with testing ideas. This one is #5 on a list of 11 — so far.
+
+I'm open to suggestions if you have any ideas, network!
