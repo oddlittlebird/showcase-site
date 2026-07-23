@@ -1,0 +1,41 @@
+---
+slug: the-parts-of-my-pipeline-that-think-and-the-parts-that-dont
+title: "The parts of my pipeline that think, and the parts that don't"
+authors: [diana]
+tags: [workflow]
+---
+
+I've had three custom Claude Code skills and a CLAUDE.md file running in this pipeline for weeks. Both live in the repo itself, not on my local machine. For the specifics of how they work, see [Skills](/showcase-site/agents-and-skills/skills) and [CLAUDE.md](/showcase-site/agents-and-skills/claude-md). This post is about something those pages don't cover: why I reach for one over the other, and what each one is actually buying me.
+
+{/* truncate */}
+
+## The deterministic layer
+
+The first thing I added to this pipeline were linters: Vale, codespell, Lychee. All three run on every pull request. Same input, same output, every time. That's what deterministic means here. They catch style violations, misspellings, and dead links, at the last possible moment, right before something merges. I don't think about them day to day. They just run.
+
+## The non-deterministic (AI) layer
+
+CLAUDE.md rules work alongside the linters, but they enforce correctness a different way. A linter matches a pattern. CLAUDE.md gives Claude Code a judgment call to make, and judgment calls don't come back identical every time the way a regex match does.
+
+Right now, there are two rules in CLAUDE.md:
+
+- When I change anything the pipeline overview page describes, CLAUDE.md tells Claude Code to check that `pipeline.md`, [How I built this](/showcase-site/how-i-built-this), and this repo's README still describe it accurately, and fix whichever one drifted.
+- When I add a new Doc Detective test page, CLAUDE.md tells Claude Code to match the heading structure the other pages in that section already use, rather than inventing a new shape.
+
+Both rules exist because I got burned once. An external reader (not Claude) found the pipeline page undercounting its own workflows and Vale rules. Writing the second rule, I found a live example of the same kind of drift myself: one test page was missing its own title heading, and nobody had noticed. No linter catches either of those. They're not typos. They're a claim quietly going stale.
+
+## The efficiency layer
+
+The skills don't enforce anything. They save time. Three commands, three chores I used to do by hand:
+
+- `/new-post` scaffolds a blog post with the slug, title, and frontmatter already filled in.
+- `/check` runs my linters locally, so I see what the PR check would catch before I open the PR, not after.
+- `/start` boots my local dev server, and checks first so I don't end up with two running by accident.
+
+None of these skills are impressive engineering. They just remove friction.
+
+## What I don't know yet
+
+Here's the honest gap: I don't know whether the skills or the CLAUDE.md rules save me tokens, as opposed to time. A skill runs a fixed set of steps. A CLAUDE.md rule asks Claude Code to notice something and decide what to do about it, which is a different kind of expensive. I haven't measured either one, and I wouldn't bet confidently on the answer in either direction.
+
+What's saving you time in your own process right now? A skill, an agent rule, something else? I'd like to know.
