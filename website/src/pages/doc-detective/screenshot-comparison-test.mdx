@@ -2,6 +2,7 @@
 sidebar_position: 6
 title: Screenshot comparison test
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import VariationBadge from '@site/src/components/VariationBadge';
 
 # Screenshot comparison test
@@ -20,9 +21,13 @@ Both comparisons use the same mechanism: a reference image that only gets replac
 
 <VariationBadge dataFile="/doc-detective/api-reference-variation.json" label="API reference" />
 
+<img src={`${useBaseUrl('/doc-detective/api-reference-baseline.png')}?v=${Date.now()}`} alt="Current reference image for the API reference comparison" style={{maxWidth: '500px', width: '100%', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '0.5rem'}} />
+
 **Doodle** — content that's supposed to change, at a 10% threshold. Most days the reference image stays untouched because the plain logo hasn't moved; on days Google ships a new doodle, the difference is large enough to replace it. Neither outcome is a failure.
 
 <VariationBadge dataFile="/doc-detective/doodle-variation.json" label="Doodle" />
+
+<img src={`${useBaseUrl('/doc-detective/doodle.png')}?v=${Date.now()}`} alt="Current reference image for the doodle comparison" style={{maxWidth: '500px', width: '100%', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '0.5rem'}} />
 
 ## How the test works
 
