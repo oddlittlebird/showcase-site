@@ -57,14 +57,14 @@ and runs the following:
    size.
 {/* step {"runShell": {"command": "bash scripts/check-portfolio-assets.sh", "exitCodes": [0]}} */}
 
-If a file is moved or deleted, `checkLink` fails. If a file is replaced with
+If a file is moved or deleted, then `checkLink` fails. If a file is replaced with
 something corrupted, truncated, or empty (a failure that still returns HTTP
-200), the shell script fails instead. Either way, [the badge](#latest-result)
+200), then the shell script fails instead. Either way, [the badge](#latest-result)
 turns red.
 
 ## Run the test manually
 
-If you clone this repo, you can run the test locally against the live site.
+If you clone this repo, then you can run the test locally against the live site.
 No local server is needed, because this test hits the deployed URLs directly.
 
 ```bash
@@ -72,7 +72,7 @@ npm install -g doc-detective
 doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/portfolio-link-test.mdx
 ```
 
-### Run the test on GitHub Actions
+## Run the test on GitHub Actions
 
 The test runs automatically every day and on every push to main that touches
 this page or the portfolio page. To trigger it on demand:
