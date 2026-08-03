@@ -40,7 +40,7 @@ jobs:
         run: npx wait-on http://localhost:3000/showcase-site/docs/pipeline
 
       - name: Install Doc Detective
-        run: npm install -g doc-detective@4.29.1
+        run: npm install -g doc-detective@4.37.1
 
       - name: Run tests
         run: doc-detective --config doc-detective/config.json --input doc-detective/tests || true
