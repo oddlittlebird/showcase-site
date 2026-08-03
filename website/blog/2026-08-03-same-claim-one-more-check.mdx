@@ -1,0 +1,34 @@
+---
+slug: same-claim-one-more-check
+title: Same claim, one more check
+authors: [diana]
+tags: [workflow]
+---
+
+I had a Doc Detective test planned for months: point `checkLink` at the work samples on my [portfolio page](/showcase-site/portfolio), same as I do for every other link on this site with [Lychee](https://lychee.cli.rs/). Then I sat down to actually build it, and realized the plan didn't hold up.
+
+{/* truncate */}
+
+## The plan that sounded right until I looked harder
+
+The idea came from a list I'd sketched out early on: ten-plus Doc Detective showcases, each demonstrating a different capability. One line on that list read almost exactly like this: portfolio link check, `checkLink` on the work samples, blog post about running two link-checking tools side by side. It sounded like a clean parallel. Lychee already crawls every link on this site on a schedule; a Doc Detective test doing the same thing on a smaller, curated set felt like an obvious complement.
+
+Then I went to actually build it and pulled up `portfolio.mdx` to see what I'd be pointing `checkLink` at. Every work sample is a static PDF or markdown file sitting in this repo's own `static/portfolio/` folder. Nothing is external link, so there's nothing that can change the way a link to someone else's site can.
+
+## Why that mattered
+
+Lychee's job is asking one question of every link on this site: does this URL return a status code that I'm willing to accept? It doesn't care what's behind the link, only whether a server answered. For the portfolio's work samples, that question was already being asked, on the same links, on the same schedule. Writing a `checkLink` test that asked it again would have meant CI time spent re-confirming something already confirmed. Not a wrong test, but a redundant one.
+
+Redundant tests are their own kind of quiet failure. They pass reliably, add a badge to a page, and let you feel like you've covered something you haven't actually added coverage for. If I'd shipped the plain version, then I'd have a page that looked exactly as thorough as the one I ended up with.
+
+## The question Lychee can't ask
+
+A status code doesn't tell you what's actually behind a link. A PDF that got corrupted mid-upload, a file that got accidentally overwritten with zero bytes, a misconfigured redirect that serves a generic error page at a real 200, all of those pass Lychee's check without complaint. The response came back. The number was fine. Lychee has no way to open the file it just confirmed exists.
+
+That gap is the one worth testing, so that's what the [portfolio link check](/showcase-site/doc-detective/portfolio-link-test) actually does. It still runs `checkLink` against each work sample, six of them, the same claim Lychee makes. Then it goes one step further: a shell script fetches each file and checks whether it's real. For the PDFs, that means reading the first four bytes and confirming they spell `%PDF`, plus a minimum file size well below what any of the actual documents weigh in at, so a truncated or emptied file can't sneak through. For the CockroachDB tutorial, it's a markdown heading and its own size floor. None of that is possible from a status code alone.
+
+## What "two tools, different jobs" actually looks like
+
+I'd been picturing two tools running the same check on different scopes; Lychee everywhere, Doc Detective on a smaller set. What I built instead is two tools running different checks on the same links: Lychee asks whether the door opens, Doc Detective checks whether there's a room behind it. The overlap in scope, both tools do touch these six files, is fine. It's the overlap in *question* that would have been the problem.
+
+The test that's live now doesn't prove more coverage exists on this site than actually does. It proves one specific thing an existing tool structurally can't: that a 200 response and a real, intact document are not the same fact, and a portfolio page is exactly the kind of place where nobody notices when they quietly stop being the same fact.
