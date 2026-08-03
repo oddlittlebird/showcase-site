@@ -10,6 +10,7 @@ on:
       - llms.txt verification test
       - Count llms.txt headings
       - API reference screenshot test
+      - Portfolio link check
     types:
       - completed
   workflow_dispatch:

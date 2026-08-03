@@ -1,0 +1,82 @@
+---
+sidebar_position: 7
+title: Portfolio link check
+---
+import StatusBadge from '@site/src/components/StatusBadge';
+
+# Portfolio link check
+
+This page shows the live result of a Doc Detective test that verifies the
+work samples linked from the [portfolio page](/showcase-site/portfolio) are
+still there, and still real documents, not just URLs that happen to return
+200.
+
+## Why this matters
+
+This site already runs Lychee across every link on every page, including the
+portfolio's. So why does a portfolio-specific test exist too? Because Lychee
+and Doc Detective check different claims.
+
+Lychee asks: does this URL return an acceptable HTTP status code? That
+catches link rot: a moved page, a deleted file, an incorrectly typed URL. It
+doesn't catch a file that resolves with a 200 but isn't actually the document
+it claims to be: a corrupted upload, a PDF accidentally overwritten with an
+empty file, or a redirect page that returns 200 with the wrong content. A
+"resources," "case studies," or "work samples" page can accumulate exactly
+this kind of quiet failure: the link works, but what's behind it doesn't.
+
+This test uses Doc Detective's `checkLink` action to confirm each portfolio
+work sample resolves, the same claim Lychee checks. Then it goes further: a
+shell script fetches each file and confirms it's a real, complete document,
+checking the PDF file signature and a minimum byte size for each PDF, and a
+markdown heading and minimum size for the tutorial file. That's the check
+Lychee has no way to perform.
+
+## Latest result
+
+<StatusBadge statusFile="/doc-detective/portfolio-link-status.json" label="Portfolio link check" />
+
+## How the test works
+
+The test is embedded directly in this page's source as Doc Detective steps
+and runs the following:
+
+1. Run `checkLink` against each of the six portfolio work-sample files and
+   confirm each returns HTTP 200.
+{/* step {"checkLink": {"url": "https://oddlittlebird.github.io/showcase-site/portfolio/Add%20a%20query%20variable%20_%20Grafana%20Labs.pdf", "statusCodes": [200]}} */}
+{/* step {"checkLink": {"url": "https://oddlittlebird.github.io/showcase-site/portfolio/Value%20mappings%20_%20Grafana%20Labs.pdf", "statusCodes": [200]}} */}
+{/* step {"checkLink": {"url": "https://oddlittlebird.github.io/showcase-site/portfolio/Find%20HTML%20Selector%20_%20Macrometa.pdf", "statusCodes": [200]}} */}
+{/* step {"checkLink": {"url": "https://oddlittlebird.github.io/showcase-site/portfolio/Manage%20Click%20Interaction%20Policies%20_%20Macrometa.pdf", "statusCodes": [200]}} */}
+{/* step {"checkLink": {"url": "https://oddlittlebird.github.io/showcase-site/portfolio/Integrate%20Fingerprint%20as%20First%20Party%20_%20Macrometa.pdf", "statusCodes": [200]}} */}
+{/* step {"checkLink": {"url": "https://oddlittlebird.github.io/showcase-site/portfolio/cockroachdb-tutorial.md", "statusCodes": [200]}} */}
+
+2. Run a shell script that fetches each of the same six files and confirms
+   each is a real, complete document: the five PDFs must start with the
+   `%PDF` file signature and clear a minimum byte size, and the markdown
+   tutorial must contain a top-level heading and clear its own minimum byte
+   size.
+{/* step {"runShell": {"command": "bash scripts/check-portfolio-assets.sh", "exitCodes": [0]}} */}
+
+If a file is moved or deleted, then `checkLink` fails. If a file is replaced with
+something corrupted, truncated, or empty (a failure that still returns HTTP
+200), then the shell script fails instead. Either way, [the badge](#latest-result)
+turns red.
+
+## Run the test manually
+
+If you clone this repo, then you can run the test locally against the live site.
+No local server is needed, because this test hits the deployed URLs directly.
+
+```bash
+npm install -g doc-detective
+doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/portfolio-link-test.mdx
+```
+
+## Run the test on GitHub Actions
+
+The test runs automatically every day and on every push to main that touches
+this page or the portfolio page. To trigger it on demand:
+
+1. Go to the **Actions** tab in the GitHub repository.
+2. Select **Portfolio link check**.
+3. Click **Run workflow**.

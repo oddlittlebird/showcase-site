@@ -78,7 +78,7 @@ do not exist as HTTP endpoints Lychee can reach.
 
 ### GitHub Actions — the pipeline itself
 
-Ten workflows wire the tools together. Path filtering keeps each workflow
+Eleven workflows wire the tools together. Path filtering keeps each workflow
 focused: a CSS change does not trigger a lint run; a workflow change does not
 trigger a doc test. The filters reduce noise and make failures meaningful.
 
@@ -89,20 +89,25 @@ The four gates described above:
 - `links.yml` — Lychee on push and weekly schedule
 - `test.yml` — Doc Detective on push to main, filtered to docs and test files
 
-Five more granular checks, each a separate Doc Detective or verification job:
+Six more granular checks, each a separate Doc Detective or verification job:
 
 - `llms-txt.yml` — verifies `llms.txt` against the live site on push to main
 - `llms-txt-headings.yml` — counts `llms.txt` headings and commits the result as JSON
 - `api-reference.yml` — Doc Detective screenshot test against the API reference page
 - `responsive-test.yml` — Doc Detective screenshot test across viewport sizes
 - `doodle.yml` — regenerates a daily doodle on a cron schedule
+- `portfolio-link-test.yml` — Doc Detective `checkLink` plus a content check
+  (PDF file signature, minimum byte size) against the portfolio's linked work
+  samples, catching corrupted or emptied files that a plain link check like
+  Lychee's would still report as passing
 
 And the deploy itself:
 
 - `deploy.yml` — Docusaurus build and GitHub Pages deployment, triggered on
   push to main and by `workflow_run` completion of `doodle.yml`,
-  `llms-txt.yml`, `llms-txt-headings.yml`, and `api-reference.yml`, so the
-  site republishes once all upstream checks have run
+  `llms-txt.yml`, `llms-txt-headings.yml`, `api-reference.yml`, and
+  `portfolio-link-test.yml`, so the site republishes once all upstream checks
+  have run
 
 ### OpenAPI 3.1 — API documentation
 
@@ -129,7 +134,7 @@ worse than no file, because an agent acts on it with confidence.
 ## Repository structure
 
 ```
-.github/workflows/       Ten CI/CD workflow definitions
+.github/workflows/       Eleven CI/CD workflow definitions
 .vale/styles/Diana/      Five custom Vale rules
 doc-detective/           Doc Detective config and test specs
 website/docs/            Documentation pages
