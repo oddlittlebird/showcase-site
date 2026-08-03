@@ -1,0 +1,72 @@
+name: Portfolio link check
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'website/src/pages/doc-detective/portfolio-link-test.mdx'
+      - 'website/src/pages/portfolio.mdx'
+      - 'website/static/portfolio/**'
+      - 'scripts/check-portfolio-assets.sh'
+  schedule:
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  doc-detective:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Doc Detective
+        run: npm install -g doc-detective@4.29.1
+
+      - name: Run tests
+        run: doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/portfolio-link-test.mdx || true
+
+      - name: Parse test results
+        id: parse_results
+        if: always()
+        run: |
+          # doc-detective's CLI exits 0 regardless of pass/fail, so read the
+          # actual result from its own JSON report instead of the exit code.
+          RESULTS=$(ls -t testResults-*.json 2>/dev/null | head -1)
+          if [ -z "$RESULTS" ]; then
+            echo "failed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          FAIL_COUNT=$(jq '.summary.tests.fail' "$RESULTS")
+          FAILED="false"
+          if [ "$FAIL_COUNT" != "0" ]; then FAILED="true"; fi
+          echo "failed=$FAILED" >> "$GITHUB_OUTPUT"
+
+      - name: Record portfolio link check status
+        if: always()
+        run: |
+          mkdir -p website/static/doc-detective
+          status="pass"
+          if [ "${{ steps.parse_results.outputs.failed }}" = "true" ]; then status="fail"; fi
+          timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          printf '{"status": "%s", "timestamp": "%s"}\n' "$status" "$timestamp" > website/static/doc-detective/portfolio-link-status.json
+
+      - name: Commit status file
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add website/static/doc-detective/portfolio-link-status.json
+          git diff --staged --quiet || git commit -m "chore: update portfolio link check status"
+          git pull --rebase origin main
+          git push
+
+      - name: Fail if tests failed
+        if: steps.parse_results.outputs.failed == 'true'
+        run: exit 1
