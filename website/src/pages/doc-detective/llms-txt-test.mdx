@@ -72,10 +72,18 @@ and runs the following:
    [`llms.txt` spec](https://llmstxt.org/) requires.
 {/* step {"runShell": {"command": "curl -sf https://oddlittlebird.github.io/showcase-site/llms.txt | grep -q '^## '", "exitCodes": [0]}} */}
 
-3. Regenerate `llms.txt`'s content from the checked-out template and live
-   repo facts (current Vale rule count and names, current workflow count),
-   and diff that against the live deployed file. Any difference (stale
-   counts, a stale link, a stale tool name) fails the test.
+3. Compare two specific things: the file this step fetches from the live
+   URL (`GET https://oddlittlebird.github.io/showcase-site/llms.txt`,
+   whatever GitHub Pages currently has deployed), against the content
+   `scripts/generate-llms-txt.py` computes fresh, right now, from the exact
+   commit this CI run checked out (not a stored file, not a previous run's
+   output — recomputed from the live `.vale/styles/Diana/` directory and
+   `.github/workflows/` directory on every run). Any difference between
+   those two — stale counts, a stale link, a stale tool name — fails the
+   test. Since a deploy can take a minute or two to finish after a merge,
+   and this step can start running before that deploy has caught up, a
+   first-attempt mismatch retries (up to 10 times, 15 seconds apart) before
+   being treated as real drift rather than a deploy still in flight.
 {/* step {"runShell": {"command": "bash scripts/check-llms-facts.sh", "exitCodes": [0]}} */}
 
 4. Extract every root-relative link inside the live `llms.txt` and confirm
