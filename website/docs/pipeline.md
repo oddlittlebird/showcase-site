@@ -91,8 +91,13 @@ The four gates described above:
 
 Six more granular checks, each a separate Doc Detective or verification job:
 
-- `llms-txt.yml` — verifies `llms.txt` against the live site on push to main
-- `llms-txt-headings.yml` — counts `llms.txt` headings and commits the result as JSON
+- `llms-txt.yml` — verifies `llms.txt` against the live site on push to main:
+  reachability, structure, a full content diff against what
+  `scripts/generate-llms-txt.py` would currently produce, and that every
+  root-relative link inside it still resolves
+- `generate-llms-txt.yml` — regenerates `llms.txt` from a template and live
+  repo facts (Vale rule count and names, workflow count) whenever those facts
+  change, and commits the result; see "Agent-facing documentation" below
 - `api-reference.yml` — Doc Detective screenshot test against the API reference page
 - `responsive-test.yml` — Doc Detective screenshot test across viewport sizes
 - `doodle.yml` — regenerates a daily doodle on a cron schedule
@@ -105,14 +110,14 @@ And the deploy itself:
 
 - `deploy.yml` — Docusaurus build and GitHub Pages deployment, triggered on
   push to main and by `workflow_run` completion of `doodle.yml`,
-  `llms-txt.yml`, `llms-txt-headings.yml`, `api-reference.yml`, and
+  `llms-txt.yml`, `generate-llms-txt.yml`, `api-reference.yml`, and
   `portfolio-link-test.yml`, so the site republishes once all upstream checks
   have run
 
 ### OpenAPI 3.1 — API documentation
 
 The Garden Companion API is documented in `website/static/api/garden.yaml`
-and rendered via Redoc. The spec covers three endpoints, four error responses
+and rendered via Scalar. The spec covers three endpoints, four error responses
 with specific, user-facing error messages, and example responses built from
 original research. The relationship model uses a two-value enum (`beneficial`,
 `harmful`) with a deliberate decision not to include a neutral value — because
@@ -125,6 +130,17 @@ This file and `llms.txt` are the agent-facing layer of the pipeline. They go
 through the same Vale linting, spell checking, and link checking as every
 other content file. They are not exceptions to the pipeline — they are part
 of it.
+
+`llms.txt`'s factual claims (Vale rule count and names, workflow count) are
+no longer hand-typed. `scripts/generate-llms-txt.py` renders them from a
+template plus live repo state, so the numbers can't silently drift the way
+this file's own numbers once did. See
+[the llms.txt verification test](/showcase-site/doc-detective/llms-txt-test)
+for the incident that motivated it. What still requires human judgment (the
+plain-English gloss of what each Vale rule does, which pages are worth
+linking) lives in `scripts/pipeline-facts.json`, hand-maintained on purpose:
+the generator refuses to run if a Vale rule exists with no matching entry
+there, turning a silent gap into a loud build failure.
 
 The central point this site is built to illustrate: machine-readable
 documentation is a formatting problem. Machine-trustworthy documentation is a
