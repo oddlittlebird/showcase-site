@@ -1,6 +1,6 @@
 # Working in this repo
 
-## Keep pipeline.md honest
+## Keep pipeline.md and llms.txt honest
 
 [website/docs/pipeline.md](website/docs/pipeline.md) is the site's agent-facing
 claim about its own pipeline: which tools run, how many workflows exist, how
@@ -25,6 +25,18 @@ Compare both counts against what pipeline.md states in "GitHub Actions — the
 pipeline itself" and "Vale — custom rule authoring." If they don't match,
 fix pipeline.md, not just the count — describe the new/changed workflow or
 rule the same way its siblings are described.
+
+`website/static/llms.txt` states the same two counts and is not hand-edited:
+`scripts/generate-llms-txt.py` renders it from `scripts/llms-txt.template`
+plus live repo state, so the counts themselves can't drift the way
+pipeline.md's once did. After adding or removing a workflow, run
+`python3 scripts/generate-llms-txt.py` — the workflow count updates
+automatically. After adding or removing a Vale rule, add or remove that
+rule's plain-English description in `scripts/pipeline-facts.json` in the
+same change, then run the generator — it refuses to run if a rule exists
+with no matching description, rather than silently shipping an inaccurate
+count. Never hand-edit the generated sections of `llms.txt` directly; a
+manual edit there just gets overwritten the next time the generator runs.
 
 ## Keep Doc Detective test pages consistent
 
