@@ -7,6 +7,10 @@ on:
     paths:
       - 'website/static/llms.txt'
       - 'website/src/pages/doc-detective/llms-txt-test.mdx'
+      - 'scripts/generate-llms-txt.py'
+      - 'scripts/llms-txt.template'
+      - 'scripts/pipeline-facts.json'
+      - 'scripts/check-llms-links.sh'
   schedule:
     - cron: '0 11 * * *'
   workflow_dispatch:

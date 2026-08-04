@@ -1,0 +1,37 @@
+name: Generate llms.txt
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/llms-txt.template'
+      - 'scripts/pipeline-facts.json'
+      - 'scripts/generate-llms-txt.py'
+      - '.github/workflows/**'
+      - '.vale/styles/Diana/**'
+      - 'website/docusaurus.config.ts'
+  schedule:
+    - cron: '0 10 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate llms.txt
+        run: python3 scripts/generate-llms-txt.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add website/static/llms.txt
+          git diff --staged --quiet || git commit -m "chore: regenerate llms.txt from live repo facts"
+          git pull --rebase origin main
+          git push

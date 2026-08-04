@@ -8,7 +8,7 @@ on:
     workflows:
       - Update doodle
       - llms.txt verification test
-      - Count llms.txt headings
+      - Generate llms.txt
       - API reference screenshot test
       - Portfolio link check
     types:

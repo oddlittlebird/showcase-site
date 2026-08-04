@@ -8,3 +8,4 @@ website/.docusaurus/
 doc-detective/testResults-*.json
 /testResults-*.json
 /.doc-detective/
+__pycache__/
