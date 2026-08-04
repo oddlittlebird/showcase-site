@@ -5,7 +5,7 @@ authors: [diana]
 tags: [workflow]
 ---
 
-For six weeks, my site's `llms.txt` told an AI agent my pipeline ran three custom Vale rules. It ran five. The test I'd built specifically to catch that kind of thing kept passing the whole time.
+For seven weeks, my site's `llms.txt` told an AI agent my pipeline ran three custom Vale rules. It ran five. The test I'd built specifically to catch that kind of thing kept passing the whole time.
 
 {/* truncate */}
 
@@ -17,50 +17,94 @@ Three separate, unrelated commits landed between late May and mid-June:
 - **2026-06-04** — I renamed `skill.md` to `pipeline.md`.
 - **2026-06-15** — I added two new Vale rules, `Acronyms.yml` and `Headings.yml`, bringing the total from three to five.
 
-None of those commits touched `llms.txt`. Each one was a correct, complete change to the thing it was actually about — a plugin swap, a file rename, a new lint rule — and none of them had any reason to know that a separate file, in a different part of the repo, was quietly restating facts that had just become wrong. By the time I noticed, `llms.txt` was claiming three Vale rules where there were five, five workflows where there were eleven, still crediting Redoc for a renderer it hadn't used in over two months, and linking to `/docs/skill.md`, a URL that had 404'd since the rename.
+None of those commits touched `llms.txt`. Each one was a correct, complete change to the thing it was actually about: a plugin swap, a file rename, a new lint rule. None of them had any reason to know that a separate file elsewhere in the repo was quietly restating facts that had just become wrong.
 
-Nobody caught any of it, because nobody reads `llms.txt`. That's not a bug, it's the whole design of the file — it exists for an AI agent, not a person, and I'd already written a [post about exactly that asymmetry](/showcase-site/blog/testing-for-machines). Which made it more uncomfortable, not less, that the test I built *because* of that asymmetry didn't catch this either.
+By the time I noticed, `llms.txt` was claiming three Vale rules where there were five, and five workflows where there were eleven. It still credited Redoc for a renderer it hadn't used in over two months. It also linked to `/docs/skill.md`, a URL that had 404'd since the rename.
+
+Nobody caught any of it, because nobody reads `llms.txt`. That's not a bug. It's the whole design of the file: it exists for an AI agent, not a person.
+
+I'd already written a [post about exactly that asymmetry](/showcase-site/blog/testing-for-machines). Which made it more uncomfortable, not less, that the test I built *because* of that asymmetry didn't catch this either.
 
 ## The test that already existed
 
-That earlier post described a real mechanism: a script counts `llms.txt`'s `##` headings, writes the count to a baseline file, and a Doc Detective test compares the live file's heading count against that baseline on every run. If they match, pass. If the live file has drifted from its last known-good state, fail.
+That earlier post described a real mechanism. A script counts `llms.txt`'s `##` headings and writes the count to a baseline file. A Doc Detective test then compares the live file's heading count against that baseline on every run.
 
-It's a reasonable design, and I stand by the reasoning in that post for why I chose it over hardcoding a number. What I didn't realize at the time is what "drift from its last known-good state" actually meant in practice: the baseline *was* the last version of `llms.txt`. Every time the count script ran, it recorded whatever the file currently said, headings and all. So the test wasn't checking "does this file still match reality." It was checking "does this file still match itself." Those are different claims, and `llms.txt` can satisfy the second one perfectly forever while failing the first one from the moment the underlying facts change.
+If they match, pass. If the live file has drifted from its last known-good state, fail.
 
-None of the three commits above added or removed a section heading. They changed a number inside a bullet list, a link target, a tool name in a sentence — content that lives *under* a heading, invisible to a check that only counts how many headings exist. A test built to catch drift was, by construction, blind to the exact shape of drift that happened.
+It's a reasonable design, and I stand by the reasoning in that post for why I chose it over hardcoding a number. What I didn't realize at the time: "drift from its last known-good state" meant the baseline *was* the last version of `llms.txt`. Every time the count script ran, it recorded whatever the file currently said, headings and all.
 
-I'll say directly what I got wrong here, because it's the kind of mistake worth naming rather than smoothing over: I was under the impression, until I sat down and closely re-read the test's own write-up, that it compared `llms.txt`'s heading count against the live page or pages it describes. It doesn't, and never did. It compares the file to a stored copy of a previous version of itself. That's a meaningfully different claim, and the write-up wasn't ambiguous by accident — I just hadn't reread it critically enough to notice which noun "baseline" was quietly doing a lot of work for. Diligence here doesn't mean trusting that a test does what its name suggests. It means rereading the thing closely enough to be sure, especially when an assistant wrote both the test and its own description of what the test does.
+So the test wasn't checking "does this file still match reality." It was checking "does this file still match itself." Those are different claims, and `llms.txt` can satisfy the second one perfectly forever while failing the first one from the moment the underlying facts change.
+
+None of the three commits above added or removed a section heading. Each one changed a number in a bullet list, a link target, or a tool name in a sentence — content that lives *under* a heading. A test built to catch drift was, by construction, blind to the exact shape of drift that happened.
+
+I'll say directly what I got wrong here, because it's worth naming rather than smoothing over. I was under the impression that the test compared `llms.txt`'s heading count against the live page or pages it describes. I didn't catch this until I sat down and closely re-read the test's own write-up.
+
+It doesn't, and never did. It compares the file to a stored copy of a previous version of itself. That's a meaningfully different claim.
+
+The write-up wasn't ambiguous by accident. I just hadn't reread it critically enough to notice which noun "baseline" was doing a lot of work for.
+
+Diligence here doesn't mean trusting that a test does what its name suggests. It means rereading closely enough to be sure, especially when an assistant wrote both the test and its own description of it.
 
 ## Three ways to fix it
 
 Once I saw the actual gap, I looked at three ways to close it:
 
-- **Keep the self-comparison, widen the scope.** Instead of comparing `llms.txt` to its own last version, compare it against the heading count summed across every page it links to. This is the version I considered first, and the one that sounds most obviously right. After all, if the pages `llms.txt` describes change shape, that should show up somewhere. However, it doesn't hold up under the same test that I just described: none of the three drifts changed a heading anywhere on the site either. A tool swap, a file rename, and two new lint rules all landed as prose and link edits, not new sections. Summing across more pages doesn't fix a check that's counting the wrong kind of thing; it just makes the wrong kind of thing noisier, and adds a new failure mode where an unrelated blog post shifts the total and breaks the baseline for no real reason.
+- **Keep the self-comparison, widen the scope.** Instead of comparing `llms.txt` to its own last version, compare it against the heading count summed across every page it links to. This is the option I considered first — it sounds obviously right, since a change in the pages `llms.txt` describes should show up somewhere. But it doesn't hold up under the same test I just described: none of the three drifts changed a heading anywhere on the site. A tool swap, a file rename, and two new lint rules all landed as prose and link edits, not new sections. Summing across more pages doesn't fix a check that's counting the wrong kind of thing. It just makes the noise louder. An unrelated blog post can shift the total and break the baseline for no real reason.
 
-- **Drop headings entirely, check the actual claims.** `llms.txt`'s riskiest content isn't its structure, it's a small number of specific factual assertions: how many Vale rules exist, how many workflows exist, which tool renders the API reference. Those are all things I can compute directly from the repository, the same way `pipeline.md` already gets self-checked (`ls .vale/styles/Diana | wc -l`, `ls .github/workflows | wc -l`) per a habit I'd already written into this repo's `CLAUDE.md` after an external collaborator caught `pipeline.md` undercounting its own workflows months earlier. Comparing the live file against a fact computed fresh from the current repo state, rather than against any stored snapshot, is the only design of the three that would have caught all three incidents, because it doesn't depend on the file itself ever having been right in the first place.
+- **Drop headings entirely, check the actual claims.** `llms.txt`'s riskiest content isn't its structure. It's a small number of specific facts: how many Vale rules exist, how many workflows exist, which tool renders the API reference. Those are all things I can compute directly from the repository, the same way `pipeline.md` already gets self-checked (`ls .vale/styles/Diana | wc -l`, `ls .github/workflows | wc -l`). I'd already written that habit into this repo's `CLAUDE.md`, after an external collaborator caught `pipeline.md` undercounting its own workflows months earlier. Comparing the live file against a freshly computed fact, rather than a stored snapshot, catches all three incidents. It's the only one of the three designs that would. That's because it doesn't depend on the file ever having been right to begin with.
 
-- **Do nothing, accept the gap.** Worth naming as an option even though I didn't take it: `llms.txt` is not load-bearing infrastructure, and a slightly stale index file describing a portfolio site is a low-stakes place to under-invest. I didn't take this option because the whole thesis of this pipeline is that a well-structured file with wrong information is worse than no file. Leaving that thesis unenforced on the one file written specifically to demonstrate it felt like the wrong place to shrug.
+- **Do nothing, accept the gap.** Worth naming as an option even though I didn't take it: `llms.txt` isn't load-bearing infrastructure. A slightly stale index file on a portfolio site is a low-stakes place to under-invest. I didn't take this option because the whole thesis of this pipeline is that a well-structured file with wrong information is worse than no file. Leaving that thesis unenforced on the one file written specifically to demonstrate it felt like the wrong place to slack off.
 
 I went with the second option.
 
 ## What actually shipped
 
-`website/static/llms.txt` is no longer typed by hand. `scripts/generate-llms-txt.py` renders it from a template plus whatever the repository currently contains — the Vale rule count and names come from listing `.vale/styles/Diana/`, the workflow count comes from listing `.github/workflows/`. Content that isn't a fact you can list — what each Vale rule actually does in plain English, which pages are worth linking, the bio — stays hand-written in `scripts/pipeline-facts.json` and the template, on purpose. Some parts of a file like this should keep requiring a human.
+`website/static/llms.txt` is no longer typed by hand. `scripts/generate-llms-txt.py` renders it from a template plus whatever the repository currently contains. The Vale rule count and names come from listing `.vale/styles/Diana/`; the workflow count comes from listing `.github/workflows/`.
 
-The part I'm more interested in than the generation itself: the generator refuses to run if a Vale rule exists with no matching description in the facts file. Add a sixth rule and forget to describe it, and nothing gets silently published with five rules listed instead of six — the build just stops, with a message telling you exactly which file needs an entry. That's the actual fix for what happened in May and June. It doesn't rely on remembering to update a second file when the first one changes. It makes forgetting loud instead of silent.
+Content that isn't a fact you can list stays hand-written in `scripts/pipeline-facts.json` and the template, on purpose. That includes what each Vale rule does in plain English, which pages are worth linking, and the bio. Some parts of a file like this should keep requiring a human.
 
-Testing the new file against the live site turned up a second gap I hadn't gone looking for: this site already runs [Lychee](https://lychee.cli.rs/) across every link on every page, `llms.txt` included, and it never once flagged the dead `/docs/skill.md` link across two months and roughly nine scheduled runs. Its config resolves root-relative paths against a `localhost` base specifically so Docusaurus routes don't get treated as broken external URLs — and that same trick means every root-relative link on the site, not just this one, is invisible to it by construction. Rather than touch a site-wide config that's doing something deliberate for a reason, the new test includes a small, narrowly scoped check: extract every root-relative link inside `llms.txt` and confirm each one resolves. It's the same shape of decision as [an earlier test on this site](/showcase-site/blog/same-claim-one-more-check) that does the same narrow-scope-on-purpose thing for a different reason.
+Here's the part I'm more interested in than the generation itself. The generator refuses to run if a Vale rule has no matching description in the facts file. Add a sixth rule and forget to describe it, and nothing gets silently published with five rules listed instead of six.
 
-## The bug in the fix
+The build just stops, with a message telling you exactly which file needs an entry. That's the actual fix for what happened in May and June.
 
-The rebuilt test failed on its actual first run after merging, and for a moment I thought I'd shipped a broken generator. I hadn't. The push-triggered workflow started two seconds after the merge; GitHub Pages didn't finish publishing the new content for another minute and a half. The new check compares a live fetch against content it regenerates fresh from the exact commit it just checked out — and those two things aren't symmetric the way the old baseline check's two sides were. The old test compared two things that were both fetched live, so they always agreed with each other even when both were stale. My replacement compares something that lags behind a deploy against something that never does, and right after any merge that changes the facts, there's a real window where a mismatch means "the deploy hasn't caught up" rather than "the content is wrong."
+It doesn't rely on remembering to update a second file when the first one changes. It makes forgetting loud instead of silent.
 
-I fixed it with a bounded retry: up to ten attempts, fifteen seconds apart, before a mismatch counts as real. It's not an elegant fix. It's an honest one — it names the actual race instead of papering over it with a longer timeout and hoping. I'd rather ship the test that catches its own timing bug in the first real run than one that looked clean in every run I happened to test locally.
+Testing the new file against the live site turned up a second gap I hadn't gone looking for. This site already runs [Lychee](https://lychee.cli.rs/) across every link on every page, `llms.txt` included. It never once flagged the dead `/docs/skill.md` link, across two months and roughly nine scheduled runs.
 
-## Does this scale
+Its config resolves root-relative paths against a `localhost` base, so Docusaurus routes don't get treated as broken external URLs. That same trick means every root-relative link on the site, not just this one, is invisible to it by construction.
 
-The generator runs as its own workflow, triggered by changes to the specific files that feed it, plus a daily schedule as a backstop — not folded into the main site build. Every other content-generating workflow on this site already works this way, and I kept the pattern rather than reinventing it: `doodle.yml`, `api-reference.yml`, and the rest are all decoupled from `deploy.yml`, wired together only through `workflow_run` triggers after each one succeeds. The reason is blast radius. If generation ran as a step inside `npm run build`, a bug in the generator — a bad template placeholder, an unhandled edge case in the fact-counting — could fail the entire site's deploy, not just one small status badge. A typo in a file almost nobody reads shouldn't be able to take the whole site offline. Keeping it as a separate job means the worst case of a broken generator is a red badge on one page, which is exactly the size of problem it actually is.
+Rather than touch a site-wide config that's doing something deliberate for a reason, the new test includes a small, narrowly scoped check. It extracts every root-relative link inside `llms.txt` and confirms each one resolves. It's the same shape of decision as [an earlier test on this site](/showcase-site/blog/same-claim-one-more-check) that does the same narrow-scope-on-purpose thing for a different reason.
 
-That's also the honest limit of how far this scales. Every new fact `llms.txt` states is either derivable from the filesystem, in which case the generator can absorb it and this whole class of drift goes away, or it requires a human judgment call, in which case it lives in `pipeline-facts.json` and depends on someone remembering to update it — the exact failure mode this post is about, just narrowed down to a smaller, named surface instead of an entire file. The fix doesn't eliminate the need to remember. It shrinks the thing you have to remember from "this whole file describes a system that keeps changing" down to "this one JSON file describes five specific rules," and it turns forgetting into a build failure instead of a two-month silence.
+## Does this scale?
+
+The generator runs as its own workflow, triggered by changes to the specific files that feed it, plus a daily schedule as a backstop. It's not folded into the main site build.
+
+Every other content-generating workflow on this site already works this way, and I kept the pattern rather than reinventing it. `doodle.yml`, `api-reference.yml`, and the rest are all decoupled from `deploy.yml`, wired together only through `workflow_run` triggers after each one succeeds.
+
+The reason is blast radius. If generation ran as a step inside `npm run build`, a bug in the generator could fail the entire site's deploy. That bug could be as small as a bad template placeholder or an unhandled edge case in the fact-counting.
+
+A typo in a file almost nobody reads shouldn't be able to take the whole site offline. Keeping it as a separate job means the worst case of a broken generator is a red badge on one page. That's exactly the size of problem it actually is.
+
+The generator was already working when a good question stopped me: were we making this harder than it needed to be? Two existing Docusaurus plugins looked like they might already do this: `docusaurus-plugin-llms` and `docusaurus-plugin-llms-txt`. Both do the same thing: scan the `/docs` folder and concatenate it into a single file.
+
+Neither has any way to know how many Vale rules exist or how many workflows exist. Those aren't docs-page content — they're facts about the repo's tooling that live in `.vale/styles/Diana/` and `.github/workflows/`. Adopting either would have meant losing the specific claims that caused all three incidents in this post, not fixing them.
+
+The maintenance picture made the decision easier, not harder. `docusaurus-plugin-llms-txt` hasn't been touched since late 2024, with four open issues sitting unanswered for months.
+
+`docusaurus-plugin-llms` is actively maintained, but its own issue tracker has an open bug, filed days before I checked. Content carried in a component prop gets silently deleted during generation, with no error and no warning. The reporter's own words: the site renders fine, the generated file is well-formed, "it just has less in it than the source did."
+
+That's the exact failure category this whole post is about, just relocated into a dependency I don't control. I can't fix someone else's plugin in the next ten minutes the way I can my own code.
+
+That's also the honest limit of how far this scales. Every new fact `llms.txt` states falls into one of two categories. Some are derivable from the filesystem — the generator can absorb those, and this whole class of drift goes away.
+
+Others require a human judgment call, like what a rule actually does in plain English, and those live in `pipeline-facts.json`. The generator checks that an entry exists, not that it's still accurate.
+
+It refuses to run if a rule has no description at all. But it has no way to notice a description that's gone stale next to a rule whose behavior quietly changed underneath it. That's a real gap, just a smaller and more honest one than the file-wide version this post started with.
+
+The fix doesn't eliminate the need to remember. It shrinks what you have to remember. Instead of "does this whole file still describe a system that keeps changing," the question is now "does this one sentence describe this one rule."
+
+And it turns the coarser failure — adding a rule and never describing it at all — into a build failure. That's better than a silence that lasts until someone reads closely enough to notice.
+
+The other habit worth keeping, alongside the mechanism: a test doesn't get to stay trusted forever just because it's still green. This one sat unexamined for seven weeks before I looked at it closely enough to see what it actually checked.
 
 A baseline only tells you a file agrees with its own history. It has never once told you the file was right to begin with.
