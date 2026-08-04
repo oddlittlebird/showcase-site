@@ -12,7 +12,7 @@ description: The standing instructions file Claude Code reads automatically in t
 
 CLAUDE.md currently encodes two rules, both specific to this repo.
 
-### Keep pipeline.md honest
+### Keep pipeline.md and llms.txt honest
 
 [website/docs/pipeline.md](/showcase-site/docs/pipeline) makes factual claims about this site's own pipeline, including how many GitHub Actions workflows exist, how many custom Vale rules exist, and what each tool does. Those claims have to keep matching the repo, not just read plausibly. CLAUDE.md tells Claude Code to re-check and update pipeline.md in the same change whenever a workflow, Vale rule, or other pipeline component it describes gets added, removed, or renamed, and gives the exact commands to compare against:
 
@@ -25,6 +25,18 @@ This is the same rule that [the pipeline test](/showcase-site/doc-detective/pipe
 checks by machine, on a schedule. CLAUDE.md is the manual half: a standing
 instruction Claude Code follows *while making a change*, rather than a check
 that runs *after* one lands.
+
+`llms.txt` states the same two counts, but the rule is different because the
+mechanism is different: `llms.txt` isn't hand-edited prose, it's rendered by
+`scripts/generate-llms-txt.py` from a template plus live repo state, so
+CLAUDE.md's instruction is to run the generator rather than rewrite the file
+by hand, and to add a plain-English description to
+`scripts/pipeline-facts.json` in the same change whenever a Vale rule is
+added or removed — the generator refuses to run otherwise. This addition
+came directly out of an incident where `llms.txt` drifted silently for about
+six weeks; see
+["A baseline is not a fact"](/showcase-site/blog/a-baseline-is-not-a-fact)
+for the full story.
 
 ### Keep Doc Detective test pages consistent
 
@@ -41,3 +53,4 @@ That reasoning is specific to this repo, not a general recommendation. A project
 - [Skills](/showcase-site/agents-and-skills/skills) — the three commands Claude Code runs on request, rather than automatically.
 - [Documentation pipeline overview](/showcase-site/docs/pipeline) — what pipeline.md itself documents.
 - [Pipeline test](/showcase-site/doc-detective/pipeline-test) — the automated counterpart to the pipeline.md rule.
+- [llms.txt verification test](/showcase-site/doc-detective/llms-txt-test) — the automated counterpart to the llms.txt half of this rule.
