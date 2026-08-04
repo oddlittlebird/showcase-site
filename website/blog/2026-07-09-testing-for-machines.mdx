@@ -7,6 +7,13 @@ tags: [workflow]
 
 My portfolio site has an `llms.txt` file. It's not for you.
 
+**Update (2026-08-04):** The baseline-comparison test described in this post
+has since been retired and rebuilt. It compared `llms.txt` against a stored
+copy of its own previous version, which turned out not to catch the kind of
+drift that actually happened — see
+[A baseline is not a fact](/showcase-site/blog/a-baseline-is-not-a-fact) for
+what changed and why.
+
 {/* truncate */}
 
 [`llms.txt`](https://llmstxt.org/) is the emerging convention for giving AI tools a structured, machine-readable map of a site's content. The idea is the same as `robots.txt`, but aimed at language models and AI-assisted search rather than web crawlers. The file describes what the site covers, where the key pages are, and who made it, in plain markdown that a retrieval pipeline or AI agent can fetch and pass along as context without rendering a browser.
