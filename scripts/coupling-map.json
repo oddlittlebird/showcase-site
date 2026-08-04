@@ -1,0 +1,16 @@
+[
+  {
+    "description": "CLAUDE.md's rules and the write-up describing them for portfolio visitors",
+    "files": [
+      "CLAUDE.md",
+      "website/src/pages/agents-and-skills/claude-md.mdx"
+    ]
+  },
+  {
+    "description": "Pipeline facts (workflow count, Vale rule count and names, tool names) stated in both the docs page and the agent-facing index file",
+    "files": [
+      "website/docs/pipeline.md",
+      "website/static/llms.txt"
+    ]
+  }
+]
