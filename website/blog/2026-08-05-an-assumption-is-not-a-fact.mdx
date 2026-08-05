@@ -17,7 +17,7 @@ This started as a pattern, not a plan. While Claude and I were updating other pi
 
 I quickly realized that depending on me (and my fallible human brain) to remember which files were related, every time, wouldn't scale. Depending on Claude to remember on its own wouldn't either, as demonstrated by the fact that the rule in CLAUDE.md wasn't doing it.
 
-Claude and I brainstormed a fix: a small, maintained map lists file pairs that state the same facts and could drift apart. `scripts/coupling-map.json` holds the pairs of related files. A new CI workflow runs on every pull request and diffs the changed files against it. It comments, only ever asking, whenever one side of a pair changed without the other.
+Claude and I brainstormed a fix: [a small, maintained map](/showcase-site/agents-and-skills/coupling-map) lists file pairs that state the same facts and could drift apart. `scripts/coupling-map.json` holds the pairs of related files. A new CI workflow runs on every pull request and diffs the changed files against it. It comments, only ever asking, whenever one side of a pair changed without the other.
 
 That solved the original problem and created another problem, albeit a smaller one. The map is yet another file someone has to remember to keep current. I mean, it worked for now, but the site and pipeline will continue to expand and evolve, so the dependencies that need mapping will, too.
 
