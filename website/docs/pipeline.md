@@ -140,7 +140,7 @@ original research. The relationship model uses a two-value enum (`beneficial`,
 neutral relationships cover nearly every plant combination and add no useful
 signal.
 
-### Agent-facing documentation — skill.md and llms.txt
+### Agent-facing documentation — pipeline.md and llms.txt
 
 This file and `llms.txt` are the agent-facing layer of the pipeline. They go
 through the same Vale linting, spell checking, and link checking as every

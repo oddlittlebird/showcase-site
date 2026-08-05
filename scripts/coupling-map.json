@@ -12,5 +12,19 @@
       "website/docs/pipeline.md",
       "website/static/llms.txt"
     ]
+  },
+  {
+    "description": "The /check command's exact Vale, codespell, and Lychee invocations, quoted verbatim in the skills write-up",
+    "files": [
+      ".claude/commands/check.md",
+      "website/src/pages/agents-and-skills/skills.mdx"
+    ]
+  },
+  {
+    "description": "The pipeline's four tools and what each one catches, stated as two independent tables",
+    "files": [
+      "website/docs/pipeline.md",
+      "README.md"
+    ]
   }
 ]

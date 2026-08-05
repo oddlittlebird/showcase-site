@@ -30,8 +30,8 @@ Four quality checks run automatically on every content change:
 
 ## Site sections
 
-- [Introduction](/docs/intro): Site overview and the tooling stack (Vale, Doc Detective, skill.md, GitHub Actions)
-- [skill.md](/docs/pipeline): Full technical breakdown of every tool and design decision
+- [Introduction](/docs/intro): Site overview and the tooling stack (Vale, Doc Detective, pipeline.md, GitHub Actions)
+- [pipeline.md](/docs/pipeline): Full technical breakdown of every tool and design decision
 - [Portfolio](/portfolio): Writing samples from Grafana Labs and Macrometa
 - [Garden Companion API](/api): OpenAPI 3.1 spec rendered via {{API_RENDERER}}
 - [Blog](/blog): Posts on documentation systems and tooling decisions
