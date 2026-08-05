@@ -32,7 +32,7 @@ Four pairs are tracked as of this writing:
 
 ## The deterministic check
 
-[`coupling-check.yml`](https://github.com/oddlittlebird/showcase-site/blob/main/.github/workflows/coupling-check.yml) runs on every pull request. It diffs the PR's changed files against the map, and if one side of a pair changed without the other, it comments asking for confirmation. It never fails the build. A partial change to a coupled pair is often correct — a typo fix on one side doesn't always need a matching edit on the other — so the check only ever asks, the same way [`coupling-map-review.yml`](/showcase-site/agents-and-skills/coupling-map) does one level up.
+[`coupling-check.yml`](https://github.com/oddlittlebird/showcase-site/blob/main/.github/workflows/coupling-check.yml) runs on every pull request. It diffs the PR's changed files against the map, and if one side of a pair changed without the other, it comments asking for confirmation. It does not block the build from merging. A partial change to a coupled pair is often correct. For example, a typo fix on one side doesn't always need a matching edit on the other, so the check only ever asks, the same way [`coupling-map-review.yml`](/showcase-site/agents-and-skills/coupling-map) does one level up.
 
 This half is a plain script: `git diff` against a JSON file, no model involved. It can't be wrong about whether a pair is in the map. It can only be wrong about whether the map itself is still complete, which is the other half's job.
 
@@ -47,10 +47,10 @@ The map needs its own periodic check too, and that check can't be a script the s
 3. Looks for new candidate pairs elsewhere in the repo, citing the specific overlapping fact rather than proposing anything speculative.
 4. Reports all of it by opening or commenting on a GitHub issue titled "Monthly coupling-map review" — the same `gh issue create` mechanism [`api-reference.yml`](https://github.com/oddlittlebird/showcase-site/blob/main/.github/workflows/api-reference.yml) and [`doodle.yml`](https://github.com/oddlittlebird/showcase-site/blob/main/.github/workflows/doodle.yml) already use for their own drift alerts.
 
-It never edits the map. It reports, the same way the PR check reports, and a human decides what to do with what it finds. The first real run found something: two new pairs worth adding, and a stale name — "skill.md" — that had been sitting in three files since a rename weeks earlier. Getting the workflow itself running took three wrong guesses first. Both are covered in [the full story](/showcase-site/blog/an-assumption-is-not-a-fact).
+It never edits the map. It reports, the same way the PR check reports, and a human decides what to do with what it finds. The first real run found something: two new pairs worth adding, and a stale name — "skill.md" — that had been sitting in three files since a rename weeks earlier. Getting the workflow itself running took three wrong guesses first. Both are covered in the blog post [An assumption is not a fact](/showcase-site/blog/an-assumption-is-not-a-fact).
 
 ## See also
 
-- [CLAUDE.md](/showcase-site/agents-and-skills/claude-md) — the rule this map exists to generalize beyond two files.
-- ["A baseline is not a fact"](/showcase-site/blog/a-baseline-is-not-a-fact) — the incident that motivated the map and the PR-time check.
-- ["An assumption is not a fact"](/showcase-site/blog/an-assumption-is-not-a-fact) — building the monthly reviewer, and what its first run actually found.
+- [CLAUDE.md](/showcase-site/agents-and-skills/claude-md) - the rule this map exists to generalize beyond two files.
+- ["A baseline is not a fact"](/showcase-site/blog/a-baseline-is-not-a-fact) - the incident that motivated the map and the PR-time check.
+- ["An assumption is not a fact"](/showcase-site/blog/an-assumption-is-not-a-fact) - building the monthly reviewer, and what its first run actually found.
