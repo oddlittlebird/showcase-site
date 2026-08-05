@@ -38,6 +38,11 @@ six weeks; see
 ["A baseline is not a fact"](/showcase-site/blog/a-baseline-is-not-a-fact)
 for the full story.
 
+This rule stays scoped to these two files on purpose. Any pair discovered
+later goes into the [coupling map](/showcase-site/agents-and-skills/coupling-map)
+instead of a third CLAUDE.md rule, so this file doesn't grow by one section
+per pair.
+
 ### Keep Doc Detective test pages consistent
 
 Pages under `website/src/pages/doc-detective/` each document one Doc Detective test and share a structure: a heading matching the page's title, a "Why this matters" section, a "Latest result" section with the relevant status badge, a "How the test works" section with numbered steps, and a "Run the test manually" section with the exact commands to run it locally. CLAUDE.md tells Claude Code to read an existing sibling page before adding a new one and match its heading order rather than inventing a new shape, and to say why in the prose if a page genuinely needs to deviate rather than silently dropping a section its siblings have.

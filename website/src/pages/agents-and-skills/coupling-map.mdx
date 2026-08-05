@@ -6,13 +6,13 @@ description: A maintained map of file pairs that state the same facts, checked o
 
 # Coupling map
 
-[CLAUDE.md](/showcase-site/agents-and-skills/claude-md) tells Claude Code to keep `pipeline.md` and `llms.txt` honest, but that rule only covers those two files. Every time this site added a new pair of files that state the same fact, someone had to remember to write a new rule for it. That doesn't scale: a reminder that depends on a future session recalling every coupled pair adds recall surface with each new pair it covers, and this repo has already forgotten once (see ["A baseline is not a fact"](/showcase-site/blog/a-baseline-is-not-a-fact)).
+[CLAUDE.md](/showcase-site/agents-and-skills/claude-md) tells Claude Code to keep `pipeline.md` and `llms.txt` honest, but that rule only covers those two files. It grew to cover both because `llms.txt` drifted once and got folded in after the fact (see ["A baseline is not a fact"](/showcase-site/blog/a-baseline-is-not-a-fact)), not because anyone planned for it. Writing a new rule for every future pair wouldn't scale. A reminder that depends on a future session recalling each one adds recall surface with every pair it covers.
 
 The coupling map replaces "remember to check this" with two things instead: a small, explicit list of known pairs, and two automated checks that read it. Neither one discovers a new coupling on its own. Both only ever confirm or flag a relationship someone already wrote down.
 
 ## The map itself
 
-[`scripts/coupling-map.json`](https://github.com/oddlittlebird/showcase-site/blob/main/scripts/coupling-map.json) is a plain array. Each entry names a fact and the files that state it:
+[`scripts/coupling-map.json`](https://github.com/oddlittlebird/showcase-site/blob/main/scripts/coupling-map.json) is a plain array. Each entry names a fact and the files that state it. For example:
 
 ```json
 {
@@ -24,7 +24,11 @@ The coupling map replaces "remember to check this" with two things instead: a sm
 }
 ```
 
-Four pairs are tracked as of this writing: `CLAUDE.md` and its own write-up on this page's sibling; `pipeline.md` and `llms.txt`; the `/check` command's shell invocations, quoted verbatim in the [skills write-up](/showcase-site/agents-and-skills/skills); and `pipeline.md`'s tool table, duplicated independently in `README.md`.
+Four pairs are tracked as of this writing:
+- `CLAUDE.md` and its own write-up on this page's sibling
+- `pipeline.md` and `llms.txt`
+- the `/check` command's shell invocations, quoted verbatim in the [skills write-up](/showcase-site/agents-and-skills/skills)
+- `pipeline.md`'s tool table, duplicated independently in `README.md`
 
 ## The deterministic check
 
