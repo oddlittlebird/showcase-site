@@ -20,7 +20,7 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ github.token }}
           claude_args: |
-            --allowedTools "Read,Grep,Glob,Bash(gh issue:*)"
+            --allowedTools "Read,Grep,Glob,Bash(gh issue *)"
           prompt: |
             You are reviewing scripts/coupling-map.json in this repository.
             This file is a small, hand-maintained list of file pairs that
