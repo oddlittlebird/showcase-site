@@ -48,7 +48,7 @@ Five rules were written from scratch beyond the standard Google style guide:
 
 ## Key files in the repository
 
-- .github/workflows/ — twelve workflow definitions
+- .github/workflows/ — thirteen workflow definitions
 - .vale/styles/Diana/ — five custom rules (Passive.yml, Terminology.yml, StackedHeadings.yml, Acronyms.yml, Headings.yml)
 - .lychee.toml — Lychee configuration with exclusion rules
 - website/static/api/garden.yaml — OpenAPI 3.1 spec
