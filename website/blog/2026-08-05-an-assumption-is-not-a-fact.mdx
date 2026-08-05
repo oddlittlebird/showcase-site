@@ -5,7 +5,7 @@ authors: [diana]
 tags: [workflow]
 ---
 
-The monthly reviewer I built to catch stale content caught something on its first real run. It wasn't a stale file. It was an assumption I (through Claude) had been carrying for weeks, unverified, since I fixed a dead link and moved on.
+The monthly reviewer I built to catch stale content caught something on its first real run. It wasn't a stale file; it was an assumption I (through Claude) had been carrying for weeks, unverified, since I fixed a dead link and moved on.
 
 {/* truncate */}
 
@@ -23,11 +23,11 @@ That solved the original problem and created another problem, albeit a smaller o
 
 ## A reminder for the reminder
 
-The map needed its own periodic check. Monthly felt right, and that meant answering a harder question first: how do you automate "remember to check this"? Both the human and the LLM doing the remembering are the exact failure mode being fixed.
+The map needed its own periodic check. Monthly felt right, but that meant answering a harder question first: how do you automate "remember to check this"? Both the human and the LLM doing the remembering are the exact failure mode being fixed.
 
-The lowest-effort option was a reminder on my own calendar. It would probably work. However, it would also live entirely outside the pipeline. This site exists to show a working pipeline that catches its own drift, not one that hands the hardest part back to a calendar app.
+The lowest-effort option was a reminder on my own calendar. It would probably work, if I paid attention to it. However, it would also live entirely outside the pipeline. This site exists to show a working pipeline that catches its own drift, not one that hands the hardest part back to an external calendar app.
 
-The better option: something inside the pipeline, on a schedule, that reads the map and the repo. It reports what it finds the same way this site's other tests already do, by opening a GitHub issue. This would require a language model to make the actual judgment call, not a fixed script.
+The better option was to add something inside the pipeline, on a schedule, that reads the map and the repo. It reports what it finds the same way this site's other tests already do, by opening a GitHub issue. This would require a language model to make the actual judgment call, not a fixed script.
 
 ## The cloud routine that went nowhere
 
@@ -37,19 +37,19 @@ Nothing happened.
 
 I ran it again. Silence.
 
-The tool I had for managing that routine could list it, fetch its config, and trigger a run. It couldn't show me a transcript, a log, or an error. Two runs, zero information about why either one failed.
+The tool I had for managing that routine could list it, fetch its config, and trigger a run. It couldn't show me a transcript, a log, or an error: no setting to flip, nothing hidden behind a flag, just nothing there. Two runs, zero information about why either one failed.
 
 ## Switching to something debuggable
 
-The idea for what came next wasn't mine to claim. I asked whether we could reuse the mechanism Doc Detective's workflows already use to open issues: plain `gh issue create` against the repo's own token. That would sidestep the cloud routine's GitHub access problem entirely.
+We seemed stuck, at least with the current path. I asked whether we could use the mechanism Doc Detective's workflows already use to open issues: plain `gh issue create` against the repo's own token. That would sidestep the cloud routine's GitHub access problem entirely.
 
 Claude took that further than I'd actually asked. The whole task could run as a GitHub Actions workflow, using Anthropic's own `claude-code-action`, not just the reporting step. No separate app dependency needed at all.
 
-That mattered for a second reason too. A failure here now shows up as a normal Actions log, like every other workflow in this pipeline. Not a black box with nothing to debug.
+That mattered for a second reason too. A failure here now shows up as a normal Actions log, like every other workflow in this pipeline. Unlike the cloud routine, it's not a black box with nothing to debug.
 
 Before writing the YAML, Claude checked the action's actual `action.yml` directly. Two different documentation sources had disagreed on whether its `claude_args` input took JSON or command-line flags.
 
-It's flags, passed straight to the Claude CLI. Trusting prose over the source would have cost a wasted run finding that out the hard way.
+Turns out, it's flags, passed straight to the Claude CLI. Trusting prose over the source would have cost a wasted run finding that out the hard way. (And because the new method required Anthropic API, each run would cost me a small amount of money, so fewer runs meant less $$.)
 
 ## Three wrong guesses, one real answer
 
@@ -59,7 +59,7 @@ Claude had one real lead. The `--allowedTools` pattern used a colon, `Bash(gh is
 
 Second run, same generic failure, but this time the full log came back. It ruled out Claude's own fix: the run lasted 409 milliseconds, one turn, zero dollars spent, zero permission checks. It had failed before a tool-permission pattern would ever matter.
 
-The log also explained why the real error had been invisible: the action hides its own output behind a `show_full_output` flag, off by default. And it named the model it had actually used, `claude-opus-5`. Neither of us had specified one, Claude for not asking, me for not realizing I needed to say so, so it defaulted to the most expensive option instead of the Sonnet pricing we'd already discussed.
+The log also explained why the real error had been invisible: the action hides its own output behind a `show_full_output` flag, which was off by default. And it named the model it had actually used, `claude-opus-5`. I hadn't realized I needed to specify a model, so I never told Claude which one to use. Because I hadn't, neither did it, and the action defaulted to the most expensive option instead of the Sonnet pricing we'd already discussed. (Thanks, Anthropic!)
 
 Claude turned on full output and pinned the model to Sonnet. Third run: the real error, finally visible. `Credit balance is too low`.
 
@@ -67,31 +67,31 @@ The API key worked. It just had no funded balance behind it, an ordinary billing
 
 ## What it actually found
 
-Once billing was sorted, the workflow ran clean and opened its first real issue. The two existing map entries checked out: it re-ran the actual count commands against the live repo and confirmed both pairs still matched (`ls .github/workflows | wc -l`, `ls .vale/styles/Diana | wc -l`). It proposed four new pairs.
+Once billing was sorted, the workflow ran clean and opened its first real issue. (Yay!) The two existing map entries checked out: it re-ran the actual count commands against the live repo and confirmed both pairs still matched (`ls .github/workflows | wc -l`, `ls .vale/styles/Diana | wc -l`). It proposed four new pairs.
 
 Two of the four were solid on inspection. `.claude/commands/check.md`'s exact shell commands are quoted verbatim in a separate write-up page, and `pipeline.md`'s tool table is duplicated independently in `README.md`. Both went straight into the map.
 
-The other two were both about the same thing. `intro.mdx` and a template file still said `skill.md`, a name that hadn't existed since a rename weeks earlier. Claude had seen that exact name before, in a different context, and had already decided what it meant.
+The other two were both about the same thing. `intro.mdx` and a template file still said `skill.md`, a name that hadn't existed since a rename weeks earlier. Claude had seen that exact name before, in a different context, and it had already decided what that meant.
 
 ## The part Claude got wrong
 
 Weeks earlier, fixing the dead link this whole saga started with, Claude found `pipeline.md`'s own text calling itself "skill.md and llms.txt" in a heading. It read that as intentional, a nickname the file used for itself, and kept the label when it repaired the link that pointed at it.
 
-It never asked whether that was actually true. It inferred, and then carried the inference forward as though it were settled.
+It never asked whether that was actually true. It inferred, and then carried the inference forward as though it were settled. I'd read that reasoning when Claude wrote it and let the phrase "intentional site branding" go by without asking what it actually meant. One clarifying question, right then, would have caught it.
 
-It wasn't. My correction was one sentence: skill.md refers to Claude skills, not to pipeline.md, and never did.
+It wasn't settled. My correction was one sentence: "skill.md refers to Claude skills, not to pipeline.md, and never did."
 
 The heading itself had been the drift, sitting there since the rename. Claude's fix from weeks earlier had quietly preserved it instead of questioning it. That's the same failure the last post was about, just moved from code into Claude's own reasoning: a baseline only proves a file agrees with its own history.
 
-An unverified assumption only proves Claude agreed with itself. Neither one checks against what's actually true, and both will hold up for exactly as long as nobody asks.
+An unverified assumption only proves Claude agreed with itself. Neither one checks against what's actually true, and both will hold up as long as nobody asks.
 
 ## What actually changed
 
-Every current-state reference to "skill.md" is now "pipeline.md": the heading, the intro page, both spots in the template. The historical references stay as they were, since they're describing the old name accurately, in the past tense, as part of an incident that already happened. The map grew by two real pairs.
+Every current-state reference to "skill.md" is now "pipeline.md": the heading, the intro page, both spots in the template. The historical references stay as they were, because they're describing the old name accurately, in the past tense, as part of an incident that already happened. The map grew by two real pairs.
 
 ## Does this scale?
 
-This site is a proof of concept for a documentation pipeline with real testing behind it, not a demo. Worth asking honestly, then: does any of this actually scale past one small repo with one contributor?
+This site is a proof of concept for a documentation pipeline with real testing behind it, not a demo. So it's worth asking honestly: does any of this actually scale past one small repo with one contributor?
 
 "If you touch this, also check that" is not a new problem. Larger teams deal with it constantly, across far more files than this repo has. Traditionally, that knowledge has lived in the heads of the writers and engineers who've been around long enough to remember it, not in any system.
 
