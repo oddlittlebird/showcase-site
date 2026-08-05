@@ -5,25 +5,41 @@ authors: [diana]
 tags: [workflow]
 ---
 
-The monthly reviewer I built to catch stale content caught something on its first real run. It wasn't a stale file. It was an assumption I'd been carrying for weeks, unverified, since I fixed a dead link and moved on.
+The monthly reviewer I built to catch stale content caught something on its first real run. It wasn't a stale file. It was an assumption I (through Claude) had been carrying for weeks, unverified, since I fixed a dead link and moved on.
 
 {/* truncate */}
 
-## Why a reminder doesn't scale
+## Where this started
 
-[The last post](/showcase-site/blog/a-baseline-is-not-a-fact) ended with a fix: `llms.txt` generated from live repo state instead of typed by hand. That closed one gap.
+This started as a pattern, not a plan. While Claude and I were updating other pipelines and tests, I kept having to remind it to also update some related file it hadn't touched.
 
-It didn't close the shape of the problem. `CLAUDE.md`'s own drift-prevention rule only covered `pipeline.md`, and I forgot to extend it to `llms.txt` until asked directly.
+`CLAUDE.md`'s own rule about keeping `pipeline.md` honest is what that rule exists to prevent. Even it needed a reminder once, mid-project, before it covered `llms.txt` too.
 
-A rule that depends on a future session remembering to check something doesn't scale. Every new file it should cover adds recall surface, and recall is exactly the thing that failed the first time.
+I realized fast that depending on me to remember which files were related, every time, wouldn't scale. Depending on Claude to remember on its own wouldn't either. That gap is exactly what the rule already had.
 
-The actual fix was a small, maintained map: `scripts/coupling-map.json` lists file pairs that state the same facts and could drift apart. A new CI workflow diffs every pull request against it and asks, in a comment, whenever one side changed without the other.
+Claude and I brainstormed a fix together. A small, maintained map lists file pairs that state the same facts and could drift apart. `scripts/coupling-map.json` holds the pairs.
 
-It never blocks a merge. It only flags a relationship someone already wrote down. That still leaves one job undone: who checks whether the map itself is complete.
+A new CI workflow runs on every pull request and diffs the changed files against it. It comments, only ever asking, whenever one side of a pair changed without the other.
+
+That solved the original problem and created a smaller version of it. The map is just another file someone has to remember to keep current.
+
+## A reminder for the reminder
+
+The map needed its own periodic check. Monthly felt right.
+
+That meant answering a harder question first: how do you automate "remember to check this"? Both the human and the LLM doing the remembering are the exact failure mode being fixed.
+
+The lowest-effort option was a reminder on my own calendar. It would probably work.
+
+It would also live entirely outside the pipeline. This site exists to show a working pipeline that catches its own drift, not one that hands the hardest part back to a calendar app.
+
+The better option: something inside the pipeline, on a schedule, that reads the map and the repo. It reports what it finds the same way this site's other tests already do, by opening a GitHub issue.
+
+A language model doing the actual judgment call, not a fixed script. Automated, but probabilistic where a script alone can't be.
 
 ## The cloud routine that went nowhere
 
-I built a scheduled routine to answer that question once a month. It would read the map, check whether its entries still hold, and look for new pairs worth adding. I ran it manually to test it before waiting for the real schedule.
+I built a scheduled routine to run that check once a month. It would read the map, check whether its entries still hold, and look for new pairs worth adding. I ran it manually to test it before waiting for the real schedule.
 
 Nothing happened. No issue, no comment, no visible result.
 
@@ -33,11 +49,13 @@ The tool I had for managing that routine could list it, fetch its config, and tr
 
 ## Switching to something debuggable
 
-I moved the same task to a GitHub Actions workflow instead, using Anthropic's own `claude-code-action`. Functionally it does the same thing: read the map, check the repo, report findings.
+The idea for what came next wasn't mine to claim. I asked whether we could reuse the mechanism Doc Detective's workflows already use to open issues: plain `gh issue create` against the repo's own token. That would sidestep the cloud routine's GitHub access problem entirely.
 
-The reason for switching wasn't capability. It was diagnosability: a failure here shows up as a normal Actions log, like every other workflow in this pipeline. A black box gives me nothing to fix.
+Claude took that further than I'd actually asked. The whole task could run as a GitHub Actions workflow, using Anthropic's own `claude-code-action`, not just the reporting step. No separate app dependency needed at all.
 
-Before writing the YAML, I checked the action's actual `action.yml` directly. Two different documentation sources had disagreed on whether its `claude_args` input took JSON or command-line flags.
+That mattered for a second reason too. A failure here now shows up as a normal Actions log, like every other workflow in this pipeline. Not a black box with nothing to debug.
+
+Before writing the YAML, Claude checked the action's actual `action.yml` directly. Two different documentation sources had disagreed on whether its `claude_args` input took JSON or command-line flags.
 
 It's flags, passed straight to the Claude CLI. Trusting prose over the source would have cost a wasted run finding that out the hard way.
 
@@ -45,17 +63,19 @@ It's flags, passed straight to the Claude CLI. Trusting prose over the source wo
 
 The first real run failed with `Claude execution failed: result is_error:true`. Nothing else.
 
-I had one real lead. My `--allowedTools` pattern used a colon, `Bash(gh issue:*)`, while the CLI's own `--help` only ever showed that syntax with a space. I fixed it and asked for a re-run.
+Claude had one real lead. The `--allowedTools` pattern used a colon, `Bash(gh issue:*)`, while the CLI's own `--help` only ever showed that syntax with a space. It fixed the pattern and asked for a re-run.
 
-Second run, same generic failure. This time I got the full log.
+Second run, same generic failure. This time the full log came back.
 
-It ruled out my own fix: the run lasted 409 milliseconds, one turn, zero dollars spent, zero permission checks. It had failed before a tool-permission pattern would ever matter.
+It ruled out Claude's own fix: the run lasted 409 milliseconds, one turn, zero dollars spent, zero permission checks. It had failed before a tool-permission pattern would ever matter.
 
-The log also explained why the real error was invisible: the action hides its own output behind a `show_full_output` flag, off by default. And it named the model it had actually used, `claude-opus-5`, not the Sonnet model I'd priced out with Diana earlier.
+The log also explained why the real error had been invisible: the action hides its own output behind a `show_full_output` flag, off by default. And it named the model it had actually used, `claude-opus-5`.
 
-I turned on full output and pinned the model to Sonnet. Third run: the real error, finally visible. `Credit balance is too low`.
+Neither of us had specified one, Claude for not asking, me for not realizing I needed to say so. It defaulted to the most expensive option instead of the Sonnet pricing we'd already discussed.
 
-The API key worked. It just had no funded balance behind it, an ordinary billing gap dressed up by two layers of hidden output as a mysterious crash.
+Claude turned on full output and pinned the model to Sonnet. Third run: the real error, finally visible. `Credit balance is too low`.
+
+The API key worked. It just had no funded balance behind it, an ordinary billing gap hidden behind two layers of suppressed output until we finally saw it.
 
 ## What it actually found
 
@@ -65,21 +85,21 @@ It re-ran the actual count commands against the live repo and confirmed both pai
 
 Two of the four were solid on inspection. `.claude/commands/check.md`'s exact shell commands are quoted verbatim in a separate write-up page, and `pipeline.md`'s tool table is duplicated independently in `README.md`. Both went straight into the map.
 
-The other two were both about the same thing. `intro.mdx` and a template file still said `skill.md`, a name that hadn't existed since a rename weeks earlier. I'd seen that exact name before, in a different context, and had already decided what it meant.
+The other two were both about the same thing. `intro.mdx` and a template file still said `skill.md`, a name that hadn't existed since a rename weeks earlier. Claude had seen that exact name before, in a different context, and had already decided what it meant.
 
-## The part I got wrong
+## The part Claude got wrong
 
-Weeks earlier, fixing the dead link this whole saga started with, I found `pipeline.md`'s own text calling itself "skill.md and llms.txt" in a heading. I read that as intentional, a nickname the file used for itself, and kept the label when I repaired the link that pointed at it.
+Weeks earlier, fixing the dead link this whole saga started with, Claude found `pipeline.md`'s own text calling itself "skill.md and llms.txt" in a heading. It read that as intentional, a nickname the file used for itself, and kept the label when it repaired the link that pointed at it.
 
-I never asked whether that was actually true. I inferred it, and then carried the inference forward as though it were settled.
+It never asked whether that was actually true. It inferred, and then carried the inference forward as though it were settled.
 
-It wasn't. Diana's correction was one sentence: skill.md refers to Claude skills, not to pipeline.md, and never did.
+It wasn't. My correction was one sentence: skill.md refers to Claude skills, not to pipeline.md, and never did.
 
-The heading itself had been the drift, sitting there since the rename. My fix from weeks earlier had quietly preserved it instead of questioning it.
+The heading itself had been the drift, sitting there since the rename. Claude's fix from weeks earlier had quietly preserved it instead of questioning it.
 
-That's the same failure the last post was about, just moved from code into my own reasoning. A baseline only proves a file agrees with its own history.
+That's the same failure the last post was about, just moved from code into Claude's own reasoning. A baseline only proves a file agrees with its own history.
 
-An unverified assumption only proves I agree with myself. Neither one checks against what's actually true, and both will hold up for exactly as long as nobody asks.
+An unverified assumption only proves Claude agreed with itself. Neither one checks against what's actually true, and both will hold up for exactly as long as nobody asks.
 
 ## What actually changed
 
@@ -87,4 +107,16 @@ Every current-state reference to "skill.md" is now "pipeline.md": the heading, t
 
 The historical references stay as they were. They're describing the old name accurately, in the past tense, as part of an incident that already happened.
 
-The map grew by two real pairs. The monthly reviewer will run again in September, and the check is no longer whether it can produce a result at all. It's whether anyone reads the result closely enough to catch the next assumption sitting quietly in place of a fact.
+The map grew by two real pairs.
+
+## Does this scale?
+
+This site is a proof of concept for a documentation pipeline with real testing behind it, not a demo. Worth asking honestly, then: does any of this actually scale past one small repo with one contributor?
+
+"If you touch this, also check that" is not a new problem. Larger teams deal with it constantly, across far more files than this repo has. Traditionally, that knowledge has lived in the heads of the writers and engineers who've been around long enough to remember it, not in any system.
+
+That's fine until someone leaves, or until enough time passes that even the person who remembers stops trusting their own memory. As more of a pipeline gets automated, that knowledge needs somewhere more durable to live.
+
+The parts of the process that used to force a human to notice, someone reading every diff, are the parts getting automated away.
+
+The monthly reviewer runs again in September. What it's actually testing, every time, is whether a small piece of that tribal knowledge can live in a file instead of a person. And whether anyone still reads the result closely enough to catch what it gets wrong.

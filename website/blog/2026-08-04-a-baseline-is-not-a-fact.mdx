@@ -59,7 +59,7 @@ I went with the second option.
 
 ## What actually shipped
 
-`website/static/llms.txt` is no longer typed by hand. `scripts/generate-llms-txt.py` renders it from a template plus whatever the repository currently contains. The Vale rule count and names come from listing `.vale/styles/Diana/`; the workflow count comes from listing `.github/workflows/`.
+`website/static/llms.txt` is no longer edited as static text. `scripts/generate-llms-txt.py` renders it from a template plus whatever the repository currently contains. The Vale rule count and names come from listing `.vale/styles/Diana/`; the workflow count comes from listing `.github/workflows/`.
 
 Content that isn't a fact you can list stays hand-written in `scripts/pipeline-facts.json` and the template, on purpose. That includes what each Vale rule does in plain English, which pages are worth linking, and the bio. Some parts of a file like this should keep requiring a human.
 
