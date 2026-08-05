@@ -78,7 +78,7 @@ do not exist as HTTP endpoints Lychee can reach.
 
 ### GitHub Actions — the pipeline itself
 
-Eleven workflows wire the tools together. Path filtering keeps each workflow
+Thirteen workflows wire the tools together. Path filtering keeps each workflow
 focused: a CSS change does not trigger a lint run; a workflow change does not
 trigger a doc test. The filters reduce noise and make failures meaningful.
 
@@ -105,6 +105,22 @@ Six more granular checks, each a separate Doc Detective or verification job:
   (PDF file signature, minimum byte size) against the portfolio's linked work
   samples, catching corrupted or emptied files that a plain link check like
   Lychee's would still report as passing
+
+One check that never fails the build, only asks a question:
+
+- `coupling-check.yml` — on every pull request, diffs the changed files
+  against `scripts/coupling-map.json`, a maintained list of file pairs known
+  to state the same facts (CLAUDE.md and its portfolio write-up, pipeline.md
+  and llms.txt). If one side of a pair changed and the other didn't, it
+  comments on the PR asking for confirmation. It doesn't discover new
+  couplings on its own; it only ever flags a relationship someone already
+  wrote down.
+- `coupling-map-review.yml` — the monthly counterpart to the check above: on
+  the first of each month, runs Claude Code (via `anthropics/claude-code-action`)
+  against the live repo to judge whether `coupling-map.json`'s existing
+  entries are still accurate and whether new file pairs deserve an entry,
+  then reports its findings as a GitHub issue. It never edits the map
+  itself; a human decides what to do with what it finds.
 
 And the deploy itself:
 
@@ -150,7 +166,7 @@ worse than no file, because an agent acts on it with confidence.
 ## Repository structure
 
 ```
-.github/workflows/       Eleven CI/CD workflow definitions
+.github/workflows/       Thirteen CI/CD workflow definitions
 .vale/styles/Diana/      Five custom Vale rules
 doc-detective/           Doc Detective config and test specs
 website/docs/            Documentation pages

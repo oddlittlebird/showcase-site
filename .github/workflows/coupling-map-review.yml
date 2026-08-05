@@ -1,0 +1,73 @@
+name: Monthly coupling-map review
+
+on:
+  schedule:
+    - cron: '0 8 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ github.token }}
+          claude_args: |
+            --allowedTools "Read,Grep,Glob,Bash(gh issue:*)"
+          prompt: |
+            You are reviewing scripts/coupling-map.json in this repository.
+            This file is a small, hand-maintained list of file pairs that
+            state the same underlying facts about this repo and could
+            silently drift apart from each other -- for example, CLAUDE.md
+            and the write-up describing its rules, or pipeline.md and
+            llms.txt, which both state the same Vale-rule-count and
+            workflow-count facts. A separate CI workflow
+            (.github/workflows/coupling-check.yml, using
+            scripts/check-coupling.py) already flags pull requests that
+            touch one side of a known pair without touching the other.
+            Your job is different: a monthly check on the map's own
+            completeness and accuracy, not on any specific PR.
+
+            Do the following:
+
+            1. Read scripts/coupling-map.json and confirm every file path
+               listed in it still exists in the repo. Flag any that don't.
+            2. For each existing pair, read both files and judge whether
+               the map's "description" field still accurately describes
+               what they have in common. Flag anything that reads as
+               stale or wrong.
+            3. Look for new candidate pairs that aren't in the map yet:
+               files that state the same specific facts (counts, names,
+               tool choices) about this repo's own tooling or pipeline,
+               where one could go stale without the other being touched.
+               Good places to check: website/docs/pipeline.md,
+               website/static/llms.txt, CLAUDE.md and its write-up at
+               website/src/pages/agents-and-skills/claude-md.mdx,
+               README.md, website/src/pages/how-i-built-this.mdx, and any
+               page under website/src/pages/doc-detective/ that names a
+               specific workflow, tool, or count. Only propose a pair
+               where you can point to the actual overlapping fact in both
+               files -- no vague or speculative pairs.
+            4. Do NOT edit scripts/coupling-map.json or any other file.
+               You only report; a human decides what to do with the
+               findings, the same way coupling-check.yml only ever asks
+               rather than silently fixing.
+            5. Report your findings by running `gh issue create` (or, if
+               an open issue titled exactly "Monthly coupling-map review"
+               already exists, `gh issue comment` on it instead of
+               opening a duplicate -- check with
+               `gh issue list --search "Monthly coupling-map review"
+               --state open` first). Structure the body as three
+               sections: existing entries that look fine (one line each),
+               existing entries that need attention (with why), and new
+               pairs to consider adding (with the specific fact each side
+               states). Keep it concise and concrete -- cite file paths
+               and quote the specific overlapping claim, don't describe
+               things in the abstract.
