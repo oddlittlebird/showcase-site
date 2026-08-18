@@ -7,6 +7,10 @@ on:
       - 'website/blog/**'
       - 'website/src/pages/**/*.mdx'
       - 'website/static/llms.txt'
+      # Re-run the checks when the rules themselves change, not just the content.
+      - 'docmeta.config.yaml'
+      - 'docmeta/**'
+      - '.github/workflows/lint.yml'
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -28,3 +32,20 @@ jobs:
           fail_on_error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  docmeta:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # docmeta requires Node 24. On anything older, npm reports the engine
+      # mismatch as a warning, installs anyway, and the step looks like it ran.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install docmeta
+        run: npm install -g docmeta
+
+      - name: Validate front matter
+        run: docmeta validate -f github
