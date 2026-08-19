@@ -104,7 +104,7 @@ The pipeline had four tools. Now it has five, and that number is written down in
 
 `llms.txt` needed updating too, but not by hand. It's generated from a template plus live repo facts, which is the fix I wrote about in [A baseline is not a fact](/showcase-site/blog/a-baseline-is-not-a-fact). The counts can't drift there anymore. The prose around them still can, so the template needed the new gate written into it.
 
-Then the part I didn't expect: `scripts/pipeline-facts.json` feeds the generated file, and it claimed my terminology rule errors on "AI agent." It doesn't, and it hasn't for a while. It now covers a term the file never mentions. So `llms.txt` has been handing AI agents a wrong description of my own linter, generated correctly from a source that was quietly false. (sigh)
+Then the part I didn't expect: `scripts/pipeline-facts.json` feeds the generated file, and it claimed my terminology rule errors on "AI agent." It didn't, and it hadn't for a while. It also covered a term the file never mentioned, `LLM`, which I have since dropped from the rule so I can decide that one case by case. So `llms.txt` had been handing AI agents a wrong description of my own linter, generated correctly from a source that was quietly false. (sigh)
 
 I built the generator specifically so that facts couldn't drift, and it works. What it checks is that every rule file has an entry and every entry has a rule file. It compares filenames. It never opens the rule to see whether the sentence about it is true. The counts can't drift, because they're read off the filesystem every time. The descriptions can, because they're just sentences somebody typed once.
 

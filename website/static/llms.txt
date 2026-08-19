@@ -28,7 +28,7 @@ Four quality checks run automatically on every content change:
 Five rules were written from scratch beyond the standard Google style guide:
 
 - Passive.yml: warns on passive voice ("was edited", "were deployed")
-- Terminology.yml: errors on \"LLM\", \"utilize\", \"leverage\", \"spin\n  off\"
+- Terminology.yml: errors on "utilize", "leverage", "spin up", "kick off"
 - StackedHeadings.yml: warns when a heading immediately follows another
   heading with no prose between them — uses scope: text with a multiline regex
 - Acronyms.yml: requires an acronym to be spelled out on first use, with an

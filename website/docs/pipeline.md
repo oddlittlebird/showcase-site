@@ -41,7 +41,7 @@ pull request review comments via the reviewdog integration, not just as a
 failed check.
 
 **Terminology.yml** — enforces preferred terms using Vale's `substitution`
-extension. `LLM`, `utilize`, `leverage`, `spin up`, and `kick off` are flagged
+extension. `utilize`, `leverage`, `spin up`, and `kick off` are flagged
 as errors that block merge. Level: error.
 
 **StackedHeadings.yml** — flags headings that immediately follow other

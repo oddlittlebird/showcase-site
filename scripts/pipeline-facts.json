@@ -7,11 +7,11 @@
     },
     {
       "file": "Terminology.yml",
-      "description": "errors on \"LLM\", \"utilize\", \"leverage\", \"spin up\", \"kick off\""
+      "description": "errors on \"utilize\", \"leverage\", \"spin up\", \"kick off\""
     },
     {
       "file": "StackedHeadings.yml",
-      "description": "warns when a heading immediately follows another heading with no prose between them \u2014 uses scope: text with a multiline regex"
+      "description": "warns when a heading immediately follows another heading with no prose between them — uses scope: text with a multiline regex"
     },
     {
       "file": "Acronyms.yml",
