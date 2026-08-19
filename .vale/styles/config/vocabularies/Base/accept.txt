@@ -22,3 +22,4 @@ configs
 docmeta
 npm
 reviewdog
+Manny
