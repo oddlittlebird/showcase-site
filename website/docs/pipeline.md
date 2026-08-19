@@ -1,3 +1,9 @@
+---
+title: Documentation Pipeline Portfolio
+description: The agent-facing description of this site's documentation pipeline — every automated check, the tool that runs it, when it runs, and what it blocks.
+last_reviewed: 2026-08-05
+---
+
 # Documentation Pipeline Portfolio
 
 This site is a working demonstration of an end-to-end documentation quality
