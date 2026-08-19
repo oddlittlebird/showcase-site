@@ -38,6 +38,18 @@ with no matching description, rather than silently shipping an inaccurate
 count. Never hand-edit the generated sections of `llms.txt` directly; a
 manual edit there just gets overwritten the next time the generator runs.
 
+The same rule applies to merge conflicts, which are the likelier way to get
+this wrong. `generate-llms-txt.yml` commits a regenerated `llms.txt` to main
+on a schedule and whenever the source facts change, so any branch that touches
+`scripts/pipeline-facts.json` or `scripts/llms-txt.template` will conflict on
+`llms.txt` if it stays open long enough. Don't resolve that conflict by picking
+a side or by editing the merge result — both sides are stale renderings of
+different sources, and hand-merging them produces a file that matches neither.
+Resolve the source files first, run `python3 scripts/generate-llms-txt.py`, and
+stage its output as the resolution. Confirm with
+`python3 scripts/generate-llms-txt.py --check` before committing; it fails if
+the committed file isn't exactly what the current sources produce.
+
 ## Keep Doc Detective test pages consistent
 
 Pages under `website/src/pages/doc-detective/` each document one Doc

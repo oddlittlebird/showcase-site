@@ -2,7 +2,7 @@
 sidebar_position: 2
 title: CLAUDE.md
 description: The standing instructions file Claude Code reads automatically in this repo, and why it's CLAUDE.md rather than AGENTS.md.
-last_reviewed: 2026-08-05
+last_reviewed: 2026-08-19
 ---
 
 # CLAUDE.md
@@ -33,9 +33,12 @@ mechanism is different: `llms.txt` isn't hand-edited prose, it's rendered by
 CLAUDE.md's instruction is to run the generator rather than rewrite the file
 by hand, and to add a plain-English description to
 `scripts/pipeline-facts.json` in the same change whenever a Vale rule is
-added or removed — the generator refuses to run otherwise. This addition
-came directly out of an incident where `llms.txt` drifted silently for about
-six weeks; see
+added or removed — the generator refuses to run otherwise. The rule also covers merge conflicts, since a
+scheduled workflow commits a regenerated `llms.txt` to main: resolve the
+source files, rerun the generator, and stage what it produces, rather than
+hand-merging two stale renderings into a file that matches neither. This
+rule came directly out of an incident where `llms.txt` drifted silently for
+about six weeks; see
 ["A baseline is not a fact"](/showcase-site/blog/a-baseline-is-not-a-fact)
 for the full story.
 
