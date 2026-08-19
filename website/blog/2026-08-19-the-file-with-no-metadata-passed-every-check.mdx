@@ -106,10 +106,18 @@ The pipeline had four tools. Now it has five, and that number is written down in
 
 Then the part I didn't expect: `scripts/pipeline-facts.json` feeds the generated file, and it claimed my terminology rule errors on "AI agent." It doesn't, and it hasn't for a while. It now covers a term the file never mentions. So `llms.txt` has been handing AI agents a wrong description of my own linter, generated correctly from a source that was quietly false. (sigh)
 
-I built the generator specifically so that facts couldn't drift. It works. It faithfully rendered a fact that had already drifted upstream of it, which is the more interesting failure and the one I don't have a check for yet.
+I built the generator specifically so that facts couldn't drift, and it works. What it checks is that every rule file has an entry and every entry has a rule file. It compares filenames. It never opens the rule to see whether the sentence about it is true. The counts can't drift, because they're read off the filesystem every time. The descriptions can, because they're just sentences somebody typed once.
 
-## What it cost
+So it faithfully rendered a fact that had already drifted upstream of it. That's the more interesting failure, and it's the next thing I'm building. A substitution rule's swap list is structured data, so a script can pull the terms straight out of the rule and compare them against the terms the prose claims it flags. That only covers substitution rules. `Passive.yml`'s description is genuinely prose, and no script is going to verify it. But it closes the specific gap that let this one through.
 
-Setup took under two minutes, including reading the list of built-in schemas. The schema is eleven lines. That's the part that bothers me. This wasn't hard, and it wasn't expensive, and I didn't do it for months, because everything was passing and nothing was complaining.
+## What this was actually for
 
-An unchecked field doesn't announce itself. It sits there looking exactly like a checked one.
+I should be straight about the stakes. This is a small personal site. I was fine with just titles, and I wasn't especially worried about descriptions. I ran docmeta mostly because I wanted to try it, and I'm glad I did.
+
+A site like mine doesn't come with strict metadata requirements. Plenty of sites do. Enterprise documentation sets, anything under regulatory obligations, anything where metadata decides retention or access or what turns up in an audit. Those have requirements that are written down somewhere and, more often than not, enforced by nothing.
+
+That's the gap worth naming, and it isn't that my blog posts lacked descriptions. It's that nothing in a reasonably well-instrumented pipeline had an opinion about whether they did. An unchecked field doesn't announce itself. It sits there looking exactly like a checked one.
+
+The requirements are also going to move. The more that what we write gets retrieved and summarized by AI agents rather than read by people, the more the definition of adequate metadata will shift, and I don't think anyone knows yet where it settles.
+
+So this was a proof of concept, and it took under two minutes to set up. Not proof that my site needed it. Proof of how I'd approach metadata governance somewhere the requirements actually bite.
