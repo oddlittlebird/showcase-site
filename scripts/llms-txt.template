@@ -21,6 +21,7 @@ Four quality checks run automatically on every content change:
 - Spell checking (codespell) — runs on pull request, any misspelling blocks merge
 - External link checking (Lychee) — runs on push and every Monday at 8am UTC
 - Docs-as-tests (Doc Detective) — runs on push to main, validates docs against the live site
+- Front matter validation (docmeta) — runs on pull request, missing or malformed metadata blocks merge
 
 ## Custom Vale rules
 
@@ -30,7 +31,7 @@ Four quality checks run automatically on every content change:
 
 ## Site sections
 
-- [Introduction](/docs/intro): Site overview and the tooling stack (Vale, Doc Detective, pipeline.md, GitHub Actions)
+- [Introduction](/docs/intro): Site overview and the tooling stack (Vale, Doc Detective, docmeta, pipeline.md, GitHub Actions)
 - [pipeline.md](/docs/pipeline): Full technical breakdown of every tool and design decision
 - [Portfolio](/portfolio): Writing samples from Grafana Labs and Macrometa
 - [Garden Companion API](/api): OpenAPI 3.1 spec rendered via {{API_RENDERER}}
@@ -41,6 +42,7 @@ Four quality checks run automatically on every content change:
 - .github/workflows/ — {{WORKFLOW_COUNT_WORD}} workflow definitions
 - .vale/styles/Diana/ — {{VALE_RULE_COUNT_WORD}} custom rules ({{VALE_RULE_NAMES_CSV}})
 - .lychee.toml — Lychee configuration with exclusion rules
+- docmeta.config.yaml, docmeta/showcase.schema.json — front matter schema: every published page needs a title, a description, and a last_reviewed date
 - website/static/api/garden.yaml — OpenAPI 3.1 spec
 - doc-detective/tests/ — Doc Detective test specifications
 

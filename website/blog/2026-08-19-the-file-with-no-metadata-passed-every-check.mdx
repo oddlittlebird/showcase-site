@@ -17,9 +17,9 @@ Vale read it. Doc Detective read it. Docusaurus built it. Every check passed.
 
 ## Adding a third gate
 
-I added [docmeta](https://hawkeyexl.github.io/docmeta/) to the pipeline this week. The split is clean. Vale checks how the prose reads, Doc Detective checks whether the procedures still work, and docmeta checks the metadata. Before this, nothing in my stack looked at front matter at all.
+I had Claude Code add [docmeta](https://hawkeyexl.github.io/docmeta/) to the pipeline this week. The split is clean. Vale checks how the prose reads, Doc Detective checks whether the procedures still work, and docmeta checks the metadata. Before this, nothing in my stack looked at front matter at all.
 
-One thing to know before you try it. It needs Node 24. The Get started page says Node 20 or newer, but the package has required Node 24 since its first release, and npm reports that mismatch as a warning rather than an error. So the install says it succeeded, `docmeta --version` answers normally, and the thing quietly doesn't work. I had pinned my CI to Node 22, which would have produced the same silent non-failure. I filed that with the maintainer.
+One thing to know before you try it. It needs Node 24. The Get started page says Node 20 or newer, but the package has required Node 24 since its first release, and npm reports that mismatch as a warning rather than an error. So the install says it succeeded, `docmeta --version` answers normally, and the thing quietly doesn't work. My CI workflows ran Node 22, which would have produced the same silent non-failure. Claude wrote the whole thing up as a bug report for the maintainer.
 
 ## The first run told me nothing
 
@@ -35,7 +35,7 @@ The built-in schema is honest about this in its own description: "Docusaurus mar
 
 ## Eleven lines changed the answer
 
-So I wrote my own schema. The interesting part is how small it is:
+So I had Claude write a schema of my own. The interesting part is how small it is:
 
 ```json
 {
@@ -50,7 +50,7 @@ So I wrote my own schema. The interesting part is how small it is:
 }
 ```
 
-Then I ran it again. Requiring nothing but a title and a description, on a site I built specifically to demonstrate documentation quality:
+The first version required all three fields, which failed all 30 files and told me nothing except that I had written a strict schema. I asked for the honest number instead: what fails on title and description alone, two fields I was already using. On a site I built specifically to demonstrate documentation quality:
 
 ```
 24 of 30 files failed
@@ -64,7 +64,7 @@ Six passed. All six live in `src/pages`. Not one file in `docs/` or `blog/` had 
 
 Here is the part that convinced me this belongs in the pipeline permanently.
 
-I made a test file with a title, a description, and `last_reviewed: 2024-13-45`. Month thirteen, day forty-five. Against the Docusaurus schema:
+Claude built a test file with a title, a description, and `last_reviewed: 2024-13-45`. Month thirteen, day forty-five. Against the Docusaurus schema:
 
 ```
 1 file checked, 1 passed, 0 failed, 0 errors
@@ -80,23 +80,49 @@ Exact field, exact line. That gap is the whole argument. If I ever build a stale
 
 ## Two things I got wrong
 
-**The check that would never have run.** I wired docmeta into my existing lint workflow and nearly shipped it broken. That workflow triggers on changes to content paths: `website/docs/**`, `website/blog/**`, and so on. My change touched only the config file, the schema, and the workflow itself. None of those matched, so the workflow would never have run at all. Not failed. Skipped. I would have had a green pull request, a check that never ran, and no way to tell the difference from the outside. A check that doesn't run is worse than no check, because the green tick still shows up.
+**The check that would never have run.** Claude wired docmeta into my existing lint workflow, and the plan was to push the check on its own first, so I could screenshot it failing before the fix landed. It caught the problem on its own, in the last check before pushing: that workflow triggers on changes to content paths, `website/docs/**`, `website/blog/**`, and so on. The new commit touched only the config file, the schema, and the workflow itself. None of those matched, so the workflow would never have run at all. Not failed. Skipped. I would have had a green pull request, a check that never ran, and no way to tell the difference from the outside. A check that doesn't run is worse than no check, because the green tick still shows up.
 
-**A rule that had been failing invisibly.** While fixing the first problem, Vale started complaining about spaced em dashes in a line I had just added. I went looking and found that same rule was already firing fourteen times in `pipeline.md`, on text that has been sitting there for months. I had never seen it, because reviewdog only comments on lines inside the diff. Those lines had not changed since the rule landed, so the errors were real, error level, and completely invisible. My linter had been finding things and telling nobody.
+**A rule that had been failing invisibly.** Vale started complaining about spaced em dashes in a line the metadata work had just added, and I said so, mostly because I wanted the rule gone. Claude went looking and came back with something I hadn't asked about: that same rule was already firing fourteen times in `pipeline.md`, on text that has been sitting there for months. I had never seen a single one, because reviewdog only comments on lines inside the diff. Those lines hadn't changed since the rule landed, so the errors were real, error level, and completely invisible. My linter had been finding things and telling nobody.
 
 ## What I actually changed
 
 Descriptions on every published page. Front matter on `pipeline.md`, finally. Both new files committed to the repo, so the schema and config are as open to inspection as everything else here.
 
-One decision worth calling out: I seeded `last_reviewed` from each file's last commit date, not from today's date. Stamping today would have asserted that I reviewed twenty-eight files, which I didn't. I read them. That's a different claim, and writing the stronger one into metadata would have been the exact failure this check exists to catch, committed on day one by the person installing the check.
+One decision worth calling out: `last_reviewed` takes its value from each file's last commit date, not from today's date. Claude proposed that and I agreed immediately, because stamping today would have asserted that someone reviewed twenty-eight files that afternoon. Nobody did. They were read, which is a different claim, and writing the stronger one into metadata would have been the exact failure this check exists to catch, committed on day one by the people installing the check.
 
-I also stopped validating two files: the starter blog posts Docusaurus ships with, still sitting in my repo full of placeholder text. Docusaurus already excludes them from the build. Writing descriptions for pages nobody publishes would have been inventing metadata to satisfy a number. The first thing the new check changed wasn't a file. It was the scope of what gets checked.
+Two files also dropped out of validation: the starter blog posts Docusaurus ships with, still sitting in my repo full of placeholder text. Docusaurus already excludes them from the build, and Claude flagged that writing descriptions for pages nobody publishes would be inventing metadata to satisfy a number. That was the right call. The first thing the new check changed wasn't a file. It was the scope of what gets checked.
 
 The result:
 
 ```
 28 files checked, 28 passed, 0 failed, 0 errors
 ```
+
+## Adding a tool is never one change
+
+The pipeline had four tools. Now it has five, and that number is written down
+in more places than I remembered: the tool table on the pipeline page, a second
+independent table in the README, the sentence listing the gates on
+[How I built this](/showcase-site/how-i-built-this), the page describing the
+Doc Detective test, and the test itself, which asserts that the pipeline page
+names every tool it claims to run. That test needed a fifth assertion, or it
+would have kept passing while checking four fifths of the truth.
+
+`llms.txt` needed updating too, but not by hand. It's generated from a template
+plus live repo facts, which is the fix I wrote about in
+[A baseline is not a fact](/showcase-site/blog/a-baseline-is-not-a-fact). The
+counts can't drift there anymore. The prose around them still can, so the
+template needed the new gate written into it.
+
+Then the part I didn't expect. `scripts/pipeline-facts.json` feeds the
+generated file, and it claimed my terminology rule errors on "AI agent." It
+doesn't. It hasn't for a while. It now covers a term the file never mentions.
+So `llms.txt` has been handing AI agents a wrong description of my own linter,
+generated correctly from a source that was quietly false.
+
+I built the generator specifically so that facts couldn't drift. It works. It
+faithfully rendered a fact that had already drifted upstream of it, which is
+the more interesting failure and the one I don't have a check for yet.
 
 ## What it cost
 

@@ -38,6 +38,12 @@
             "selector": "body",
             "elementText": "/Doc Detective/"
           }
+        },
+        {
+          "find": {
+            "selector": "body",
+            "elementText": "/docmeta/"
+          }
         }
       ]
     }

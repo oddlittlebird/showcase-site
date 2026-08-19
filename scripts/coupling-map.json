@@ -21,10 +21,24 @@
     ]
   },
   {
-    "description": "The pipeline's four tools and what each one catches, stated as two independent tables",
+    "description": "The pipeline's five tools and what each one catches, stated as two independent tables",
     "files": [
       "website/docs/pipeline.md",
       "README.md"
+    ]
+  },
+  {
+    "description": "The metadata rules docmeta enforces, described in prose on the pipeline page",
+    "files": [
+      "docmeta/showcase.schema.json",
+      "website/docs/pipeline.md"
+    ]
+  },
+  {
+    "description": "The pipeline tools the Doc Detective test asserts on, listed in the page it tests",
+    "files": [
+      "doc-detective/tests/sample.json",
+      "website/docs/pipeline.md"
     ]
   }
 ]
