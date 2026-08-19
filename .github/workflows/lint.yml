@@ -11,6 +11,20 @@ on:
       - 'docmeta.config.yaml'
       - 'docmeta/**'
       - '.github/workflows/lint.yml'
+  # Direct pushes to main happen here, from automated commits and from
+  # branches merged without a PR. Without this trigger those never get linted.
+  push:
+    branches:
+      - main
+    paths:
+      - 'website/docs/**'
+      - 'website/blog/**'
+      - 'website/src/pages/**/*.mdx'
+      - 'website/static/llms.txt'
+      # Re-run the checks when the rules themselves change, not just the content.
+      - 'docmeta.config.yaml'
+      - 'docmeta/**'
+      - '.github/workflows/lint.yml'
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
