@@ -1,0 +1,24 @@
+# Metadata validation. Runs alongside Vale (prose) and Doc Detective (procedures).
+# Built-in Docusaurus schemas check the shape of front matter the plugins accept.
+# showcase.schema.json adds what this site requires: every published page needs
+# a title, a description, and a last_reviewed date that is actually a date.
+
+paths:
+  - website/docs
+  - website/blog
+  - website/src/pages
+
+exclude:
+  - "**/node_modules/**"
+  - "website/build/**"
+  # Docusaurus ignores underscore-prefixed files, so they never ship.
+  - "website/blog/_*/**"
+  - "website/blog/_*"
+
+overrides:
+  - files: "website/docs/**"
+    schemas: ["docusaurus:docs:3.10", "./docmeta/showcase.schema.json"]
+  - files: "website/blog/**"
+    schemas: ["docusaurus:blog:3.10", "./docmeta/showcase.schema.json"]
+  - files: "website/src/pages/**"
+    schemas: ["docusaurus:pages:3.10", "./docmeta/showcase.schema.json"]

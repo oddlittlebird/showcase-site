@@ -7,7 +7,7 @@
     },
     {
       "file": "Terminology.yml",
-      "description": "errors on \"utilize\", \"leverage\", \"spin up\", \"kick off\""
+      "description": "errors on \"LLM\", \"utilize\", \"leverage\", \"spin up\", \"kick off\""
     },
     {
       "file": "StackedHeadings.yml",

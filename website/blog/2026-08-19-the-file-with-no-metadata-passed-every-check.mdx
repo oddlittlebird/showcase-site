@@ -1,0 +1,123 @@
+---
+slug: the-file-with-no-metadata-passed-every-check
+title: The file with no metadata passed every check
+description: My pipeline had three quality gates and none of them looked at front matter. The file that describes the pipeline to machines had no front matter at all, and every check passed it.
+authors: [diana]
+tags: [workflow]
+last_reviewed: 2026-08-19
+---
+
+There is a file in this repo called `pipeline.md`. It exists so an AI agent can read a straight description of how this site's documentation pipeline works. It's the file my whole "documentation for machines" argument rests on.
+
+Until last week, it had no front matter. None. It opened on an H1. That's one of the dangers when you build something with an AI coding assistant like Claude Code, I guess. 
+
+Vale read it. Doc Detective read it. Docusaurus built it. Every check passed, including me physically looking at it.
+
+{/* truncate */}
+
+## Adding a third gate
+
+I had Claude Code add Manny Silva's new tool, [docmeta](https://hawkeyexl.github.io/docmeta/), to the pipeline this week. The split is clean. Vale checks how the prose reads, Doc Detective checks whether the procedures still work, and docmeta checks the metadata. Before this, nothing in my stack looked at front matter at all.
+
+One thing to know before you try docmeta: It needs Node 24. The Get started page says Node 20 or newer, but the package has required Node 24 since its first release, and npm reports that mismatch as a warning rather than an error. So the install says it succeeded, `docmeta --version` answers normally, and the thing quietly doesn't work. My CI workflows ran Node 22, which would have produced the same silent non-failure. Claude wrote the whole thing up as a bug report that I sent to Manny, so the Get started should be updated very soon.
+
+## The first run told me nothing
+
+docmeta ships with schemas for Docusaurus front matter, so I started with those. Thirty files across my docs, blog, and pages directories:
+
+```
+30 files checked, 30 passed, 0 failed, 0 errors
+```
+
+A clean sweep, which sounds like good news but was actually the entire problem.
+
+The built-in schema is honest about this in its own description: "Docusaurus marks no field as required, so this is a format check, not a presence check." It constrains the shape of every field Docusaurus accepts, and it requires none of them. A file with no front matter whatsoever satisfies it completely. That's how `pipeline.md` passed.
+
+## Eleven lines changed the answer
+
+So I had Claude write a schema of my own. The interesting part is how small it is:
+
+```json
+{
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["title", "description", "last_reviewed"],
+  "properties": {
+    "title": { "type": "string", "minLength": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "last_reviewed": { "type": "string", "format": "date" }
+  }
+}
+```
+
+The first version required all three fields, which failed all 30 files and told me nothing except that I had written a strict schema. I asked for the honest number instead: what fails on title and description alone, two fields I was already using. On a site I built specifically to demonstrate documentation quality:
+
+```
+24 of 30 files failed
+```
+
+Six passed. All six live in `src/pages`. Not one file in `docs/` or `blog/` had a description. Fifteen blog posts, zero descriptions, every one of them written by someone who does this for a living.
+
+`description` is the field that feeds search results and AI retrieval. It had been missing from almost everything for months, and no gate I owned had any opinion about it.
+
+## The date that is not a date
+
+Here's the part that convinced me this belongs in the pipeline permanently.
+
+Claude built a test file with a title, a description, and `last_reviewed: 2024-13-45`, which is month thirteen, day forty-five. Against the Docusaurus schema:
+
+```
+1 file checked, 1 passed, 0 failed, 0 errors
+```
+
+Against my schema:
+
+```
+/last_reviewed  must match format "date"  (line 4)
+```
+
+It names the exact field and the exact line. That gap is the whole argument. If I ever build a staleness report on `last_reviewed`, the report doesn't error when the field is garbage. It just quietly returns a wrong answer, and the wrongness looks exactly like an answer.
+
+## Two things I got wrong
+
+**The check that would never have run.** Claude wired docmeta into my existing lint workflow, and the plan was to push the check on its own first, so I could screenshot it failing before the fix landed. It caught the problem on its own, in the last check before pushing: that workflow triggers on changes to content paths, `website/docs/**`, `website/blog/**`, and so on. The new commit touched only the config file, the schema, and the workflow itself. None of those matched, so the workflow would never have run at all. It wouldn't have failed; it simply would not have run. I would have had a green pull request, a check that never ran, and no way to tell the difference from the outside. A check that doesn't run is worse than no check, because the green tick still shows up.
+
+**A rule that had been failing invisibly.** Vale started complaining about spaced em dashes in a line the metadata work had just added, and I said so, mostly because I wanted the rule gone. Claude went looking and came back with something I hadn't asked about: that same rule was already firing fourteen times in `pipeline.md`, on text that has been sitting there for months. I had never seen a single one, because reviewdog only comments on lines inside the diff. Those lines hadn't changed since the rule landed, so the errors were real, error level, and completely invisible. My linter had been finding things and telling nobody.
+
+## What I actually changed
+
+Descriptions now exist on every published page, and `pipeline.md` finally has front matter of its own. Both new files are committed to the repo, so the schema and config are as open to inspection as everything else here.
+
+One decision worth calling out: `last_reviewed` takes its value from each file's last commit date, not from today's date. Claude proposed that and I agreed immediately, because stamping today would have asserted that someone reviewed twenty-eight files that afternoon. Nobody did. They were read, which is a different claim, and writing the stronger one into metadata would have been the exact failure this check exists to catch, committed on day one by the people installing the check.
+
+Two files also dropped out of validation: the starter blog posts Docusaurus ships with, still sitting in my repo full of placeholder text. Docusaurus already excludes them from the build, and Claude flagged that writing descriptions for pages nobody publishes would be inventing metadata to satisfy a number. That was the right call. The first thing the new check changed wasn't a file. It was the scope of what gets checked.
+
+The result:
+
+```
+28 files checked, 28 passed, 0 failed, 0 errors
+```
+
+## Adding a tool is never one change
+
+The pipeline had four tools. Now it has five, and that number is written down in more places than I remembered: the tool table on the pipeline page, a second independent table in the README, the sentence listing the gates on [How I built this](/showcase-site/how-i-built-this), the page describing the Doc Detective test, and the test itself, which asserts that the pipeline page names every tool it claims to run. That test needed a fifth assertion, or it would have kept passing while checking four fifths of the truth.
+
+`llms.txt` needed updating too, but not by hand. It's generated from a template plus live repo facts, which is the fix I wrote about in [A baseline is not a fact](/showcase-site/blog/a-baseline-is-not-a-fact). The counts can't drift there anymore. The prose around them still can, so the template needed the new gate written into it.
+
+Then the part I didn't expect: `scripts/pipeline-facts.json` feeds the generated file, and it claimed my terminology rule errors on "AI agent." It doesn't, and it hasn't for a while. It now covers a term the file never mentions. So `llms.txt` has been handing AI agents a wrong description of my own linter, generated correctly from a source that was quietly false. (sigh)
+
+I built the generator specifically so that facts couldn't drift, and it works. What it checks is that every rule file has an entry and every entry has a rule file. It compares filenames. It never opens the rule to see whether the sentence about it is true. The counts can't drift, because they're read off the filesystem every time. The descriptions can, because they're just sentences somebody typed once.
+
+So it faithfully rendered a fact that had already drifted upstream of it. That's the more interesting failure, and it's the next thing I'm building. A substitution rule's swap list is structured data, so a script can pull the terms straight out of the rule and compare them against the terms the prose claims it flags. That only covers substitution rules. `Passive.yml`'s description is genuinely prose, and no script is going to verify it. But it closes the specific gap that let this one through.
+
+## What this was actually for
+
+I should be straight about the stakes. This is a small personal site. I was fine with just titles, and I wasn't especially worried about descriptions. I ran docmeta mostly because I wanted to try it, and I'm glad I did.
+
+A site like mine doesn't come with strict metadata requirements, but plenty of other sites do. For example, enterprise documentation sets, anything under regulatory obligations, anything where metadata decides retention or access or what turns up in an audit. Those have requirements that are written down somewhere and, more often than not, lack enforcement.
+
+That's the gap worth naming, and it isn't that my blog posts lacked descriptions. It's that nothing in a reasonably well-instrumented pipeline had an opinion about whether they did. An unchecked field doesn't announce itself. It sits there looking exactly like a checked one.
+
+The requirements are also going to move. The more that what we write gets retrieved and summarized by AI agents rather than read by people, the more the definition of adequate metadata will shift, and I don't think anyone knows yet where it will settle.
+
+So this was a proof of concept, and it took under two minutes to set up. It's a fun little tool, so I suggest you give it a spin, especially if you're working on documentation with front matter requirements.

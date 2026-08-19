@@ -1,3 +1,9 @@
+---
+title: Documentation Pipeline Portfolio
+description: The agent-facing description of this site's documentation pipeline — every automated check, the tool that runs it, when it runs, and what it blocks.
+last_reviewed: 2026-08-05
+---
+
 # Documentation Pipeline Portfolio
 
 This site is a working demonstration of an end-to-end documentation quality
@@ -16,6 +22,7 @@ the published site:
 | Spelling | codespell | Pull request | Any misspelling blocks merge |
 | Broken external links | Lychee | Push to main + weekly | Any broken URL |
 | Procedural accuracy | Doc Detective | Push to main | Any failed UI test |
+| Front matter | docmeta | Pull request | Missing or malformed metadata blocks merge |
 
 ## What each tool demonstrates
 
@@ -34,8 +41,8 @@ pull request review comments via the reviewdog integration, not just as a
 failed check.
 
 **Terminology.yml** — enforces preferred terms using Vale's `substitution`
-extension. `utilize`, `leverage`, `spin up`, and `AI agent` are flagged as
-errors that block merge. Level: error.
+extension. `LLM`, `utilize`, `leverage`, `spin up`, and `kick off` are flagged
+as errors that block merge. Level: error.
 
 **StackedHeadings.yml** — flags headings that immediately follow other
 headings with no prose between them. Uses `scope: text` with a raw
@@ -76,15 +83,39 @@ six months later without any content change triggering a check. The
 links, and root-relative Docusaurus routes, which are client-side paths that
 do not exist as HTTP endpoints Lychee can reach.
 
+### docmeta — metadata validation
+
+Vale checks how the prose reads and Doc Detective checks whether the
+procedures still work. Neither looks at front matter, so before docmeta a page
+could ship with no description at all, or with a `last_reviewed` value that was
+not a date, and every gate would pass.
+
+The site validates against two layers. The built-in Docusaurus schemas
+(`docusaurus:docs:3.10`, `docusaurus:blog:3.10`, `docusaurus:pages:3.10`)
+constrain the shape of every field the Docusaurus plugins accept. They require
+none of them, so they are a format check rather than a presence check, and any
+file that builds will pass them.
+
+`docmeta/showcase.schema.json` supplies the presence check. Every published
+page must carry a title, a description, and a `last_reviewed` value that
+validates as a date. `docmeta.config.yaml` maps each content directory to its
+matching Docusaurus schema plus the custom one, and excludes the
+underscore-prefixed blog drafts that Docusaurus omits from the build.
+
+The job pins Node 24. docmeta requires it, and on older Node versions npm
+reports the engine mismatch as a warning rather than an error, installs
+anyway, and the step reports success while doing nothing useful.
+
 ### GitHub Actions — the pipeline itself
 
 Thirteen workflows wire the tools together. Path filtering keeps each workflow
 focused: a CSS change does not trigger a lint run; a workflow change does not
 trigger a doc test. The filters reduce noise and make failures meaningful.
 
-The four gates described above:
+The five gates described above:
 
-- `lint.yml` — Vale on pull request, filtered to content files
+- `lint.yml` — Vale and docmeta on pull request, filtered to content files
+  and to the metadata schema and config themselves
 - `spellcheck.yml` — codespell on pull request, filtered to content files
 - `links.yml` — Lychee on push and weekly schedule
 - `test.yml` — Doc Detective on push to main, filtered to docs and test files

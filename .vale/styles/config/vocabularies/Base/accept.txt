@@ -19,3 +19,7 @@ breakpoint
 breakpoints
 config
 configs
+docmeta
+npm
+reviewdog
+Manny
