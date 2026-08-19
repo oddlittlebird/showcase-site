@@ -1,13 +1,13 @@
 ---
 title: Documentation Pipeline Portfolio
-description: The agent-facing description of this site's documentation pipeline — every automated check, the tool that runs it, when it runs, and what it blocks.
+description: "The agent-facing description of this site's documentation pipeline: every automated check, the tool that runs it, when it runs, and what it blocks."
 last_reviewed: 2026-08-05
 ---
 
 # Documentation Pipeline Portfolio
 
 This site is a working demonstration of an end-to-end documentation quality
-pipeline. It exists to show — with running code, not claims — that the person
+pipeline. It exists to show, with running code rather than claims, that the person
 who built it can design, implement, and maintain documentation systems that
 work for both human readers and AI agents.
 
@@ -46,7 +46,7 @@ as errors that block merge. Level: error.
 
 **StackedHeadings.yml** — flags headings that immediately follow other
 headings with no prose between them. Uses `scope: text` with a raw
-multiline regex — a pattern that requires understanding how Vale's scope
+multiline regex. That pattern requires understanding how Vale's scope
 system works at the document level, beyond what most users ever reach.
 
 **Acronyms.yml** — extends Vale's `conditional` rule to require that an
@@ -70,7 +70,7 @@ as file contents.
 
 Doc Detective runs a browser against the deployed site and verifies that what
 the documentation describes actually exists. Tests are defined in JSON in
-`doc-detective/tests/`. This is not a smoke test — it treats documentation as
+`doc-detective/tests/`. This is not a smoke test. It treats documentation as
 a contract with the product. When a product changes and the docs are not
 updated, the test fails and the failure is visible in CI.
 
@@ -167,7 +167,7 @@ The Garden Companion API is documented in `website/static/api/garden.yaml`
 and rendered via Scalar. The spec covers three endpoints, four error responses
 with specific, user-facing error messages, and example responses built from
 original research. The relationship model uses a two-value enum (`beneficial`,
-`harmful`) with a deliberate decision not to include a neutral value — because
+`harmful`) with a deliberate decision not to include a neutral value, because
 neutral relationships cover nearly every plant combination and add no useful
 signal.
 
@@ -175,7 +175,7 @@ signal.
 
 This file and `llms.txt` are the agent-facing layer of the pipeline. They go
 through the same Vale linting, spell checking, and link checking as every
-other content file. They are not exceptions to the pipeline — they are part
+other content file. They are not exceptions to the pipeline. They are part
 of it.
 
 `llms.txt`'s factual claims (Vale rule count and names, workflow count) are

@@ -1,6 +1,6 @@
 # Diana Payton — Documentation systems portfolio
 
-An agent confidently using wrong documentation is worse than an agent that finds nothing. This repo demonstrates the process that makes sure it finds the right thing — and that the right thing is true.
+An agent confidently using wrong documentation is worse than an agent that finds nothing. This repo demonstrates the process that makes sure it finds the right thing, and that the right thing is true.
 
 ## The problem this repo solves
 
@@ -58,8 +58,8 @@ portfolio/            PDF portfolio samples
 
 This repo is licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/).
 
-**You can** fork and adapt this as a template for your own portfolio site. Attribution is required — link back to this repo.
+**You can** fork and adapt this as a template for your own portfolio site. Attribution is required: link back to this repo.
 
 **You cannot** incorporate this repo or its contents into any paid coaching, training, or consulting program without a commercial license.
 
-If you want help building your own documentation portfolio — including setting up this pipeline, improving your resume, and positioning yourself for AI-era technical writing roles — that's exactly what I offer. [Get in touch](mailto:diana@dianapayton.com).
+If you want help building your own documentation portfolio (setting up this pipeline, improving your resume, positioning yourself for AI-era technical writing roles), that's exactly what I offer. [Get in touch](mailto:diana@dianapayton.com).
