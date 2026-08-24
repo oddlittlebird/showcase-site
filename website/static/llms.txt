@@ -48,7 +48,7 @@ Five rules were written from scratch beyond the standard Google style guide:
 
 ## Key files in the repository
 
-- .github/workflows/ — thirteen workflow definitions
+- .github/workflows/ — fourteen workflow definitions
 - .vale/styles/Diana/ — five custom rules (Passive.yml, Terminology.yml, StackedHeadings.yml, Acronyms.yml, Headings.yml)
 - .lychee.toml — Lychee configuration with exclusion rules
 - docmeta.config.yaml, docmeta/showcase.schema.json — front matter schema: every published page needs a title, a description, and a last_reviewed date

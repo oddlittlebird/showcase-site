@@ -5,7 +5,8 @@
     "website/src/pages/doc-detective/api-reference-test.mdx",
     "website/src/pages/doc-detective/llms-txt-test.mdx",
     "website/src/pages/doc-detective/responsive-test.mdx",
-    "website/src/pages/doc-detective/portfolio-link-test.mdx"
+    "website/src/pages/doc-detective/portfolio-link-test.mdx",
+    "website/src/pages/doc-detective/cli-flag-check.mdx"
   ],
   "recursive": true,
   "relativePathBase": "cwd",
