@@ -29,7 +29,7 @@ jobs:
           node-version: '22'
 
       - name: Install Doc Detective
-        run: npm install -g doc-detective@4.37.1
+        run: npm install -g doc-detective@4.38.1
 
       - name: Run tests
         run: doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/llms-txt-test.mdx || true
