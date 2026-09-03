@@ -23,7 +23,7 @@ jobs:
 
       - name: Install Doc Detective
         run: |
-          npm install -g doc-detective@4.37.1
+          npm install -g doc-detective@4.38.1
 
       - name: Run doodle test
         run: doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/doodle-test.mdx || true

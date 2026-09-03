@@ -11,6 +11,7 @@ on:
       - Generate llms.txt
       - API reference screenshot test
       - Portfolio link check
+      - CLI flag check
     types:
       - completed
   workflow_dispatch:

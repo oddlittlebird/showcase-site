@@ -108,7 +108,7 @@ anyway, and the step reports success while doing nothing useful.
 
 ### GitHub Actions — the pipeline itself
 
-Thirteen workflows wire the tools together. Path filtering keeps each workflow
+Fourteen workflows wire the tools together. Path filtering keeps each workflow
 focused: a CSS change does not trigger a lint run; a workflow change does not
 trigger a doc test. The filters reduce noise and make failures meaningful.
 
@@ -120,7 +120,7 @@ The five gates described above:
 - `links.yml` — Lychee on push and weekly schedule
 - `test.yml` — Doc Detective on push to main, filtered to docs and test files
 
-Six more granular checks, each a separate Doc Detective or verification job:
+Seven more granular checks, each a separate Doc Detective or verification job:
 
 - `llms-txt.yml` — verifies `llms.txt` against the live site on push to main:
   reachability, structure, a full content diff against what
@@ -136,6 +136,10 @@ Six more granular checks, each a separate Doc Detective or verification job:
   (PDF file signature, minimum byte size) against the portfolio's linked work
   samples, catching corrupted or emptied files that a plain link check like
   Lychee's would still report as passing
+- `cli-flag-check.yml` — Doc Detective `runShell` test that runs
+  `doc-detective --help` and confirms the `--config` and `--input` flags still
+  exist, since every "Run the test manually" command on this site and every
+  Doc Detective workflow in this list passes both
 
 One check that never fails the build, only asks a question:
 
@@ -157,8 +161,9 @@ And the deploy itself:
 
 - `deploy.yml` — Docusaurus build and GitHub Pages deployment, triggered on
   push to main and by `workflow_run` completion of `doodle.yml`,
-  `llms-txt.yml`, `generate-llms-txt.yml`, `api-reference.yml`, and
-  `portfolio-link-test.yml`, so the site republishes once all upstream checks
+  `llms-txt.yml`, `generate-llms-txt.yml`, `api-reference.yml`,
+  `portfolio-link-test.yml`, and `cli-flag-check.yml`, so the site republishes
+  once all upstream checks
   have run
 
 ### OpenAPI 3.1 — API documentation

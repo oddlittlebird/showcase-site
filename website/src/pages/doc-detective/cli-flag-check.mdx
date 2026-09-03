@@ -1,0 +1,97 @@
+---
+sidebar_position: 8
+title: CLI flag check
+description: A Doc Detective test that confirms the two CLI flags every command on this site depends on still exist.
+last_reviewed: 2026-08-24
+---
+import StatusBadge from '@site/src/components/StatusBadge';
+
+# CLI flag check
+
+This page shows the live result of a Doc Detective test that confirms the two
+Doc Detective CLI flags this repository depends on, `--config` and `--input`,
+still exist in the CLI's own help output.
+
+## Why this matters
+
+Every test page in this section that has a test of its own ends with a "Run the
+test manually" section, and each of those sections contains a command shaped
+like this:
+
+```bash
+doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/cli-flag-check.mdx
+```
+
+The same two flags drive the workflows that run these tests in CI. Every Doc
+Detective workflow in this repository passes both.
+
+Every one of those commands is a claim: that `--config` and `--input` are flags
+Doc Detective still accepts. If either one gets renamed upstream, then all of
+them break at once. Readers who copy a command get an error instead of a
+test run, and the CI workflows fail on a flag they can no longer pass. Nothing
+else in the pipeline would catch it. Vale reads prose, codespell reads
+spelling, and Lychee reads links. None of them run the command.
+
+This test also exercises a part of Doc Detective the other tests on this site
+never touch. The rest load a page in a browser and assert something about what
+renders, or check that a URL resolves. This one runs a shell command and reads
+what the command prints. It never starts a browser, which also makes it the
+one test here that runs on a machine with no browser driver installed.
+
+## Latest result
+
+<StatusBadge statusFile="/doc-detective/cli-flag-status.json" label="CLI flag check" />
+
+## How the test works
+
+The test is embedded directly in this page's source as Doc Detective steps and
+runs the following:
+
+1. Run `doc-detective --help` and confirm the output contains `-c, --config`.
+{/* step {"runShell": {"command": "doc-detective --help", "stdio": "/-c, --config/"}} */}
+
+2. Run `doc-detective --help` and confirm the output contains `-i, --input`.
+{/* step {"runShell": {"command": "doc-detective --help", "stdio": "/-i, --input/"}} */}
+
+Each step matches the short form and the long form together, exactly as the
+pair appears in the help output's option list. Matching `--config` on its own
+would be weaker, because the help output also names flags inside other flags'
+descriptions: a bare match could pass on a stray mention long after the flag
+itself was gone.
+
+Each step also expects an exit code of 0, which is `runShell`'s default. A
+`doc-detective --help` that fails to run at all is a failure here too.
+
+## What makes this test fail
+
+The badge turns red if either flag is renamed, removed, or stops appearing in
+the help output's option list.
+
+The test doesn't prove the full command works. It confirms both flags are
+still offered, not that a complete `doc-detective --config ... --input ...`
+invocation runs a test end to end. The other tests in this section cover that
+ground already: each one that has a workflow of its own runs that exact command
+there, so a genuinely broken invocation shows up as a red badge somewhere else
+on this site.
+
+## Run the test manually
+
+If you clone this repo, then you can run the test locally. No local server is
+needed, because the test only runs a command and reads its output.
+
+```bash
+npm install -g doc-detective
+doc-detective --config doc-detective/config.json --input website/src/pages/doc-detective/cli-flag-check.mdx
+```
+
+That command is also the thing under test. If the flags in it ever stop
+working, then the command that checks them stops working in the same way.
+
+## Run the test on GitHub Actions
+
+The test runs automatically every day and on every push to main that touches
+this page. To trigger it on demand:
+
+1. Go to the **Actions** tab in the GitHub repository.
+2. Select **CLI flag check**.
+3. Click **Run workflow**.
