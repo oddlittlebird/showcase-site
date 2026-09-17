@@ -4,14 +4,16 @@ on:
   push:
     branches:
       - main
+  # Scheduled checks commit status files with GITHUB_TOKEN, which doesn't
+  # trigger push workflows. Rather than deploying after each one, deploy after
+  # each Update doodle run. Its 15:00 UTC fallback run is the last scheduled
+  # workflow of the day, so that deploy also publishes everything the other
+  # checks committed. Generate llms.txt dispatches this workflow itself when
+  # it commits, because the llms.txt verification test needs the new file
+  # live right away.
   workflow_run:
     workflows:
       - Update doodle
-      - llms.txt verification test
-      - Generate llms.txt
-      - API reference screenshot test
-      - Portfolio link check
-      - CLI flag check
     types:
       - completed
   workflow_dispatch:

@@ -17,6 +17,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   generate:
@@ -28,10 +29,26 @@ jobs:
         run: python3 scripts/generate-llms-txt.py
 
       - name: Commit if changed
+        id: commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add website/static/llms.txt
-          git diff --staged --quiet || git commit -m "chore: regenerate llms.txt from live repo facts"
+          if git diff --staged --quiet; then
+            echo "committed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -m "chore: regenerate llms.txt from live repo facts"
           git pull --rebase origin main
           git push
+          echo "committed=true" >> "$GITHUB_OUTPUT"
+
+      # Deploy only runs once a day for scheduled checks, but the llms.txt
+      # verification test compares the live file against the repo, so a new
+      # llms.txt has to go live now. A GITHUB_TOKEN push doesn't trigger
+      # Deploy on its own; workflow_dispatch is the exception that does.
+      - name: Deploy the new llms.txt
+        if: steps.commit.outputs.committed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --repo "$GITHUB_REPOSITORY" --ref main

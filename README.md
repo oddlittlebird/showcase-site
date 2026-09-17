@@ -28,7 +28,7 @@ This repo demonstrates a documentation system that addresses both layers: the te
 
 1. **Write** — content authored in Markdown/MDX in `website/docs/` and `website/blog/`
 2. **Lint** — Vale runs on pull request against changed files; errors block merge
-3. **Test** — Doc Detective runs on deploy; failed procedural tests block the release
+3. **Test** — Doc Detective runs daily and on relevant pushes to main; results show as status badges on each test's page and don't block deploys
 4. **Serve** — Docusaurus builds and publishes to GitHub Pages
 
 ## Site structure

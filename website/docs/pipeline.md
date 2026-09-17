@@ -128,7 +128,8 @@ Seven more granular checks, each a separate Doc Detective or verification job:
   root-relative link inside it still resolves
 - `generate-llms-txt.yml` — regenerates `llms.txt` from a template and live
   repo facts (Vale rule count and names, workflow count) whenever those facts
-  change, and commits the result; see "Agent-facing documentation" below
+  change, commits the result, and triggers a deploy so the new file is live
+  before `llms-txt.yml` checks it; see "Agent-facing documentation" below
 - `api-reference.yml` — Doc Detective screenshot test against the API reference page
 - `responsive-test.yml` — Doc Detective screenshot test across viewport sizes
 - `doodle.yml` — regenerates a daily doodle on a cron schedule
@@ -160,11 +161,11 @@ One check that never fails the build, only asks a question:
 And the deploy itself:
 
 - `deploy.yml` — Docusaurus build and GitHub Pages deployment, triggered on
-  push to main and by `workflow_run` completion of `doodle.yml`,
-  `llms-txt.yml`, `generate-llms-txt.yml`, `api-reference.yml`,
-  `portfolio-link-test.yml`, and `cli-flag-check.yml`, so the site republishes
-  once all upstream checks
-  have run
+  push to main, when `generate-llms-txt.yml` commits a new `llms.txt`, and by
+  `workflow_run` completion of `doodle.yml`. The doodle runs twice a day, and
+  its 15:00 UTC fallback run is the last scheduled workflow, so that deploy
+  also publishes every screenshot and status file the other scheduled checks
+  committed that day, in one build instead of one per check
 
 ### OpenAPI 3.1 — API documentation
 
