@@ -1,0 +1,79 @@
+---
+slug: im-the-supervisor-not-the-engineer
+title: "I'm the supervisor, not the engineer"
+description: A technical writer asked me whether they were technical enough to build a docs pipeline with an AI assistant. Here's what a week of fixing mine actually asked of me.
+authors: [diana]
+tags: [workflow]
+last_reviewed: 2026-09-17
+---
+
+I was talking with a technical writer recently who doesn't use GitHub. They'd been reading about docs-as-code pipelines and wanted to know whether they were technical enough to build one with Claude Code or a similar AI assistant.
+
+It's a fair question, and I didn't want to just answer it with a pep talk. This is what happened on my own pipeline this week, including the part I'm less proud of.
+
+{/* truncate */}
+
+## How I work with Claude Code
+
+Claude Code is my assistant and pocket engineer. My account settings tell it, "I am a technical writer, not an engineer," so it explains things to me the way it would to a technical layperson. It does the investigating and the building. I decide what gets built, and when an explanation loses me, I ask for further clarification. Unlike a human engineer, Claude Code never gets frustrated or annoyed with my questions.
+
+One more habit, which is my own quirk: Claude Code commits its changes to a separate branch, and sometimes pushes that branch to GitHub, but I'm always the one who does the final merge into the live site. I like having that manual review step, even when I'm confident in the change.
+
+## Two red tests
+
+This site runs a set of [Doc Detective](https://doc-detective.com) tests on a schedule. Each one checks something the site claims, and each has a status badge on its page. Earlier this week, two of them started failing: the [Pipeline test](/showcase-site/doc-detective/pipeline-test) and the [API reference screenshot test](/showcase-site/doc-detective/api-reference-test).
+
+I saw the red in the GitHub Actions tab, pasted the link into Claude Code, and told it those two tests were failing. That was the whole request. (Sometimes I actually go into the logs and paste more details, but I didn't this time.)
+
+It found three things, in this order:
+
+- The failures weren't about my content. The pipeline page still had exactly the heading the test looks for.
+- It ran the tests on my laptop and got the same failure. Then it pointed a test at example.com, a page with nothing to do with my site, and that failed too. So the problem was in the testing tool.
+- Doc Detective drives a real browser, and to do that it downloads some helper software the first time it runs. One of those helpers, a Chrome driver, released a new version on September 14 that broke the step where a test looks for something on the page. The timing lined up almost to the minute: the pipeline test passed at 16:05 UTC, the new driver came out at 16:18, and the API reference test failed for the first time at 16:51.
+
+Here's the part that surprised me: I'd pinned Doc Detective to a specific version so an update couldn't break things without warning. It turns out that pin doesn't cover the helpers Doc Detective downloads. Those still came in at whatever the newest version was.
+
+The fix was to hold that one driver at its previous version. Claude Code's first attempt at that didn't stick, because Doc Detective's own install step quietly replaced it with the new version again. Claude Code caught that in its own testing before it ever showed me the change, tried a different approach, and confirmed both tests passed. It also told me the version hold is temporary. Once a fixed driver ships, the hold should come out, or I'll miss future fixes too.
+
+I merged the change and watched the Actions tab. Both tests went green.
+
+## Why were there so many deploys?
+
+Then I noticed something else in the Actions tab. My one merge had set off a stack of Deploy runs, and several had a gray warning icon. Deploy is the workflow that rebuilds the site and publishes it. I only expected one deploy per merge, so I asked what was going on.
+
+The gray icons turned out to be harmless. Only one deploy can run at a time, so when several line up, GitHub cancels the older ones that are still waiting and runs the newest. The cancelled ones never used any time or resources.
+
+But Claude Code also checked the deploy history and found something I hadn't known: the site was rebuilding and redeploying itself seven times a day. Most of my scheduled tests save a small status file when they finish, and each one triggered its own deploy. Nothing had broken, and because the repo is public, the extra runs didn't cost anything. It was just a lot of redundant work.
+
+Claude Code gave me three options, each with its trade-off:
+- Deploy once a day.
+- Deploy only when a test result actually changes.
+- Leave it alone and just fix two tests whose results weren't getting published at all.
+
+I pointed out that my [Doodle test](/showcase-site/doc-detective/doodle-test) captures Google's homepage every day, so at minimum the site needs a daily deploy. Once a day covered that, so that's what I picked.
+
+## The mistake I caught by asking a plain question
+
+Before merging, I asked Claude Code one more thing: do any of the pipeline descriptions or test write-ups need to change because of this?
+
+That question turned up a real problem in the change itself. Claude Code had scheduled the daily deploy to run after the check it described as the last one of the day. It wasn't the last one. The doodle test runs twice a day, and its second run is a fallback for days when Google hasn't put up the new doodle yet. That second run happens after the deploy would have run, so on exactly the days the fallback exists for, the doodle page would have shown yesterday's image until the next day.
+
+Claude Code said so directly, said it should have checked every schedule before calling anything the last one, and laid out new options. I chose to deploy after each doodle run: two deploys a day instead of seven. The same review also found two descriptions on the site that were already wrong before this change, and I had it fix those in the same branch.
+
+I never wrote a line of that code. What I did was ask whether the documentation still matched the system. As a technical writer, that's the question I'd ask anyway.
+
+## Was seven deploys a day a mistake?
+
+An engineer designing the whole pipeline in one sitting probably would have set up one deploy from the start, but nobody designed my pipeline in one sitting. It grew one test at a time over several months, and each test's deploy trigger made sense when I added it. When I wrote [Doc Detective dominos](/showcase-site/blog/doc-detective-dominos), triggering a deploy after the doodle test was the fix.
+
+No one had ever looked at the deploy setup as a whole, including me.
+
+The "last check of the day" error bothers me more. Claude Code stated it with complete confidence, and it would have gotten past me if I hadn't asked a follow-up question. I wrote about the same gap in [What Claude Code didn't notice](/showcase-site/blog/what-claude-code-didnt-notice).
+
+## Back to the technical writer's question
+
+Could they build this? I think so. Everything I did this week came down to noticing that something looked off in the Actions tab and bringing it to Claude Code, then basically having a conversation with it.
+
+At the start of the week, I didn't know that Doc Detective's helpers ignore my version pin, that my site was deploying seven times a day, or how GitHub handles a queue of deploys. None of that was a prerequisite. I found out each one as it came up.
+
+Now, I know more than I did at the start of the week. I'm building my expertise as I build the pipeline, iterating as I go. And that part is working exactly as designed.
