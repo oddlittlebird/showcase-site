@@ -161,11 +161,11 @@ One check that never fails the build, only asks a question:
 And the deploy itself:
 
 - `deploy.yml` — Docusaurus build and GitHub Pages deployment, triggered on
-  push to main, when `generate-llms-txt.yml` commits a new `llms.txt`, and
-  once a day by `workflow_run` completion of the scheduled `cli-flag-check.yml`,
-  the last check in the daily schedule. That daily deploy publishes every
-  screenshot and status file the scheduled checks committed that day, in one
-  build instead of one per check
+  push to main, when `generate-llms-txt.yml` commits a new `llms.txt`, and by
+  `workflow_run` completion of `doodle.yml`. The doodle runs twice a day, and
+  its 15:00 UTC fallback run is the last scheduled workflow, so that deploy
+  also publishes every screenshot and status file the other scheduled checks
+  committed that day, in one build instead of one per check
 
 ### OpenAPI 3.1 — API documentation
 
