@@ -4,13 +4,14 @@ on:
   push:
     branches:
       - main
+  # Scheduled checks commit status files with GITHUB_TOKEN, which doesn't
+  # trigger push workflows. Rather than deploying after each one, deploy once
+  # after CLI flag check, the last check in the daily schedule, to publish
+  # everything the checks committed that day. Generate llms.txt dispatches
+  # this workflow itself when it commits, because the llms.txt verification
+  # test needs the new file live right away.
   workflow_run:
     workflows:
-      - Update doodle
-      - llms.txt verification test
-      - Generate llms.txt
-      - API reference screenshot test
-      - Portfolio link check
       - CLI flag check
     types:
       - completed
@@ -30,6 +31,8 @@ concurrency:
 
 jobs:
   build:
+    # A push-triggered CLI flag check already has a push deploy of its own.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.event == 'schedule'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
