@@ -15,23 +15,23 @@ Before I started this project, I didn't know that pinning a version was somethin
 
 I got a couple of emails the other morning saying two of my scheduled tests had failed: the [llms.txt verification test](/showcase-site/doc-detective/llms-txt-test) and the [API reference screenshot test](/showcase-site/doc-detective/api-reference-test). As one does, I asked Claude Code to find out why.
 
-It wasn't my site. Neither test had actually run. Every workflow in my repo runs on a temporary machine that GitHub supplies, and the message on both jobs said no machine ever picked the job up. GitHub's status page showed an Actions incident that started about 20 minutes before my tests were scheduled. The tests that ran earlier and later that day all passed. The fix was to wait for the next scheduled run.
+Neither test had actually run. Every workflow in my repo runs on a temporary machine that GitHub supplies, and the message on both jobs said no machine ever picked the job up. GitHub's status page showed an Actions incident that started about 20 minutes before my tests were scheduled. The tests that ran earlier and later that day all passed. The fix was to wait for the next scheduled run.
 
 ## The notice next to the failures
 
 Claude Code also pointed out a notice that GitHub had attached to every run, passing or failing. Starting October 19, the `ubuntu-latest` label moves to Ubuntu 26.
 
-Every one of my workflows had the line `runs-on: ubuntu-latest`. That line doesn't name a version. It asks for whatever GitHub currently calls the latest one. So on October 19, all of my workflows would move to a new operating system, and I wouldn't have changed a thing in my repo.
+Every one of my workflows had the line `runs-on: ubuntu-latest`. That line doesn't name a version. It asks for whatever GitHub currently calls the latest one. On October 19, all of my workflows would move to a new operating system, and I wouldn't have changed a thing in my repo.
 
-Most of my pipeline probably wouldn't notice. The screenshot tests are the ones I'd worry about. They compare a new screenshot against a saved one, and a different operating system can render fonts and spacing a little differently. A test could fail even though nothing on my site changed, and I'd spend a morning chasing a problem that was never in my content.
+Most of my pipeline probably wouldn't notice. The screenshot tests are the ones I'd worry about. They compare a new screenshot against a saved one, and a different operating system can render fonts and spacing a little differently. A test could fail over a few pixels, and I'd spend a morning chasing a problem that was never in my content.
 
 ## I'd seen this before
 
-I recognized the problem because pinning had come up before. Earlier, I'd pinned Doc Detective to a specific version so that an update couldn't break my tests without warning. Then in September I found out the hard way that the pin didn't cover a browser driver that Doc Detective downloads on its own. I wrote that one up in [I'm the supervisor, not the engineer](/showcase-site/blog/im-the-supervisor-not-the-engineer).
+Pinning had come up before. Earlier this year, I'd pinned Doc Detective to a specific version so that an update couldn't break my tests without warning. In September, I found out the hard way that the pin didn't cover a browser driver that Doc Detective downloads on its own. That one's written up in [I'm the supervisor, not the engineer](/showcase-site/blog/im-the-supervisor-not-the-engineer).
 
-So the fix here made sense to me right away. Claude Code changed every workflow from `ubuntu-latest` to `ubuntu-24.04`, which is the version they already run on today. That's 16 jobs across 14 workflow files. Nothing about how they run changes. The difference is that the upgrade now happens when I decide it does, instead of on GitHub's calendar.
+The fix here made sense to me right away. Claude Code changed every workflow from `ubuntu-latest` to `ubuntu-24.04`, the version they were already running on. That's 16 jobs across 14 workflow files. They run exactly as before, but the upgrade now happens when I decide it does, instead of on GitHub's calendar.
 
-The pin isn't permanent. GitHub will eventually retire Ubuntu 24.04, so at some point I'll try Ubuntu 26 on a separate branch, refresh any saved screenshots that come out different, and then take the pin out. That's the controlled version of the same upgrade.
+The pin isn't permanent. GitHub will eventually retire Ubuntu 24.04, so at some point I'll try Ubuntu 26 on a separate branch, refresh any saved screenshots that come out different, and then take the pin out.
 
 ## Somebody used to do this for me
 
