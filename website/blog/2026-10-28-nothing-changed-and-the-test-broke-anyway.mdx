@@ -27,7 +27,7 @@ Nobody touched the layout. The browser window on GitHub's machine just started o
 
 My first thought was that this shouldn't fail anything. The comparison allows up to 2% pixel difference, and when a screenshot goes over that, Doc Detective reports a warning, not a failure. I'd written a whole [screenshot comparison test](/showcase-site/doc-detective/screenshot-comparison-test) page about that behavior.
 
-Doc Detective checks something before it compares pixels: whether the two images are the same shape. If their aspect ratios differ by more than 5%, it can't line them up, so it fails the step. My two screenshots were about 13% apart.
+Doc Detective checks something before it compares pixels: whether the two images are the same shape. If their aspect ratios differ by more than 5%, then it can't line them up, so it fails the step. My two screenshots were about 13% apart.
 
 And the test couldn't recover on its own. It replaces the reference image whenever a screenshot drifts past 2%, so an ordinary visual change fixes itself after one warning. A failed shape check ends the step before that replacement happens. The reference image stayed at the old size, every new screenshot came out at the new size, and the test was going to fail every morning until someone stepped in.
 
@@ -47,4 +47,6 @@ The alert I'd built for this test stayed quiet, too. When a screenshot drifts pa
 
 This test runs when I push a change to the API spec or the test page, and it also runs on a schedule. During those seven days, I didn't push anything that would have triggered it. If it ran only on push, I'd have found this the next time I edited the spec, possibly weeks later, and I'd have assumed my edit caused it.
 
-{/* DIANA: end the post here with a sentence or two on how you noticed the failure and what, if anything, you'll change about checking results. I don't know whether the GitHub failure emails reached you or why it took a week, so I didn't guess. */}
+## Lessons learned
+
+I'm accustomed to having false fails on my tests. Maybe GitHub was down, maybe the internet sneezed. Whatever. So in this case, I didn't stress about the emails saying the run failed. Usually when I investigate, it's green by the time I get there. This time, it wasn't. And it really drives home the point that no matter how good or thought-out our pipelines are, they still need a human to pay attention and check on them now and then.
