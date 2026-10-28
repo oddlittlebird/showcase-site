@@ -30,7 +30,9 @@ That said, this test proves the pipeline produced *something*, not that the some
 
 ## How the test works
 
-The test is defined directly in this page's source as embedded Doc Detective steps and runs the following:
+The test is defined directly in this page's source as embedded Doc Detective steps. It runs in a fixed 1280×800 Chrome viewport, so the screenshots keep the same dimensions as the reference image even when the CI runner's default browser window size changes. The test runs the following:
+
+{/* test {"testId": "api-reference", "runOn": [{"browsers": [{"name": "chrome", "viewport": {"width": 1280, "height": 800}}]}]} */}
 
 1. Navigate to the [API reference](/showcase-site/api).
 {/* step {"goTo": "http://localhost:3000/showcase-site/api"} */}
@@ -41,12 +43,17 @@ The test is defined directly in this page's source as embedded Doc Detective ste
 3. Capture a screenshot and save it as `api-reference.png`.
 {/* step {"screenshot": {"path": "website/static/doc-detective/api-reference.png", "overwrite": "true"}} */}
 
-4. Capture a second screenshot and compare it against the reference image saved at `api-reference-baseline.png`, allowing up to 2% pixel difference. This step doesn't fail the test either way — see [the screenshot comparison test](/showcase-site/doc-detective/screenshot-comparison-test) for what `maxVariation` actually does and why it reports WARNING instead of FAIL.
+4. Capture a second screenshot and compare it against the reference image saved at `api-reference-baseline.png`, allowing up to 2% pixel difference. A pixel difference greater than 2% reports WARNING, not FAIL — see [the screenshot comparison test](/showcase-site/doc-detective/screenshot-comparison-test) for what `maxVariation` actually does. Before it compares pixels, though, Doc Detective checks that the two images have matching aspect ratios, and a mismatch there does fail the step.
 {/* step {"screenshot": {"path": "website/static/doc-detective/api-reference-baseline.png", "maxVariation": 0.02, "overwrite": "aboveVariation"}} */}
+
+{/* test end */}
 
 ## What makes this test fail
 
-The test fails only if `find` can't locate an `h1.section-header-label` element within 20 seconds. In practice that means the CDN script never loaded, the OpenAPI spec never fetched, or Scalar's render broke badly enough to produce no heading at all.
+The test fails in two cases:
+
+- `find` can't locate an `h1.section-header-label` element within 20 seconds. In practice that means the CDN script never loaded, the OpenAPI spec never fetched, or Scalar's render broke badly enough to produce no heading at all.
+- The aspect ratio of the new screenshot differs from that of the reference image by more than 5%. Doc Detective can't compute a pixel difference between images of different shapes, so it fails the comparison step instead of reporting a variation. Because the step fails before it can overwrite the reference image, the test keeps failing on every run until someone replaces that image. The fixed viewport exists to prevent this: in October 2026, the CI runner's default Chrome window got 57 pixels shorter, and every run failed this check until the test pinned its viewport.
 
 It does *not* fail if the page renders with broken, wrong, or degraded content, as long as some element matching that selector exists. The [comparison step](#how-the-test-works) narrows this gap without turning it into a hard failure: because this page rarely changes, a WARNING here is a meaningful signal that something visual actually shifted, worth checking even though it doesn't redden [the badge](#latest-result).
 
