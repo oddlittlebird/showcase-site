@@ -1,0 +1,50 @@
+---
+slug: nothing-changed-and-the-test-broke-anyway
+title: "Nothing changed, and the test broke anyway"
+description: My API reference test failed seven mornings in a row with no commit to blame. GitHub's browser window had gotten 57 pixels shorter.
+authors: [diana]
+tags: [workflow]
+last_reviewed: 2026-10-28
+---
+
+Earlier this month, I pinned every workflow in my repo to a specific version of Ubuntu so that GitHub couldn't swap my build machines out from under me. Two weeks later, something changed out from under me anyway.
+
+{/* truncate */}
+
+## Seven red mornings
+
+My [API reference screenshot test](/showcase-site/doc-detective/api-reference-test) runs every morning. It loads the site's API reference page, checks that Scalar rendered it, saves a screenshot, and then compares a second screenshot against a reference image saved from an earlier run.
+
+It passed every day through October 20 and failed every day starting October 21. By the time I asked my robot minion (Claude Code) what was going on, it had failed seven runs in a row.
+
+The first thing Claude Code checked was what had changed in my repo between the last pass and the first failure. Nothing had. The only commits in that window were the status updates my workflows make on their own after every run, with no content edits, config changes, or dependency bumps among them.
+
+## 57 pixels
+
+The live page was fine. Scalar loaded, and the heading the test looks for was right where it belonged. What had changed was the screenshot. On October 20, it was 780 pixels wide and 437 tall. On October 21, it was 780 by 380.
+
+Nobody touched the layout. The browser window on GitHub's machine just started opening 57 pixels shorter, and the screenshot shrank with it.
+
+My first thought was that this shouldn't fail anything. The comparison allows up to 2% pixel difference, and when a screenshot goes over that, Doc Detective reports a warning, not a failure. I'd written a whole [screenshot comparison test](/showcase-site/doc-detective/screenshot-comparison-test) page about that behavior.
+
+Doc Detective checks something before it compares pixels: whether the two images are the same shape. If their aspect ratios differ by more than 5%, it can't line them up, so it fails the step. My two screenshots were about 13% apart.
+
+And the test couldn't recover on its own. It replaces the reference image whenever a screenshot drifts past 2%, so an ordinary visual change fixes itself after one warning. A failed shape check ends the step before that replacement happens. The reference image stayed at the old size, every new screenshot came out at the new size, and the test was going to fail every morning until someone stepped in.
+
+## What the pin covered
+
+Pinning Ubuntu fixed the version of the operating system. It didn't freeze everything running on top of it. GitHub keeps updating the software on its machines, and the browser that Doc Detective drives can update too. I don't know which of those changed the window size. I didn't dig further, because the fix is the same either way: stop letting the test use whatever window size it happens to get.
+
+The test now asks for a 1280 by 800 browser window explicitly, the same way the [responsive screenshot test](/showcase-site/doc-detective/responsive-test) already did for its two viewports. Claude Code also deleted the old reference image so that the next run saves a new one at the new size. We ran the test twice locally to make sure the second run compared cleanly against the first. The fix is in a pull request as I write this, and the first scheduled run after it merges saves the new reference image.
+
+## My own page was wrong
+
+The test page said the comparison step "doesn't fail the test either way." That was true for pixel differences and false for size differences, and I'd never hit the case that would have shown me. It's corrected in the same pull request.
+
+The alert I'd built for this test stayed quiet, too. When a screenshot drifts past 2%, the workflow opens a GitHub issue. That alert depends on the variation number, and with no comparison, there was no number. The variation badge on the test page read 0 the whole week. The pass/fail badge was the only thing that turned red.
+
+## Why it runs every morning
+
+This test runs when I push a change to the API spec or the test page, and it also runs on a schedule. During those seven days, I didn't push anything that would have triggered it. If it ran only on push, I'd have found this the next time I edited the spec, possibly weeks later, and I'd have assumed my edit caused it.
+
+{/* DIANA: end the post here with a sentence or two on how you noticed the failure and what, if anything, you'll change about checking results. I don't know whether the GitHub failure emails reached you or why it took a week, so I didn't guess. */}
