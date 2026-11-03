@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: Coupling map
-description: A maintained map of file pairs that state the same facts, checked on every pull request and reviewed monthly by an agent.
+description: A maintained map of file pairs that state the same facts, checked on every pull request and reviewed periodically by an agent.
 last_reviewed: 2026-08-05
 ---
 
@@ -41,7 +41,7 @@ This half is a plain script: `git diff` against a JSON file, no model involved. 
 
 The map needs its own periodic check too, and that check can't be a script the same way. "Does this file still exist" is mechanical. "Does this description still accurately describe what these two files have in common" and "is there a new pair worth adding" both require reading the actual content and making a judgment call.
 
-[`coupling-map-review.yml`](https://github.com/oddlittlebird/showcase-site/blob/main/.github/workflows/coupling-map-review.yml) runs on the first of every month, via [`anthropics/claude-code-action`](https://github.com/anthropics/claude-code-action). Each run:
+[`coupling-map-review.yml`](https://github.com/oddlittlebird/showcase-site/blob/main/.github/workflows/coupling-map-review.yml) runs via [`anthropics/claude-code-action`](https://github.com/anthropics/claude-code-action). It was scheduled for the first of every month; that schedule is paused for now, and the workflow runs only when triggered manually. Each run:
 
 1. Reads every file path in the map and confirms it still exists.
 2. Reads each pair and judges whether its description still holds, given what the files currently say.

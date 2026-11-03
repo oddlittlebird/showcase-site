@@ -1,8 +1,10 @@
 name: Monthly coupling-map review
 
+# The monthly schedule is paused while the API key is disabled. To
+# resume it, restore:
+#   schedule:
+#     - cron: '0 8 1 * *'
 on:
-  schedule:
-    - cron: '0 8 1 * *'
   workflow_dispatch:
 
 permissions:

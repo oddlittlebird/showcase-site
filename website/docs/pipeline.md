@@ -151,8 +151,9 @@ One check that never fails the build, only asks a question:
   comments on the PR asking for confirmation. It doesn't discover new
   couplings on its own; it only ever flags a relationship someone already
   wrote down.
-- `coupling-map-review.yml` — the monthly counterpart to the check above: on
-  the first of each month, runs Claude Code (via `anthropics/claude-code-action`)
+- `coupling-map-review.yml` — the periodic counterpart to the check above.
+  Its monthly schedule is paused, so it runs only when triggered manually.
+  It runs Claude Code (via `anthropics/claude-code-action`)
   against the live repo to judge whether `coupling-map.json`'s existing
   entries are still accurate and whether new file pairs deserve an entry,
   then reports its findings as a GitHub issue. It never edits the map
